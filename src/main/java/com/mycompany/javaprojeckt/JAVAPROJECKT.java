@@ -11,6 +11,6 @@ package com.mycompany.javaprojeckt;
 public class JAVAPROJECKT {
 
     public static void main(String[] args) {
-        System.out.println("Hellso !");
+        System.out.println("Hello new projeckt!");
     }
 }
