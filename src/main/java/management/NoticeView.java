@@ -100,7 +100,7 @@ public class NoticeView extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(254, 254, 254)
                         .addComponent(titlename, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(142, Short.MAX_VALUE))
+                .addContainerGap(139, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
