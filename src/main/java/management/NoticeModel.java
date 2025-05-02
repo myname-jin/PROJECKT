@@ -34,21 +34,21 @@ public class NoticeModel {
 
     // 파일에서 공지사항 내용을 읽어오는 메서드
     public String[] loadNotices() {
-        File file = new File(FILE_PATH);
-        ArrayList<String> notices = new ArrayList<>();
-        
-        // 파일을 읽어서 내용 저장
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                notices.add(line);  // 각 줄을 notices 리스트에 추가
+         File file = new File(FILE_PATH);
+    ArrayList<String> notices = new ArrayList<>();
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+            if (!line.trim().isEmpty()) {  // 🔍 빈 줄 제거
+                notices.add(line);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-        
-        // 리스트를 배열로 변환하여 반환
-        return notices.toArray(new String[0]);
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+
+    return notices.toArray(new String[0]);
     }
 }
     
