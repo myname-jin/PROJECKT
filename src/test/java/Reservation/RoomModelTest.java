@@ -29,7 +29,7 @@ public class RoomModelTest {
     // 매개변수 생성자 테스트
     @Test
     public void testConstructorWithParameters() {
-        System.out.println("✅ 매개변수를 가진 생성자 테스트: " + room.getName() + ", " + room.getType());
+        System.out.println("매개변수를 가진 생성자 테스트: " + room.getName() + ", " + room.getType());
         assertEquals("912호", room.getName());
         assertEquals("강의실", room.getType());
     }
