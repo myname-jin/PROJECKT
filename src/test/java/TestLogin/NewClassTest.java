@@ -4,6 +4,7 @@
  */
 package TestLogin;
 
+import ServerClient.NewClass;
 import org.junit.jupiter.api.*;
 
 import java.io.*;
