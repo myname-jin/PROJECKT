@@ -64,7 +64,7 @@ public class NewClass extends JFrame {
                 in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-                out.write("LOGIN:" + userId + "\n");
+                out.write("LOGIN:" + userId + ":" + password + "\n");
                 out.flush();
 
                 String response;
