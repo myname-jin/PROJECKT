@@ -11,9 +11,9 @@ package TestLogin;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-/**
- * 서버 진입점
- */
+// 서버를 시작하고 클라이언트 연결을 수락하는 진입점 클래스
+
+
 public class ServerMain {
     public static void main(String[] args) throws Exception {
         final int PORT = 12345;

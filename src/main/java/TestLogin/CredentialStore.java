@@ -8,6 +8,8 @@ package TestLogin;
  *
  * @author adsd3
  */
+// 사용자 ID/비밀번호를 파일에서 읽고 자격을 검증하는 클래스
+
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -15,9 +17,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * TEST_LOGIN.txt 에서 id,password 쌍을 읽어 와서 검증하는 클래스
- */
+
 public class CredentialStore {
     private final Map<String,String> store = new HashMap<>();
 

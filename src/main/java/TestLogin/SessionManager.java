@@ -8,6 +8,9 @@ package TestLogin;
  *
  * @author adsd3
  */
+
+// 최대 접속자 수를 관리하고 대기열을 처리하는 세션 관리자
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.Socket;
@@ -16,9 +19,7 @@ import java.util.Queue;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * 동시 접속 제한과 대기열 관리
- */
+
 public class SessionManager {
     private final int maxUsers;
     private final Set<String> active = new HashSet<>();

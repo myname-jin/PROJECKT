@@ -16,9 +16,9 @@ import java.io.OutputStreamWriter;
 import java.io.IOException;
 import java.net.Socket;
 
-/**
- * 클라이언트별 요청을 처리하는 Runnable
- */
+// 클라이언트의 로그인/로그아웃 요청을 처리하는 쓰레드 클래스
+
+
 public class ClientHandler implements Runnable {
     private final Socket socket;
     private final CredentialStore creds;

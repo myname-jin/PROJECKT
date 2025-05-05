@@ -9,10 +9,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.net.Socket;
-/**
- *
- * @author adsd3
- */
+
+// 로그인 화면을 제공하고 서버와 통신하는 초기 뷰/컨트롤러
+
+
 
 public class NewClass extends JFrame {
     private JTextField txtUser;
