@@ -9,10 +9,13 @@ package login;
  * @author adsd3
  */
 import management.NextPage;
+import ruleagreement.RuleAgreementController;
 
 import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class LoginController {
     private final LoginView view;
@@ -93,7 +96,11 @@ public class LoginController {
             if (role.equals("admin")) {
                 new NextPage(userId).setVisible(true); // 관리자용
             } else {
-                new NextPage(userId, socket, in, out).setVisible(true); // 사용자용
+                try {
+                    new RuleAgreementController(userId, socket, out);
+                } catch (Exception ex) {
+                    Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
             view.dispose();
         });

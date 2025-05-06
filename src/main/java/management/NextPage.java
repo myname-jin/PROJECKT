@@ -32,9 +32,7 @@ public class NextPage extends JFrame {
         add(new JLabel("로그인 성공! 다음 페이지입니다.", SwingConstants.CENTER));
 
         // ✅ 소켓이 있을 때만 로그아웃 처리 부착
-        if (socket != null && out != null) {
             LogoutUtil.attach(this, userId, socket, out);
-        }
     }
 
     // 관리자용 생성자

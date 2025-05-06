@@ -8,25 +8,28 @@ package ServerClient;
  * @author adsd3
  */
 import javax.swing.*;
-import java.awt.event.*;
-import java.io.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.net.Socket;
 
-// 창 종료 시 로그아웃 처리를 공통으로 수행하는 유틸 클래스
-
 public class LogoutUtil {
+
     public static void attach(JFrame frame, String userId, Socket socket, BufferedWriter out) {
+        if (frame == null || userId == null || socket == null || out == null) {
+            return; // 관리자거나 비정상 상황: 아무것도 하지 않음
+        }
+
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                System.out.println("[공통 로그아웃] 창 종료 이벤트 발생: " + userId);
                 try {
                     out.write("LOGOUT:" + userId + "\n");
                     out.flush();
-                    socket.close();
-                    System.out.println("[공통 로그아웃] 로그아웃 메시지 전송 완료");
+                    socket.close(); // 소켓도 정리
                 } catch (IOException ex) {
-                    ex.printStackTrace();
+                    ex.printStackTrace(); // 예외는 로깅만
                 }
             }
         });
