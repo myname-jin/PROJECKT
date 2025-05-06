@@ -5,7 +5,7 @@
 package TestLogin;
 
 
-import ServerClient.NextPage;
+import management.NextPage;
 import org.junit.jupiter.api.Test;
 
 import javax.swing.*;

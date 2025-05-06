@@ -8,6 +8,13 @@ package ServerClient;
  *
  * @author adsd3
  */
+
+// 서버를 시작하고 클라이언트 연결을 수락하는 진입점 클래스
+
+/**
+ *
+ * @author adsd3
+ */
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -20,7 +27,7 @@ public class ServerMain {
         final int MAX_USERS = 3;
 
         // 사용자 자격증명 파일 경로 지정
-        CredentialStore creds     = new CredentialStore("C:/SWG/JAVAPROJECKT/TEST_LOGIN.txt");
+        CredentialStore creds     = new CredentialStore("C:/SWG/JAVAPROJECKT/USER_LOGIN.txt");
         SessionManager sessions   = new SessionManager(MAX_USERS);
 
         try (ServerSocket ss = new ServerSocket(PORT)) {

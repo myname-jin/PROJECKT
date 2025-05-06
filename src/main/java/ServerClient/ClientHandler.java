@@ -37,6 +37,8 @@ public class ClientHandler implements Runnable {
 
             String line;
             while ((line = in.readLine()) != null) {
+                    System.out.println("수신 메시지: " + line +"님이 로그인 했습니다."); // 클라이언트 요청 로그
+
                 if (line.startsWith("LOGIN:")) {
                     // "LOGIN:id:pw" 형태로 split
                     String[] parts   = line.split(":", 3);
@@ -73,6 +75,8 @@ public class ClientHandler implements Runnable {
                     sessions.logout(userId);
                     out.write("BYE:로그아웃 완료\n\n");
                     out.flush();
+                    System.out.println("[로그아웃] " + userId + "님이 로그아웃했습니다.");
+
                     break;
                 }
             }
