@@ -9,6 +9,10 @@ import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import management.ReservationMgmtModel;
 
+import javax.swing.JComboBox;
+import javax.swing.DefaultCellEditor;
+import javax.swing.table.TableColumn;
+
 /**
  *
  * @author suk22
@@ -19,8 +23,32 @@ public class ReservationMgmtView extends javax.swing.JFrame {
 
     public ReservationMgmtView() {
         initComponents();
+        setupTableListener();
+        setupApprovalColumnEditor();
         loadReservationData();  // 앱 시작 시 자동 불러오기
-         setTitle("관리자 예약 목록");
+        setTitle("관리자 예약 목록");
+    }
+
+    private void setupApprovalColumnEditor() {
+        String[] statusOptions = {"대기", "승인", "거절"};
+        JComboBox<String> comboBox = new JComboBox<>(statusOptions);
+
+        TableColumn statusColumn = jTable1.getColumnModel().getColumn(5);
+        statusColumn.setCellEditor(new DefaultCellEditor(comboBox));
+    }
+
+    private void setupTableListener() {
+        jTable1.getModel().addTableModelListener(e -> {
+            int row = e.getFirstRow();
+            int column = e.getColumn();
+            
+            if (column == 5) {
+                String studentId = (String) jTable1.getValueAt(row, 0); // 학번으로 대상 찾기
+                String newStatus = (String) jTable1.getValueAt(row, 5);
+
+                controller.updateApprovalStatus(studentId, newStatus);
+            }
+        });
     }
 
     private void loadReservationData() {
@@ -31,9 +59,10 @@ public class ReservationMgmtView extends javax.swing.JFrame {
         for (ReservationMgmtModel r : reservations) {
             model.addRow(new Object[]{
                 r.getStudentId(), r.getDepartment(), r.getName(),
-                r.getRoom(), r.getTime(),// r.getApproved()
+                r.getRoom(), r.getTime(), r.getApproved()
             });
         }
+
     }
 
     /**
@@ -65,6 +94,7 @@ public class ReservationMgmtView extends javax.swing.JFrame {
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
