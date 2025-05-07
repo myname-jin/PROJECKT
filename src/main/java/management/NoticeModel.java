@@ -19,7 +19,7 @@ import java.util.ArrayList;
  */
 public class NoticeModel {
     // 파일 경로 설정
-    private static final String FILE_PATH = "C:\\SWG\\JAVAPROJECKT\\Notice.txt";
+    private static final String FILE_PATH = "src/resources/Notice.txt";
     
     // 파일에 공지사항을 저장하는 메서드
     public void saveNotice(String content) {

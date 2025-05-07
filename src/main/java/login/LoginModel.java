@@ -9,17 +9,23 @@ package login;
  * @author adsd3
  */
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 public class LoginModel {
 
     public boolean validateCredentials(String userId, String password, String role) {
-        String filePath = role.equals("admin")
-                ? "C:/SWG/JAVAPROJECKT/ADMIN_LOGIN.txt"
-                : "C:/SWG/JAVAPROJECKT/USER_LOGIN.txt";
+        String fileName = role.equals("admin") ? "ADMIN_LOGIN.txt" : "USER_LOGIN.txt";
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream(fileName)) {
+            if (input == null) {
+                System.err.println("파일을 찾을 수 없습니다: " + fileName);
+                return false;
+            }
+
+            Scanner scanner = new Scanner(input, StandardCharsets.UTF_8);
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
                 String[] parts = line.split(",");
                 if (parts.length == 2 &&
                         parts[0].trim().equals(userId) &&
@@ -27,7 +33,7 @@ public class LoginModel {
                     return true;
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
