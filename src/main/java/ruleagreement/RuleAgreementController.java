@@ -21,7 +21,7 @@ public class RuleAgreementController {
 
     // ✅ 소켓과 출력 스트림을 생성자에서 받아서 로그아웃 처리에 활용
     public RuleAgreementController(String userId, Socket socket, BufferedWriter out) throws Exception {
-        String absolutePath = "src/resources/rules.txt"; // 경로는 필요시 수정
+        String absolutePath = "src/main/resources/rules.txt"; // 경로는 필요시 수정
         this.model = new RuleAgreementModel(absolutePath);
         this.view = new RuleAgreementView(model.getRules());
 

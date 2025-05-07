@@ -27,7 +27,7 @@ public class ServerMain {
         final int MAX_USERS = 3;
 
         // 사용자 자격증명 파일 경로 지정
-        CredentialStore creds     = new CredentialStore("src/resources/USER_LOGIN.txt");
+        CredentialStore creds     = new CredentialStore("src/main/resources/USER_LOGIN.txt");
         SessionManager sessions   = new SessionManager(MAX_USERS);
 
         try (ServerSocket ss = new ServerSocket(PORT)) {

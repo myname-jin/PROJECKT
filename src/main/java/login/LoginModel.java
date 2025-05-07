@@ -14,12 +14,15 @@ import java.util.Scanner;
 
 public class LoginModel {
 
-    public boolean validateCredentials(String userId, String password, String role) {
-        String fileName = role.equals("admin") ? "ADMIN_LOGIN.txt" : "USER_LOGIN.txt";
+  public boolean validateCredentials(String userId, String password, String role) {
+        // 클래스패스에서 파일 읽기
+        String fileName = role.equals("admin") ? 
+                "/ADMIN_LOGIN.txt" : 
+                "/USER_LOGIN.txt";
 
-        try (InputStream input = getClass().getClassLoader().getResourceAsStream(fileName)) {
+        try (InputStream input = getClass().getResourceAsStream(fileName)) {
             if (input == null) {
-                System.err.println("파일을 찾을 수 없습니다: " + fileName);
+                System.err.println("❌ 파일을 찾을 수 없습니다: " + fileName);
                 return false;
             }
 
