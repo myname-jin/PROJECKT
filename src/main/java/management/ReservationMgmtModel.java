@@ -15,7 +15,7 @@ public class ReservationMgmtModel {
     private String name;
     private String room;
     private String time;
-    //private String approved;
+    private String approved;
 
     public ReservationMgmtModel(String studentId, String department, String name, String room, String time, String approved) {
         this.studentId = studentId;
@@ -23,7 +23,7 @@ public class ReservationMgmtModel {
         this.name = name;
         this.room = room;
         this.time = time;
-        //this.approved = approved;
+        this.approved = approved;
     }
 
     public String getStudentId() {
@@ -44,5 +44,13 @@ public class ReservationMgmtModel {
 
     public String getTime() {
         return time;
+    }
+
+    public String getApproved() {
+        return approved;
+    }
+
+    public void setApproved(String approved) {
+        this.approved = approved;
     }
 }
