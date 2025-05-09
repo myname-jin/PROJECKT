@@ -38,19 +38,21 @@ public class ClientHandler implements Runnable {
             String line;
             while ((line = in.readLine()) != null) {
                     System.out.println("수신 메시지: " + line +"님이 로그인 했습니다."); // 클라이언트 요청 로그
+                        // 로그인 처리 전에 최신 데이터로 리로드
+                        creds.reload();
 
-                if (line.startsWith("LOGIN:")) {
-                    // "LOGIN:id:pw" 형태로 split
-                    String[] parts   = line.split(":", 3);
-                    String   userId  = parts.length > 1 ? parts[1].trim() : "";
-                    String   password= parts.length > 2 ? parts[2].trim() : "";
+                    if (line.startsWith("LOGIN:")) {
+                        // "LOGIN:id:pw" 형태로 split
+                        String[] parts   = line.split(":", 3);
+                        String   userId  = parts.length > 1 ? parts[1].trim() : "";
+                        String   password= parts.length > 2 ? parts[2].trim() : "";
 
-                    // 자격 검증
-                    if (!creds.validate(userId, password)) {
-                        out.write("FAIL:자격증명 불일치\n\n");
-                        out.flush();
-                        break;
-                    }
+                        // 자격 검증
+                        if (!creds.validate(userId, password)) {
+                            out.write("FAIL:자격증명 불일치\n\n");
+                            out.flush();
+                            break;
+                        }
 
                     // 세션 관리
                     SessionManager.Pending pend = new SessionManager.Pending(socket, userId, out);
