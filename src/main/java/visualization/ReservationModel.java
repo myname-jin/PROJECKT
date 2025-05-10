@@ -12,7 +12,7 @@ public class ReservationModel {
     private final Map<String, Map<String, Integer>> roomByDay = new HashMap<>();
     private final String[] rooms = {"911", "912", "913", "914", "915", "916", "917", "918"};
     private final String[] days = {"월", "화", "수", "목", "금"};
-    private final String filePath = "C:\\SWG\\JAVAPROJECKT\\visualization.txt";
+    private final String filePath = "C:\\SWG\\JAVAPROJECKT\\src\\main\\resources/visualization.txt";
 
     public ReservationModel() {
         loadData();
