@@ -8,6 +8,7 @@ package calendar;
  *
  * @author adsd3
  */
+ //다이얼로그 순차 흐름 제어 (블록→방종류→호수→시간대)
 
 import java.time.LocalDate;
 import java.util.List;

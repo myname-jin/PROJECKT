@@ -8,7 +8,7 @@ package calendar;
  *
  * @author adsd3
  */
-
+// 전체/일부/해제/취소 블록 타입 선택 UI
 
 import javax.swing.*;
 import java.awt.*;

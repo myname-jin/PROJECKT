@@ -8,6 +8,8 @@ package calendar;
  *
  * @author adsd3
  */
+// blocked_dates.txt 파일 입출력 관리
+
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;

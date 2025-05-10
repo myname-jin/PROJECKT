@@ -8,6 +8,7 @@ package calendar;
  *
  * @author adsd3
  */
+// 예약 차단·해제 및 조회 비즈니스 로직
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;

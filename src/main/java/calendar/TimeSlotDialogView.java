@@ -8,6 +8,9 @@ package calendar;
  *
  * @author adsd3
  */
+
+// 시간대(1~8) 선택 3×3 그리드 UI
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;

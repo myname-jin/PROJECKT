@@ -8,6 +8,7 @@ package calendar;
  *
  * @author adsd3
  */
+// 강의실/실습실 선택 UI
 import javax.swing.*;
 import java.awt.*;
 

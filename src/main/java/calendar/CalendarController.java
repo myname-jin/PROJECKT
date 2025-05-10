@@ -8,6 +8,7 @@ package calendar;
  *
  * @author adsd3
  */
+// 뷰와 서비스 연결 및 날짜 더블클릭 이벤트 처리
 import java.time.LocalDate;
 
 public class CalendarController {

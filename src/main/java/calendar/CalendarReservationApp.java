@@ -9,7 +9,7 @@ package calendar;
  * @author adsd3
  */
 
-
+//애플리케이션 시작 및 Controller 초기화
 
 import javax.swing.SwingUtilities;
 
