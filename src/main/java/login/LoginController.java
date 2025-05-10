@@ -21,11 +21,18 @@ public class LoginController {
     private final LoginView view;
     private final LoginModel model;
 
-    public LoginController(LoginView view, LoginModel model) {
+    public LoginController(LoginView view, LoginModel model) {        
         this.view = view;
         this.model = model;
 
         view.btnLogin.addActionListener(e -> handleLogin());
+        //회원가입 버튼 이벤트 추가
+        view.btnSignup.addActionListener(e -> {
+            SignupView signupView = new SignupView();
+            new SignupController(signupView, model);
+            signupView.setVisible(true);
+            view.dispose();
+        });
     }
 
     private void handleLogin() {
@@ -104,5 +111,5 @@ public class LoginController {
             }
             view.dispose();
         });
-    }
+    }    
 }

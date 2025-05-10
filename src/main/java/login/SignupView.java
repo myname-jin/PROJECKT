@@ -6,31 +6,36 @@ package login;
 
 /**
  *
- * @author adsd3
+ * @author msj02
  */
 import javax.swing.*;
 
-public class LoginView extends JFrame {
+public class SignupView extends JFrame {
     public JTextField txtUser = new JTextField();
     public JPasswordField txtPass = new JPasswordField();
-    public JButton btnLogin = new JButton("로그인");
+    public JButton btnSignup = new JButton("회원가입");
     public JRadioButton userRadio = new JRadioButton("사용자");
     public JRadioButton adminRadio = new JRadioButton("관리자");
-    public JButton btnSignup = new JButton("회원가입"); // 회원가입 버튼 객체 생성
+    // 회원가입 화면에 이름과 학과를 입력받을 객체 생성
+    public JTextField txtUsername = new JTextField();
+    public JTextField txtDepartment = new JTextField();
 
-    public LoginView() {
-        super("로그인 화면");
-        setSize(350, 300); // 화면 높이 250 -> 300으로 변경
+    public SignupView() {
+        super("회원가입 화면");
+        setSize(400, 350);
         setLayout(null);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         txtUser.setBounds(80, 30, 180, 30);
         txtPass.setBounds(80, 70, 180, 30);
-        btnLogin.setBounds(130, 160, 80, 30);
-        userRadio.setBounds(80, 110, 80, 20);
-        adminRadio.setBounds(160, 110, 80, 20);
-        btnSignup.setBounds(130, 200, 80, 30); // 회원가입 버튼 위치 지정
+        // 이름과 학과 텍스트필드 위치 지정
+        txtUsername.setBounds(80, 110, 180, 30);
+        txtDepartment.setBounds(80, 150, 180, 30);
+        userRadio.setBounds(80, 190, 80, 20);
+        adminRadio.setBounds(160, 190, 80, 20);
+        btnSignup.setBounds(130, 230, 80, 30);
+        
 
         ButtonGroup group = new ButtonGroup();
         group.add(userRadio);
@@ -39,10 +44,12 @@ public class LoginView extends JFrame {
 
         add(txtUser);
         add(txtPass);
-        add(btnLogin);
+        add(btnSignup);
         add(userRadio);
         add(adminRadio);
-        add(btnSignup); // 회원가입 버튼 추가
+        // 이름과 학과 텍스트 필드 추가
+        add(txtUsername);
+        add(txtDepartment);
     }
 
     public String getUserId() {
