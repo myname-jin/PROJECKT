@@ -12,6 +12,28 @@ import java.util.Scanner;
  */
 public class ConsoleView { //입출력 클래스
      private Scanner scanner = new Scanner(System.in);
+     
+     public String inputName() {
+        System.out.print("예약자 이름: ");
+        return scanner.nextLine().trim();
+    }
+
+    public String inputUserType() {
+        System.out.print("사용자 유형 (학생 / 교수): ");
+        return scanner.nextLine().trim();
+    }
+
+    public String inputUserId() {
+        System.out.print("학번 또는 교수번호: ");
+        return scanner.nextLine().trim();
+    }
+
+    public String inputDepartment() {
+        System.out.print("학과 이름: ");
+        return scanner.nextLine().trim();
+    }
+
+
 
     public String selectRoomType() {
     System.out.println("[강의실 예약 시스템]");
@@ -39,17 +61,33 @@ public class ConsoleView { //입출력 클래스
             System.out.println("- " + time);
         }
     }
+    
+    public String inputDate() {
+        System.out.print("예약 날짜 : ");
+        return scanner.nextLine().trim();
+    }
+
+    public String inputStartTime() {
+        System.out.print("시작 시간 : ");
+        return scanner.nextLine().trim();
+    }
+
+    public String inputEndTime() {
+        System.out.print("종료 시간 : ");
+        return scanner.nextLine().trim();
+    }
+
+    public String inputPurpose() {
+        System.out.print("예약 목적: ");
+        return scanner.nextLine().trim();
+    }
+
+
 
     public String getInput() {
         return scanner.nextLine().trim();
     }
     
-    public static void main(String[] args) {
-        ConsoleView c = new ConsoleView();
-        
-        String s = c.selectRoomType();
-        System.out.println("테스트"+s);
-    }
 }
 
 

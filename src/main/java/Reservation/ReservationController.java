@@ -4,8 +4,10 @@
  */
 package Reservation;
 
-import java.io.FileWriter;
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.Arrays;
 
 
@@ -24,6 +26,12 @@ public class ReservationController {  //예약 제어 클래스
     private ConsoleView view = new ConsoleView(); //사용자 인터페이스 객체 생성
 
     public void start() {
+         // 사용자 정보 입력
+        String name = view.inputName();
+        String userType = view.inputUserType();
+        String userId = view.inputUserId();
+        String department = view.inputDepartment();
+        
         //1. 강의실 또는 실습실 중 하나 선택
         String type = view.selectRoomType();  
 
@@ -38,36 +46,57 @@ public class ReservationController {  //예약 제어 클래스
             return;
         }
 
-        //4. 강의실 목록 보여주기
+         //4. 강의실 목록 보여주기
         view.showRooms(filtered);
         String selectedName = view.getInput();
-        System.out.println(selectedName);
-
-         // 5. 강의실 이름 일치 확인 → 있으면 예약 시간 보여주고 예약 완료
+        RoomModel selectedRoom = null;
         for (RoomModel room : filtered) {
-            if (room.getName().trim().equalsIgnoreCase(selectedName.trim())) {
-                //예약 가능 시간대 보여주기
-                view.showAvailableTimes(room.getAvailableTimes());
-
-                System.out.print("\n예약할 시간대를 입력하세요: ");
-                String selectedTime = view.getInput();
-
-                //예약 결과 출력, 정보 저장
-                System.out.println("\n[예약 완료] " + room.getName() + " - " + selectedTime);
-                 saveReservation(room.getName(), selectedTime);
-                return;
+            if (room.getName().equalsIgnoreCase(selectedName.trim())) {
+                selectedRoom = room;
+                break;
             }
         }
-        //강의실 이름이 일치하지 않을 때 
-        System.out.println("해당 강의실을 찾을 수 없습니다.");
-    }
-   // 예약 내역을 파일에 저장하는 메서드
-    private void saveReservation(String roomName, String time) {
-        try (FileWriter writer = new FileWriter("reservation.txt", true)) {
-            writer.write(roomName + " - " + time + "\n");
-        } catch (IOException e) {
-            System.out.println("예약 기록 저장 실패: " + e.getMessage());
+
+        if (selectedRoom == null) {
+            System.out.println("해당 강의실을 찾을 수 없습니다.");
+            return;
         }
+
+        // 예약 상세 정보 입력
+        view.showAvailableTimes(selectedRoom.getAvailableTimes());
+        String date = view.inputDate();
+        String startTime = view.inputStartTime();
+        String endTime = view.inputEndTime();
+        String purpose = view.inputPurpose();
+        String status = "예약완료";
+
+        // 결과 출력
+        System.out.println("\n[예약 완료]");
+        System.out.println("강의실: " + selectedRoom.getName());
+        System.out.println("시간: " + startTime + " ~ " + endTime);
+
+        // 파일 저장
+        saveReservation(name, userType, userId, department,
+                        selectedRoom.getType(), selectedRoom.getName(),
+                        date, startTime, endTime, purpose, status);
     }
 
+    private void saveReservation(String name, String userType, String userId, String department,
+                                  String roomType, String roomNumber,
+                                  String date, String startTime, String endTime,
+                                  String purpose, String status) {
+               String filePath = "src/main/resources/reservation.txt"; 
+               
+        try (BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream(filePath, true), "UTF-8"))) {
+
+            writer.write(String.join(",", name, userType, userId, department,
+                                     roomType, roomNumber, date, startTime, endTime,
+                                     purpose, status));
+            writer.newLine();
+
+        } catch (IOException e) {
+            System.out.println("예약 저장 실패: " + e.getMessage());
+        }
+    }
 }
