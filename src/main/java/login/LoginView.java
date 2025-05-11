@@ -27,10 +27,10 @@ public class LoginView extends JFrame {
 
         txtUser.setBounds(80, 30, 180, 30);
         txtPass.setBounds(80, 70, 180, 30);
+        btnLogin.setBounds(130, 160, 80, 30);
         userRadio.setBounds(80, 110, 80, 20);
         adminRadio.setBounds(160, 110, 80, 20);
-        btnLogin.setBounds(130, 160, 90, 30); // 로그인 버튼
-        btnSignup.setBounds(130, 200, 90, 30); // 회원가입 버튼 위치 지정
+        btnSignup.setBounds(130, 200, 80, 30); // 회원가입 버튼 위치 지정
 
         ButtonGroup group = new ButtonGroup();
         group.add(userRadio);

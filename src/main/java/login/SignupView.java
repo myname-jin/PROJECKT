@@ -13,16 +13,16 @@ import javax.swing.*;
 public class SignupView extends JFrame {
     public JTextField txtUser = new JTextField();
     public JPasswordField txtPass = new JPasswordField();
-    public JButton btnRegister = new JButton("등록");
+    public JButton btnSignup = new JButton("회원가입");
     public JRadioButton userRadio = new JRadioButton("사용자");
     public JRadioButton adminRadio = new JRadioButton("관리자");
     // 회원가입 화면에 이름과 학과를 입력받을 객체 생성
     public JTextField txtUsername = new JTextField();
-    public JTextField txtDept = new JTextField();
+    public JTextField txtDepartment = new JTextField();
 
     public SignupView() {
         super("회원가입 화면");
-        setSize(350, 350);
+        setSize(400, 350);
         setLayout(null);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -31,10 +31,10 @@ public class SignupView extends JFrame {
         txtPass.setBounds(80, 70, 180, 30);
         // 이름과 학과 텍스트필드 위치 지정
         txtUsername.setBounds(80, 110, 180, 30);
-        txtDept.setBounds(80, 150, 180, 30);
+        txtDepartment.setBounds(80, 150, 180, 30);
         userRadio.setBounds(80, 190, 80, 20);
         adminRadio.setBounds(160, 190, 80, 20);
-        btnRegister.setBounds(130, 230, 80, 30);
+        btnSignup.setBounds(130, 230, 80, 30);
         
 
         ButtonGroup group = new ButtonGroup();
@@ -44,12 +44,12 @@ public class SignupView extends JFrame {
 
         add(txtUser);
         add(txtPass);
-        add(btnRegister);
+        add(btnSignup);
         add(userRadio);
         add(adminRadio);
         // 이름과 학과 텍스트 필드 추가
         add(txtUsername);
-        add(txtDept);
+        add(txtDepartment);
     }
 
     public String getUserId() {
@@ -62,13 +62,5 @@ public class SignupView extends JFrame {
 
     public String getRole() {
         return userRadio.isSelected() ? "user" : "admin";
-    }
-    // 회원가입 화면의 사용자 이름 입력값을 반환하는 메서드 추가
-    public String getUserName() {
-        return txtUsername.getText().trim();
-    }
-    // 회원가입 화면의 사용자 학과 입력값을 반환하는 메서드 추가
-    public String getUserDept() {
-        return txtDept.getText().trim();
     }
 }
