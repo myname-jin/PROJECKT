@@ -63,12 +63,12 @@ public class ConsoleView { //입출력 클래스
     }
     
     public String inputDate() {
-        System.out.print("예약 날짜 : ");
+        System.out.print("\n예약 날짜 : ");
         return scanner.nextLine().trim();
     }
 
     public String inputStartTime() {
-        System.out.print("시작 시간 : ");
+        System.out.print("\n시작 시간 : ");
         return scanner.nextLine().trim();
     }
 
@@ -78,7 +78,7 @@ public class ConsoleView { //입출력 클래스
     }
 
     public String inputPurpose() {
-        System.out.print("예약 목적: ");
+        System.out.print("\n예약 목적: ");
         return scanner.nextLine().trim();
     }
 
