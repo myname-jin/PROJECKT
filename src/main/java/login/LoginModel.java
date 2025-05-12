@@ -30,7 +30,7 @@ public class LoginModel {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 String[] parts = line.split(",");
-                if (parts.length == 2 &&
+                if (parts.length >= 2 &&    // 회원가입 정보 Id, Pw, 이름, 학과 중 Id, Pw 사용
                         parts[0].trim().equals(userId) &&
                         parts[1].trim().equals(password)) {
                     return true;
