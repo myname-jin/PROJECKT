@@ -4,11 +4,12 @@
  */
 package Reservation;
 
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.util.Arrays;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.*;
+import java.util.*;
+
 
 
 /**
@@ -17,15 +18,16 @@ import java.util.Arrays;
  */
 public class ReservationController {  //예약 제어 클래스
     
-    private RoomModel[] allRooms = { //더미 데이터. 엑셀이나 메모장 파일로 불러올 예정
-        new RoomModel("912", "강의실", new String[]{"09:00", "11:00", "15:00"}),
-        new RoomModel("913", "강의실", new String[]{"09:00", "13:00"}),
-        new RoomModel("911", "실습실", new String[]{"10:00", "13:00"})
-    };
-
+    private static final String EXCEL_PATH = "src/main/resources/available_rooms.xlsx";
+    private static final List<String> LAB_ROOMS = Arrays.asList("911", "915", "916");
+    
+    private List<RoomModel> allRooms = new ArrayList<>();
     private ConsoleView view = new ConsoleView(); //사용자 인터페이스 객체 생성
-
+    
+    
     public void start() {
+        loadRoomsFromExcel();
+        
          // 사용자 정보 입력
         String name = view.inputName();
         String userType = view.inputUserType();
@@ -33,33 +35,40 @@ public class ReservationController {  //예약 제어 클래스
         String department = view.inputDepartment();
         
         //1. 강의실 또는 실습실 중 하나 선택
-        String type = view.selectRoomType();  
+        String type = view.selectRoomType().trim();     
+        System.out.println("선택한 유형: [" + type + "]");
 
-        //2. 해당 유형에 맞는 강의실 유형 출력
-        RoomModel[] filtered = Arrays.stream(allRooms)
-            .filter(r -> r.getType().equals(type))  
-            .toArray(RoomModel[]::new);
 
+
+       List<RoomModel> filteredRooms = new ArrayList<>();
+        for (RoomModel room : allRooms) {
+            if (type.equals("실습실") && LAB_ROOMS.contains(room.getName())) {
+                filteredRooms.add(room);
+            } else if (type.equals("강의실") && !LAB_ROOMS.contains(room.getName())) {
+                filteredRooms.add(room);
+            }
+        }
+
+        //System.out.println("엑셀 강의실 목록: " + filteredRooms);
+        for (RoomModel r : filteredRooms) {
+    System.out.println("- " + r.getName() + " (" + r.getType() + ")");
+}
+        
         //3. 필터링된 강의실 없으면 종료
-        if (filtered.length == 0) {
+        if (filteredRooms.isEmpty()) {
             System.out.println("해당 유형에 대한 강의실이 없습니다.");
             return;
         }
 
-         //4. 강의실 목록 보여주기
-        view.showRooms(filtered);
+         //강의실 목록 보여주기
+        view.showRooms(filteredRooms.toArray(new RoomModel[0]));
         String selectedName = view.getInput();
         RoomModel selectedRoom = null;
-        for (RoomModel room : filtered) {
+        for (RoomModel room : filteredRooms) {
             if (room.getName().equalsIgnoreCase(selectedName.trim())) {
                 selectedRoom = room;
                 break;
             }
-        }
-
-        if (selectedRoom == null) {
-            System.out.println("해당 강의실을 찾을 수 없습니다.");
-            return;
         }
 
         // 예약 상세 정보 입력
@@ -79,6 +88,58 @@ public class ReservationController {  //예약 제어 클래스
         saveReservation(name, userType, userId, department,
                         selectedRoom.getType(), selectedRoom.getName(),
                         date, startTime, endTime, purpose, status);
+    }
+    
+    private boolean isLabRoom(String roomNumber) {
+    return roomNumber.equals("911") || 
+           roomNumber.equals("915") || 
+           roomNumber.equals("916") ||
+           roomNumber.equals("918"); // 새로 추가
+}
+
+    
+     private void loadRoomsFromExcel() {
+        try (InputStream fis = new FileInputStream(EXCEL_PATH);
+             Workbook workbook = new XSSFWorkbook(fis)) {
+
+            for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+                Sheet sheet = workbook.getSheetAt(i);
+                String roomName = sheet.getSheetName();
+                List<String> availableTimes = new ArrayList<>();
+
+                for (int rowIdx = 1; rowIdx <= sheet.getLastRowNum(); rowIdx++) {
+                    Row row = sheet.getRow(rowIdx);
+                    if (row == null) continue;
+
+                    Cell timeCell = row.getCell(0);
+                    if (timeCell == null || timeCell.getCellType() != CellType.STRING) continue;
+
+                    String time = timeCell.getStringCellValue();
+                    boolean isFree = false;
+
+                    for (int col = 1; col < row.getLastCellNum(); col++) {
+                        Cell cell = row.getCell(col);
+                        if (cell != null && "비어있음".equals(cell.getStringCellValue().trim())) {
+                            isFree = true;
+                            break;
+                        }
+                    }
+
+                    if (isFree) {
+                        availableTimes.add(time);
+                    }
+                }
+
+                if (!availableTimes.isEmpty()) {
+                    RoomModel room = new RoomModel(roomName, LAB_ROOMS.contains(roomName) ? "실습실" : "강의실",
+                            availableTimes.toArray(new String[0]));
+                    allRooms.add(room);
+                }
+            }
+
+        } catch (IOException e) {
+            System.out.println("엑셀 파일 읽기 오류: " + e.getMessage());
+        }
     }
 
     private void saveReservation(String name, String userType, String userId, String department,
