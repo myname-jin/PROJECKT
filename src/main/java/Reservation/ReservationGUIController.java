@@ -5,7 +5,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.awt.event.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 public class ReservationGUIController {
@@ -23,12 +25,17 @@ public class ReservationGUIController {
         view.setUserInfo(userName, userId, userDept);
         loadRoomsFromExcel();
 
-        // 강의실 목록 GUI에 설정
-        List<String> roomNames = new ArrayList<>();
-        for (RoomModel room : allRooms) {
-            roomNames.add(room.getName());
-        }
-        view.setRoomList(roomNames);
+ // 강의실 유형 선택시 → 해당 방 목록 표시
+        view.setRoomTypeList(Arrays.asList("강의실", "실습실"));
+        view.addRoomTypeSelectionListener(e -> {
+            String selectedType = view.getSelectedRoomType();
+            List<String> filtered = allRooms.stream()
+                    .filter(r -> r.getType().equals(selectedType))
+                    .map(RoomModel::getName)
+                    .collect(Collectors.toList());
+            view.setRoomList(filtered);
+        });
+
 
         // 날짜 or 강의실 선택 변경 시 시간대 갱신
         ActionListener timeUpdateListener = e -> updateAvailableTimes();
@@ -38,6 +45,7 @@ public class ReservationGUIController {
         // 예약 버튼 이벤트 처리
         view.addReserveButtonListener(e -> {
             String date = view.getSelectedDate();
+            List<String> times = view.getSelectedTimes();
             String time = view.getSelectedTime();
             String purpose = view.getSelectedPurpose();
             String selectedRoomName = view.getSelectedRoom();
@@ -47,10 +55,23 @@ public class ReservationGUIController {
                 view.showMessage("모든 항목을 입력해주세요.");
                 return;
             }
+            if (isUserAlreadyReserved(userId, date)) {
+                view.showMessage("해당 날짜에 이미 예약이 존재합니다. 하루 1회만 예약할 수 있습니다.");
+                return;
+            }
 
-            String[] timeParts = time.split("~");
-            String startTime = timeParts.length > 0 ? timeParts[0] : "";
-            String endTime = timeParts.length > 1 ? timeParts[1] : "";
+            int totalMinutes = calculateTotalDuration(times);
+            if (totalMinutes > 120) {
+                view.showMessage("총 예약 시간이 2시간(120분)을 초과할 수 없습니다.");
+                return;
+            }
+            
+            //가장 빠른 시작 시간과 가장 늦은 종료 시간 추출
+            
+            String[] first = times.get(0).split("~");
+            String[] last = times.get(times.size() - 1).split("~");
+            String startTime = first[0];
+            String endTime = last[1];
 
             saveReservation(userName, "학생", userId, userDept,
                     selectedRoom.getType(), selectedRoom.getName(),
@@ -61,6 +82,7 @@ public class ReservationGUIController {
 
         view.setVisible(true);
     }
+    
 
     private void updateAvailableTimes() {
         String date = view.getSelectedDate();
@@ -79,8 +101,47 @@ public class ReservationGUIController {
 
         view.clearTimeSlots();
         for (String time : availableTimes) {
-            view.addTimeSlot(time, evt -> view.setSelectedTime(time));
+            view.addTimeSlot(time, e -> {
+                int total = calculateTotalDuration(view.getSelectedTimes());
+                view.setTotalDuration(total + "분");
+            });
         }
+    }
+    
+    private int calculateTotalDuration(List<String> times) {
+        int total = 0;
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        for (String time : times) {
+            try {
+                String[] parts = time.split("~");
+                Date start = sdf.parse(parts[0]);
+                Date end = sdf.parse(parts[1]);
+                long diff = (end.getTime() - start.getTime()) / (1000 * 60);
+                total += diff;
+            } catch (ParseException e) {
+                System.out.println("시간 파싱 오류: " + time);
+            }
+        }
+        return total;
+    }
+
+    private boolean isUserAlreadyReserved(String userId, String date) {
+        String path = "src/main/resources/reservation.txt";
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(path), "UTF-8"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 4) {
+                    if (parts[2].equals(userId) && parts[6].equals(date)) {
+                        return true;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("예약 기록 읽기 실패: " + e.getMessage());
+        }
+        return false;
     }
 
     private RoomModel getRoomByName(String name) {

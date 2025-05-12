@@ -10,17 +10,20 @@ import java.util.*;
 
 public class ReservationView extends JFrame {
     private JLabel nameLabel, idLabel, deptLabel;
+    private JComboBox<String> roomTypeComboBox;
     private JComboBox<String> roomComboBox;
     private JPanel timeSlotPanel;
     private JDatePickerImpl datePicker;
     private JTextField selectedTimeField;
+    private JLabel totalDurationLabel;
     private JButton[] purposeButtons;
     private JButton reserveButton;
     private String selectedPurpose = "";
+    private Set<String> selectedTimes = new TreeSet<>();
 
     public ReservationView() {
         setTitle("강의실 예약 시스템");
-        setSize(650, 550);
+        setSize(720, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -36,6 +39,12 @@ public class ReservationView extends JFrame {
 
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+        
+        JPanel typePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        typePanel.add(new JLabel("강의실 유형:"));
+        roomTypeComboBox = new JComboBox<>();
+        typePanel.add(roomTypeComboBox);
+        centerPanel.add(typePanel);
 
         // 강의실 선택
         JPanel roomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -46,6 +55,9 @@ public class ReservationView extends JFrame {
 
         // 날짜 선택
         UtilDateModel model = new UtilDateModel();
+        Calendar today = Calendar.getInstance();
+        model.setDate(today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DAY_OF_MONTH));
+        model.setSelected(true); // 오늘 날짜 선택
         Properties p = new Properties();
         p.put("text.today", "오늘");
         p.put("text.month", "월");
@@ -61,17 +73,24 @@ public class ReservationView extends JFrame {
         // 시간대 영역
         centerPanel.add(new JLabel("예약 가능한 시간대 목록:"));
         timeSlotPanel = new JPanel();
-        timeSlotPanel.setLayout(new GridLayout(0, 1));
+        timeSlotPanel.setLayout(new GridLayout(0, 2));
         JScrollPane scrollPane = new JScrollPane(timeSlotPanel);
-        scrollPane.setPreferredSize(new Dimension(600, 120));
+        scrollPane.setPreferredSize(new Dimension(680, 130));
         centerPanel.add(scrollPane);
 
         // 선택된 시간
         JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         timePanel.add(new JLabel("선택한 시간:"));
-        selectedTimeField = new JTextField(20);
+        selectedTimeField = new JTextField(30);
         timePanel.add(selectedTimeField);
         centerPanel.add(timePanel);
+        
+        //총 선택 시간
+        JPanel durationPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        durationPanel.add(new JLabel("총 선택 시간:"));
+        totalDurationLabel = new JLabel("0분");
+        durationPanel.add(totalDurationLabel);
+        centerPanel.add(durationPanel);
 
         // 목적 선택
         centerPanel.add(new JLabel("예약 목적 선택:"));
@@ -100,6 +119,14 @@ public class ReservationView extends JFrame {
         idLabel.setText("학번: " + id);
         deptLabel.setText("학과: " + dept);
     }
+    
+    
+    public void setRoomTypeList(java.util.List<String> types) {
+        roomTypeComboBox.removeAllItems();
+        for (String type : types) {
+            roomTypeComboBox.addItem(type);
+        }
+    }
 
     // 강의실 콤보박스 채우기
 
@@ -113,9 +140,17 @@ public class ReservationView extends JFrame {
             roomComboBox.addItem(name);
         }
     }
+    
+    public String getSelectedRoomType() {
+    return (String) roomTypeComboBox.getSelectedItem();
+    }
 
     public String getSelectedRoom() {
         return (String) roomComboBox.getSelectedItem();
+    }
+    
+    public void addRoomTypeSelectionListener(ActionListener listener) {
+    roomTypeComboBox.addActionListener(listener);
     }
 
     public void addRoomSelectionListener(ActionListener listener) {
@@ -132,16 +167,50 @@ public class ReservationView extends JFrame {
 
     public void addTimeSlot(String time, ActionListener listener) {
         JButton timeButton = new JButton(time);
+        timeButton.setBackground(Color.LIGHT_GRAY);
         timeButton.addActionListener(listener);
+        timeButton.addActionListener(e -> {
+            if (selectedTimes.contains(time)) {
+                selectedTimes.remove(time);
+                timeButton.setBackground(Color.LIGHT_GRAY);
+            } else {
+                selectedTimes.add(time);
+                timeButton.setBackground(Color.CYAN);
+            }
+            updateSelectedTimeField();
+        });
         timeSlotPanel.add(timeButton);
         timeSlotPanel.revalidate();
         timeSlotPanel.repaint();
     }
+    
+     private void updateSelectedTimeField() {
+        selectedTimeField.setText(String.join(", ", selectedTimes));
+    }
+
+    public java.util.List<String> getSelectedTimes() {
+        return new ArrayList<>(selectedTimes);
+    }
 
     public void clearTimeSlots() {
+        selectedTimes.clear();
+        selectedTimeField.setText("");
+        totalDurationLabel.setText("0분");
         timeSlotPanel.removeAll();
         timeSlotPanel.revalidate();
         timeSlotPanel.repaint();
+    }
+    
+    public void setTotalDuration(String durationText) {
+        totalDurationLabel.setText(durationText);
+    }
+    
+    public String getSelectedPurpose() {
+        return selectedPurpose;
+    }
+     
+    public void addReserveButtonListener(ActionListener listener) {
+        reserveButton.addActionListener(listener);
     }
 
     public String getSelectedTime() {
@@ -152,15 +221,8 @@ public class ReservationView extends JFrame {
         selectedTimeField.setText(time);
     }
 
-    public String getSelectedPurpose() {
-        return selectedPurpose;
-    }
-
-    public void addReserveButtonListener(ActionListener listener) {
-        reserveButton.addActionListener(listener);
-    }
-
-    public void showMessage(String msg) {
+    
+   public void showMessage(String msg) {
         JOptionPane.showMessageDialog(this, msg);
     }
 
