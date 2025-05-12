@@ -88,11 +88,12 @@
         <Component class="javax.swing.JTable" name="jTable1">
           <Properties>
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-              <Table columnCount="6" rowCount="4">
+              <Table columnCount="7" rowCount="5">
                 <Column editable="true" title="&#xd559;&#xbc88;" type="java.lang.Object"/>
                 <Column editable="true" title="&#xd559;&#xacfc;" type="java.lang.Object"/>
                 <Column editable="true" title="&#xc774;&#xb984;" type="java.lang.Object"/>
                 <Column editable="true" title="&#xac15;&#xc758;&#xc2e4;" type="java.lang.Object"/>
+                <Column editable="true" title="&#xb0a0;&#xc9dc;" type="java.lang.Object"/>
                 <Column editable="true" title="&#xc2dc;&#xac04;" type="java.lang.Object"/>
                 <Column editable="true" title="&#xc2b9;&#xc778; &#xc5ec;&#xbd80;" type="java.lang.Object"/>
               </Table>
@@ -105,11 +106,17 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="&#xacf5;&#xc9c0;&#xc0ac;&#xd56d; &#xad00;&#xb9ac;"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="jButton2">
       <Properties>
         <Property name="text" type="java.lang.String" value="&#xb0a0;&#xc9dc; &#xc81c;&#xd55c;"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton2ActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="jButton3">
       <Properties>
@@ -121,6 +128,9 @@
           <Dimension value="[82, 23]"/>
         </Property>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton3ActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>

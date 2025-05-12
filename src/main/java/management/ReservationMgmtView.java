@@ -8,6 +8,9 @@ import management.ReservationMgmtController;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import management.ReservationMgmtModel;
+import visualization.MainView;
+import visualization.ReservationModel;
+import visualization.ReservationController;
 
 import javax.swing.JComboBox;
 import javax.swing.DefaultCellEditor;
@@ -33,7 +36,7 @@ public class ReservationMgmtView extends javax.swing.JFrame {
         String[] statusOptions = {"대기", "승인", "거절"};
         JComboBox<String> comboBox = new JComboBox<>(statusOptions);
 
-        TableColumn statusColumn = jTable1.getColumnModel().getColumn(5);
+        TableColumn statusColumn = jTable1.getColumnModel().getColumn(6);
         statusColumn.setCellEditor(new DefaultCellEditor(comboBox));
     }
 
@@ -41,10 +44,10 @@ public class ReservationMgmtView extends javax.swing.JFrame {
         jTable1.getModel().addTableModelListener(e -> {
             int row = e.getFirstRow();
             int column = e.getColumn();
-            
-            if (column == 5) {
+
+            if (column == 6) {
                 String studentId = (String) jTable1.getValueAt(row, 0); // 학번으로 대상 찾기
-                String newStatus = (String) jTable1.getValueAt(row, 5);
+                String newStatus = (String) jTable1.getValueAt(row, 6);
 
                 controller.updateApprovalStatus(studentId, newStatus);
             }
@@ -59,7 +62,7 @@ public class ReservationMgmtView extends javax.swing.JFrame {
         for (ReservationMgmtModel r : reservations) {
             model.addRow(new Object[]{
                 r.getStudentId(), r.getDepartment(), r.getName(),
-                r.getRoom(), r.getTime(), r.getApproved()
+                r.getRoom(), r.getDate(), r.getTime(), r.getApproved()
             });
         }
 
@@ -98,24 +101,40 @@ public class ReservationMgmtView extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
             },
             new String [] {
-                "학번", "학과", "이름", "강의실", "시간", "승인 여부"
+                "학번", "학과", "이름", "강의실", "날짜", "시간", "승인 여부"
             }
         ));
         jScrollPane1.setViewportView(jTable1);
 
         jButton1.setText("공지사항 관리");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("날짜 제한");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("시작화 자료");
         jButton3.setMaximumSize(new java.awt.Dimension(82, 23));
         jButton3.setMinimumSize(new java.awt.Dimension(82, 23));
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jLabel1.setText("관리자: test1");
 
@@ -153,6 +172,20 @@ public class ReservationMgmtView extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        ReservationModel model = new ReservationModel();
+        ReservationController controller = new ReservationController(model);
+        new MainView(model, controller);
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
