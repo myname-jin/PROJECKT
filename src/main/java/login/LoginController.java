@@ -8,17 +8,12 @@ package login;
  *
  * @author adsd3
  */
-import management.NextPage;
+import management.ReservationMgmtView;
 import ruleagreement.RuleAgreementController;
-import management.ReservationMgmt;        // ← 추가
-import management.ReservationMgmtView; 
-
 
 import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class LoginController {
     private final LoginView view;
@@ -36,7 +31,7 @@ public class LoginController {
         String password = view.getPassword();
         String role = view.getRole();
 
-        // 1. 관리자 로그인 처리
+        // 관리자 로그인 처리
         if (role.equals("admin")) {
             if (model.validateCredentials(userId, password, role)) {
                 showNextPage(userId, role, null, null, null);
@@ -47,62 +42,89 @@ public class LoginController {
             return;
         }
 
-        // 2. 사용자 로그인 처리 (서버 연결 필요)
+        // 사용자 로그인 처리 (서버 연결)
         view.btnLogin.setEnabled(false);
-
         new Thread(() -> {
             try {
                 Socket socket = new Socket("localhost", 12345);
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-                // ✅ 메시지에서 role 제거
                 out.write("LOGIN:" + userId + ":" + password + "\n");
                 out.flush();
 
                 String response;
                 boolean waitingShown = false;
-
                 while ((response = in.readLine()) != null) {
                     if (response.startsWith("OK")) {
                         showNextPage(userId, role, socket, in, out);
                         break;
+
                     } else if (response.startsWith("WAIT") && !waitingShown) {
                         waitingShown = true;
                         SwingUtilities.invokeLater(() ->
-                                JOptionPane.showMessageDialog(view,
-                                        "접속 대기 중입니다. 자리가 나면 자동 접속됩니다.",
-                                        "대기 중", JOptionPane.INFORMATION_MESSAGE));
+                            JOptionPane.showMessageDialog(view,
+                                "접속 대기 중입니다. 자리가 나면 자동 접속됩니다.",
+                                "대기 중", JOptionPane.INFORMATION_MESSAGE));
+
                     } else if (response.startsWith("FAIL")) {
-                        final String responseFinal = response;  // 람다에서 사용 가능하게
-                        SwingUtilities.invokeLater(() ->
-                                JOptionPane.showMessageDialog(view,
-                                        responseFinal, "접속 거부", JOptionPane.WARNING_MESSAGE));
+                        // response를 람다 안에 안전하게 전달하기 위해 final 변수에 복사
+                        final String failMsg = response;
+
+                        SwingUtilities.invokeLater(() -> {
+                            JOptionPane.showMessageDialog(
+                                view,
+                                failMsg,
+                                "접속 거부",
+                                JOptionPane.WARNING_MESSAGE
+                            );
+                            view.btnLogin.setEnabled(true);
+                        });
+
                         socket.close();
-                        view.btnLogin.setEnabled(true);
                         break;
                     }
                 }
 
             } catch (IOException e) {
                 SwingUtilities.invokeLater(() ->
-                        JOptionPane.showMessageDialog(view,
-                                "서버 연결 실패: " + e.getMessage(), "오류", JOptionPane.ERROR_MESSAGE));
+                    JOptionPane.showMessageDialog(view,
+                        "서버 연결 실패: " + e.getMessage(),
+                        "오류", JOptionPane.ERROR_MESSAGE));
                 view.btnLogin.setEnabled(true);
             }
         }).start();
     }
 
-   private void showNextPage(String userId, String role,
-                          Socket socket, BufferedReader in, BufferedWriter out) {
-    SwingUtilities.invokeLater(() -> {
-        // 1) 로그인 창 닫기
-        view.dispose();
+    /**
+     * 로그인 후 화면 전환
+     * @param userId  로그인한 사용자 ID
+     * @param role    "admin" 또는 "user"
+     * @param socket  사용자일 경우 서버 소켓 (admin은 null)
+     * @param in      사용자일 경우 입력 스트림 (admin은 null)
+     * @param out     사용자일 경우 출력 스트림 (admin은 null)
+     */
+    private void showNextPage(String userId, String role,
+                              Socket socket, BufferedReader in, BufferedWriter out) {
+        SwingUtilities.invokeLater(() -> {
+            view.dispose();
 
-        // 2) 바로 관리 화면(ReservationMgmtView) 띄우기
-        ReservationMgmtView mgmtView = new ReservationMgmtView();
-        mgmtView.setLocationRelativeTo(null);
-        mgmtView.setVisible(true);
-    });
-}
+            if ("admin".equals(role)) {
+                // 관리자 화면
+                ReservationMgmtView mgmtView = new ReservationMgmtView();
+                mgmtView.setLocationRelativeTo(null);
+                mgmtView.setVisible(true);
+
+            } else {
+                // 사용자 화면: 강의실 사용 규칙 동의
+                try {
+                    new RuleAgreementController(userId, socket, out);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null,
+                        "규칙 동의 화면을 여는 중 오류가 발생했습니다:\n" + e.getMessage(),
+                        "오류", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+    }
 }
