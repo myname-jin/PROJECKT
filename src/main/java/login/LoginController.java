@@ -10,6 +10,9 @@ package login;
  */
 import management.NextPage;
 import ruleagreement.RuleAgreementController;
+import management.ReservationMgmt;        // ← 추가
+import management.ReservationMgmtView; 
+
 
 import javax.swing.*;
 import java.io.*;
@@ -90,19 +93,16 @@ public class LoginController {
         }).start();
     }
 
-    private void showNextPage(String userId, String role,
-                              Socket socket, BufferedReader in, BufferedWriter out) {
-        SwingUtilities.invokeLater(() -> {
-            if (role.equals("admin")) {
-                new NextPage(userId).setVisible(true); // 관리자용
-            } else {
-                try {
-                    new RuleAgreementController(userId, socket, out);
-                } catch (Exception ex) {
-                    Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            view.dispose();
-        });
-    }
+   private void showNextPage(String userId, String role,
+                          Socket socket, BufferedReader in, BufferedWriter out) {
+    SwingUtilities.invokeLater(() -> {
+        // 1) 로그인 창 닫기
+        view.dispose();
+
+        // 2) 바로 관리 화면(ReservationMgmtView) 띄우기
+        ReservationMgmtView mgmtView = new ReservationMgmtView();
+        mgmtView.setLocationRelativeTo(null);
+        mgmtView.setVisible(true);
+    });
+}
 }

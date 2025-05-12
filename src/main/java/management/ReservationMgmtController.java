@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class ReservationMgmtController {
 
-    private static final String FILE_PATH = "src/resources/mgmt_reservation.txt";
+    private static final String FILE_PATH = "src/main/resources/mgmt_reservation.txt";
 
     public List<ReservationMgmtModel> getAllReservations() {
         List<ReservationMgmtModel> reservations = new ArrayList<>();
