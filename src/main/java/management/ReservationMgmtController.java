@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class ReservationMgmtController {
 
-    private static final String FILE_PATH = "src/resources/mgmt_reservation.txt";
+    private static final String FILE_PATH = "src/main/resources/mgmt_reservation.txt";
 
     public List<ReservationMgmtModel> getAllReservations() {
         List<ReservationMgmtModel> reservations = new ArrayList<>();
@@ -27,10 +27,10 @@ public class ReservationMgmtController {
 
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
-                if (data.length == 6) {
+                if (data.length == 7) {
                     ReservationMgmtModel reservation = new ReservationMgmtModel(
                             data[0], data[1], data[2],
-                            data[3], data[4], data[5]
+                            data[3], data[4], data[5], data[6]
                     );
                     reservations.add(reservation);
                 }
@@ -67,7 +67,7 @@ public class ReservationMgmtController {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
             for (ReservationMgmtModel r : reservations) {
                 String line = String.join(",", r.getStudentId(), r.getDepartment(), r.getName(),
-                        r.getRoom(), r.getTime(), r.getApproved());
+                        r.getRoom(), r.getDate(),r.getTime(), r.getApproved());
                 writer.write(line);
                 writer.newLine();
             }

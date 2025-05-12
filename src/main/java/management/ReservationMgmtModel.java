@@ -14,14 +14,16 @@ public class ReservationMgmtModel {
     private String department;
     private String name;
     private String room;
+    private String date;
     private String time;
     private String approved;
 
-    public ReservationMgmtModel(String studentId, String department, String name, String room, String time, String approved) {
+    public ReservationMgmtModel(String studentId, String department, String name, String room, String date, String time, String approved) {
         this.studentId = studentId;
         this.department = department;
         this.name = name;
         this.room = room;
+        this.date = date;
         this.time = time;
         this.approved = approved;
     }
@@ -40,6 +42,10 @@ public class ReservationMgmtModel {
 
     public String getRoom() {
         return room;
+    }
+
+    public String getDate() {
+        return date;
     }
 
     public String getTime() {
