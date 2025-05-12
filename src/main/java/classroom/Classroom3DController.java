@@ -14,13 +14,7 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.transform.Rotate;
 
-/**
- * 컨트롤러: 모델에 정의된 테이블 위치마다
- *  - 테이블
- *  - 컴퓨터 베이스
- *  - 모니터(스크린)
- * 를 생성하여 root 그룹에 추가합니다.
- */
+
 public class Classroom3DController {
     private final ClassroomModel model;
     private final Group root;
