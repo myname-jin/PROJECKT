@@ -71,7 +71,9 @@ public class ReservationView extends JFrame {
         centerPanel.add(datePanelUI);
 
         // 시간대 영역
-        centerPanel.add(new JLabel("예약 가능한 시간대 목록:"));
+        JLabel timeLabel = new JLabel("예약 가능한 시간대 목록:", SwingConstants.CENTER);
+        timeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        centerPanel.add(timeLabel);
         timeSlotPanel = new JPanel();
         timeSlotPanel.setLayout(new GridLayout(0, 2));
         JScrollPane scrollPane = new JScrollPane(timeSlotPanel);
@@ -93,17 +95,44 @@ public class ReservationView extends JFrame {
         centerPanel.add(durationPanel);
 
         // 목적 선택
-        centerPanel.add(new JLabel("예약 목적 선택:"));
-        JPanel purposePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel purposeLabel = new JLabel("예약 목적 선택:", SwingConstants.CENTER);
+        purposeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        centerPanel.add(purposeLabel);
+        
+        JPanel purposePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         String[] purposes = {"수업", "시험", "스터디", "세미나", "기타"};
         purposeButtons = new JButton[purposes.length];
+        
+        Dimension fixedSize = new Dimension(80, 30);  // 원하는 크기
+        Insets margin = new Insets(5, 10, 5, 10);  //내부 여백 고정
+        
         for (int i = 0; i < purposes.length; i++) {
             final String purpose = purposes[i];
-            purposeButtons[i] = new JButton(purpose);
-            purposeButtons[i].addActionListener(e -> selectedPurpose = purpose);
-            purposePanel.add(purposeButtons[i]);
+            JButton btn = new JButton(purpose);
+             btn.setPreferredSize(fixedSize);           // ✅ 고정 크기
+            btn.setMargin(margin);                     // ✅ 고정 여백
+            btn.setFocusPainted(false);                // ✅ 클릭 테두리 제거
+            btn.setBackground(null);                   // 초기 배경
+
+            purposeButtons[i] = btn;
+            
+            btn.addActionListener(e -> {
+               selectedPurpose = purpose;
+                    
+                for (JButton b : purposeButtons) {
+                    b.setBackground(null);
+                    b.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         }
-        centerPanel.add(purposePanel);
+        
+        btn.setBackground(new Color(200, 230, 255)); // 파스텔 블루
+        btn.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2)); // 강조
+    });
+
+   purposePanel.add(purposeButtons[i]);
+}
+
+centerPanel.add(purposePanel);
+
 
         add(centerPanel, BorderLayout.CENTER);
 
@@ -175,7 +204,7 @@ public class ReservationView extends JFrame {
                 timeButton.setBackground(Color.LIGHT_GRAY);
             } else {
                 selectedTimes.add(time);
-                timeButton.setBackground(Color.CYAN);
+                timeButton.setBackground(new Color(180, 220, 250));
             }
             updateSelectedTimeField();
         });
