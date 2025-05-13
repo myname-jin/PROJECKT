@@ -4,10 +4,6 @@
  */
 package login;
 
-/**
- *
- * @author adsd3
- */
 import management.ReservationMgmtView;
 import ruleagreement.RuleAgreementController;
 
@@ -16,6 +12,7 @@ import java.io.*;
 import java.net.Socket;
 
 public class LoginController {
+
     private final LoginView view;
     private final LoginModel model;
 
@@ -24,6 +21,7 @@ public class LoginController {
         this.model = model;
 
         view.btnLogin.addActionListener(e -> handleLogin());
+        view.btnSignup.addActionListener(e -> handleSignup()); // 회원가입 버튼
     }
 
     private void handleLogin() {
@@ -62,21 +60,19 @@ public class LoginController {
 
                     } else if (response.startsWith("WAIT") && !waitingShown) {
                         waitingShown = true;
-                        SwingUtilities.invokeLater(() ->
-                            JOptionPane.showMessageDialog(view,
+                        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(view,
                                 "접속 대기 중입니다. 자리가 나면 자동 접속됩니다.",
                                 "대기 중", JOptionPane.INFORMATION_MESSAGE));
 
                     } else if (response.startsWith("FAIL")) {
-                        // response를 람다 안에 안전하게 전달하기 위해 final 변수에 복사
                         final String failMsg = response;
 
                         SwingUtilities.invokeLater(() -> {
                             JOptionPane.showMessageDialog(
-                                view,
-                                failMsg,
-                                "접속 거부",
-                                JOptionPane.WARNING_MESSAGE
+                                    view,
+                                    failMsg,
+                                    "접속 거부",
+                                    JOptionPane.WARNING_MESSAGE
                             );
                             view.btnLogin.setEnabled(true);
                         });
@@ -87,8 +83,7 @@ public class LoginController {
                 }
 
             } catch (IOException e) {
-                SwingUtilities.invokeLater(() ->
-                    JOptionPane.showMessageDialog(view,
+                SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(view,
                         "서버 연결 실패: " + e.getMessage(),
                         "오류", JOptionPane.ERROR_MESSAGE));
                 view.btnLogin.setEnabled(true);
@@ -96,33 +91,39 @@ public class LoginController {
         }).start();
     }
 
-    /**
-     * 로그인 후 화면 전환
-     * @param userId  로그인한 사용자 ID
-     * @param role    "admin" 또는 "user"
-     * @param socket  사용자일 경우 서버 소켓 (admin은 null)
-     * @param in      사용자일 경우 입력 스트림 (admin은 null)
-     * @param out     사용자일 경우 출력 스트림 (admin은 null)
-     */
+    private void handleSignup() {
+        view.dispose();
+
+        SignupView signupView = new SignupView();
+        SignupModel signupModel = new SignupModel();
+        new SignupController(signupView, signupModel);
+
+        signupView.setVisible(true); // 회원가입 화면 띄우기
+    }
+
     private void showNextPage(String userId, String role,
                               Socket socket, BufferedReader in, BufferedWriter out) {
         SwingUtilities.invokeLater(() -> {
             view.dispose();
 
             if ("admin".equals(role)) {
-                // 관리자 화면
-                ReservationMgmtView mgmtView = new ReservationMgmtView();
-                mgmtView.setLocationRelativeTo(null);
-                mgmtView.setVisible(true);
+                try {
+                    UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+                } catch (Exception ignored) {
+                }
 
+                SwingUtilities.invokeLater(() -> {
+                    ReservationMgmtView mgmtView = new ReservationMgmtView();
+                    mgmtView.setLocationRelativeTo(null);
+                    mgmtView.setVisible(true);
+                });
             } else {
-                // 사용자 화면: 강의실 사용 규칙 동의
                 try {
                     new RuleAgreementController(userId, socket, out);
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(null,
-                        "규칙 동의 화면을 여는 중 오류가 발생했습니다:\n" + e.getMessage(),
-                        "오류", JOptionPane.ERROR_MESSAGE);
+                            "규칙 동의 화면을 여는 중 오류가 발생했습니다:\n" + e.getMessage(),
+                            "오류", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
