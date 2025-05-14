@@ -179,10 +179,17 @@ public class ClassroomView extends javax.swing.JFrame {
         String capacity = jTextField2.getText().trim();
         String note = jTextField3.getText().trim();
 
-        if (location.isEmpty() || capacity.isEmpty()) {
+        if (location.isEmpty() && capacity.isEmpty()) {
             javax.swing.JOptionPane.showMessageDialog(this, "위치와 수용 인원을 입력하세요.");
             return;
+        } else if (location.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "위치를 입력하세요.");
+            return;
+        } else if (capacity.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "수용 인원을 입력하세요.");
+            return;
         }
+        javax.swing.JOptionPane.showMessageDialog(this, "강의실 정보가 추가되었습니다.");
 
         ClassroomModel classroom = new ClassroomModel(room, location, capacity, note);
         controller.addClassroom(classroom);
@@ -196,7 +203,7 @@ public class ClassroomView extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         int selectedRow = jTable1.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(null, "수정할 행을 선택하세요.");
+            JOptionPane.showMessageDialog(this, "수정할 행을 선택하세요.");
             return;
         }
 
@@ -206,20 +213,21 @@ public class ClassroomView extends javax.swing.JFrame {
         String newCapacity = jTextField2.getText().trim();
         String newNote = jTextField3.getText().trim();
 
-        if (newLocation.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "위치 정보를 입력하세요.");
+        if (newLocation.isEmpty() && newCapacity.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "위치와 수용 인원을 입력하세요.");
+            return;
+        } else if (newLocation.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "위치를 입력하세요.");
+            return;
+        } else if (newCapacity.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "수용 인원을 입력하세요.");
             return;
         }
 
-        if (newCapacity.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "수용 인원을 입력하세요.");
-            return;
-        }
-        
         try {
             Integer.parseInt(newCapacity);
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "수용 인원은 숫자로 입력하세요.");
+            JOptionPane.showMessageDialog(this, "수용 인원은 숫자로 입력하세요.");
             return;
         }
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
@@ -244,7 +252,7 @@ public class ClassroomView extends javax.swing.JFrame {
             e.printStackTrace();
         }
 
-        JOptionPane.showMessageDialog(null, room + " 강의실 정보가 수정되었습니다.");
+        JOptionPane.showMessageDialog(this, room + " 강의실 정보가 수정되었습니다.");
 
         // 입력 필드 초기화
         jTextField1.setText("");
