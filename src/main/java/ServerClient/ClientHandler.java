@@ -37,10 +37,10 @@ public class ClientHandler implements Runnable {
 
             String line;
             while ((line = in.readLine()) != null) {
-                    System.out.println("수신 메시지: " + line +"님이 로그인 했습니다."); // 클라이언트 요청 로그
-
+                    
                 if (line.startsWith("LOGIN:")) {
                     // "LOGIN:id:pw" 형태로 split
+                    
                     String[] parts   = line.split(":", 3);
                     String   userId  = parts.length > 1 ? parts[1].trim() : "";
                     String   password= parts.length > 2 ? parts[2].trim() : "";
@@ -59,6 +59,7 @@ public class ClientHandler implements Runnable {
                         case OK:
                             out.write("OK:로그인 성공\n\n");
                             out.flush();
+                            System.out.println("[로그인] " + userId + "님이 로그인했습니다.");
                             break;
                         case WAIT:
                             out.write("WAIT:대기열 추가\n\n");
