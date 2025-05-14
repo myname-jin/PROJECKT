@@ -74,4 +74,27 @@ public class ClassroomController {
 
         return classrooms;
     }
+
+    public void updateClassroom(ClassroomModel updatedClassroom) {
+        List<ClassroomModel> classrooms = getClassroomList();
+        boolean found = false;
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            for (ClassroomModel c : classrooms) {
+                if (c.getRoom().equals(updatedClassroom.getRoom())) {
+                    writer.write(updatedClassroom.toFileString());
+                    found = true;
+                } else {
+                    writer.write(c.toFileString());
+                }
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (!found) {
+            JOptionPane.showMessageDialog(null, "수정할 강의실을 찾을 수 없습니다.", "수정 실패", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 }

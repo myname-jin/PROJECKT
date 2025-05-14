@@ -7,7 +7,11 @@ package management;
 import javax.swing.table.DefaultTableModel;
 import management.ClassroomModel;
 import management.ClassroomController;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -81,6 +85,11 @@ public class ClassroomView extends javax.swing.JFrame {
         });
 
         jButton2.setText("수정");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("삭제");
 
@@ -183,6 +192,65 @@ public class ClassroomView extends javax.swing.JFrame {
         jTextField2.setText("");
         jTextField3.setText("");
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(null, "수정할 행을 선택하세요.");
+            return;
+        }
+
+        // 입력 필드 값 가져오기
+        String room = (String) jTable1.getValueAt(selectedRow, 0); // 기존 room 값 유지
+        String newLocation = jTextField1.getText().trim();
+        String newCapacity = jTextField2.getText().trim();
+        String newNote = jTextField3.getText().trim();
+
+        if (newLocation.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "위치 정보를 입력하세요.");
+            return;
+        }
+
+        if (newCapacity.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "수용 인원을 입력하세요.");
+            return;
+        }
+        
+        try {
+            Integer.parseInt(newCapacity);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "수용 인원은 숫자로 입력하세요.");
+            return;
+        }
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        model.setValueAt(newLocation, selectedRow, 1);
+        model.setValueAt(newCapacity, selectedRow, 2);
+        model.setValueAt(newNote, selectedRow, 3);
+
+        List<ClassroomModel> classrooms = controller.getClassroomList();
+        for (int i = 0; i < classrooms.size(); i++) {
+            if (classrooms.get(i).getRoom().equals(room)) {
+                classrooms.set(i, new ClassroomModel(room, newLocation, newCapacity, newNote));
+                break;
+            }
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/resources/classroom.txt"))) {
+            for (ClassroomModel c : classrooms) {
+                writer.write(c.toFileString());
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        JOptionPane.showMessageDialog(null, room + " 강의실 정보가 수정되었습니다.");
+
+        // 입력 필드 초기화
+        jTextField1.setText("");
+        jTextField2.setText("");
+        jTextField3.setText("");
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
