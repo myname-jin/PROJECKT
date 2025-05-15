@@ -185,6 +185,7 @@ public class ReservationMgmtView extends javax.swing.JFrame {
         ReservationModel model = new ReservationModel();
         ReservationController controller = new ReservationController(model);
         new MainView(model, controller);
+//        this.dispose();
     }//GEN-LAST:event_jButton3ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
