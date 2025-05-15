@@ -14,7 +14,6 @@ import javax.swing.SwingUtilities;
 public class Main {
     public static void main(String[] args) {
         String filePath = System.getProperty("user.dir") + "/src/main/resources/Notice.txt";
-        NotificationService notifier = new NotificationService();
         NoticeRepository repo = new NoticeRepository(filePath);
         NoticeModel model = new NoticeModel(repo);
 
