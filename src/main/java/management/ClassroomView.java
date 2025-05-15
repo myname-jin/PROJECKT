@@ -92,6 +92,11 @@ public class ClassroomView extends javax.swing.JFrame {
         });
 
         jButton3.setText("삭제");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jLabel2.setText("위치");
 
@@ -189,15 +194,18 @@ public class ClassroomView extends javax.swing.JFrame {
             javax.swing.JOptionPane.showMessageDialog(this, "수용 인원을 입력하세요.");
             return;
         }
+
+        try {
+            Integer.parseInt(capacity);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "수용 인원은 숫자로 입력하세요.");
+            return;
+        }
+
         javax.swing.JOptionPane.showMessageDialog(this, "강의실 정보가 추가되었습니다.");
 
         ClassroomModel classroom = new ClassroomModel(room, location, capacity, note);
         controller.addClassroom(classroom);
-
-        // 입력 필드 초기화
-        jTextField1.setText("");
-        jTextField2.setText("");
-        jTextField3.setText("");
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -207,7 +215,6 @@ public class ClassroomView extends javax.swing.JFrame {
             return;
         }
 
-        // 입력 필드 값 가져오기
         String room = (String) jTable1.getValueAt(selectedRow, 0); // 기존 room 값 유지
         String newLocation = jTextField1.getText().trim();
         String newCapacity = jTextField2.getText().trim();
@@ -253,12 +260,29 @@ public class ClassroomView extends javax.swing.JFrame {
         }
 
         JOptionPane.showMessageDialog(this, room + " 강의실 정보가 수정되었습니다.");
-
-        // 입력 필드 초기화
-        jTextField1.setText("");
-        jTextField2.setText("");
-        jTextField3.setText("");
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        int selectedRow = jTable1.getSelectedRow();
+
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "삭제할 행을 선택하세요.");
+            return;
+        }
+
+        String room = (String) jTable1.getValueAt(selectedRow, 0);
+
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                room + " 강의실을 삭제하시겠습니까?",
+                "삭제 확인",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            controller.deleteClassroom(room);  // Controller의 삭제 메서드 호출
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
