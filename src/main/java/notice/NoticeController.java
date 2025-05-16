@@ -26,18 +26,42 @@ public class NoticeController {
         this.listView = listView;
         this.editorView = editorView;
 
+        // 검색 필드
         listView.addSearchListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) { refreshList(); }
             public void removeUpdate(DocumentEvent e) { refreshList(); }
             public void changedUpdate(DocumentEvent e) { refreshList(); }
         });
+
+        // 필터
         listView.addFilterListener(e -> refreshList());
+
+        // 버튼들
         listView.addToggleReadListener(e -> onToggleRead());
         listView.addAddListener(e -> onAdd());
         listView.addEditListener(e -> onEdit());
         listView.addDeleteListener(e -> onDelete());
 
-        refreshList();
+        // ✅ 뒤로가기 버튼 동작 추가
+        listView.getBackButton().addActionListener(e -> {
+            try {
+                UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+            } catch (Exception ignored) {}
+
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    management.ReservationMgmtView mgmtView = new management.ReservationMgmtView();
+                    mgmtView.setLocationRelativeTo(null);
+                    mgmtView.setVisible(true);
+                } catch (Exception ex) {
+                    ex.printStackTrace(); // 혹시 오류 발생 시 확인
+                }
+            });
+
+            listView.dispose(); // 현재 창 닫기
+        });
+
+        refreshList(); // 최초 목록 표시
     }
 
     public void refreshList() {
@@ -45,11 +69,20 @@ public class NoticeController {
         String filterCat = listView.getFilterCategory();
         List<Notice> all = model.getNotices();
         filteredNotices = new ArrayList<>();
+
         for (Notice n : all) {
-            boolean matchCat = filterCat.equals("전체") || n.getCategory().equals(filterCat);
+            boolean matchCat = filterCat.equals("전체")
+                || n.getCategory().equals(filterCat)
+                || (filterCat.equals("읽음") && n.isRead())
+                || (filterCat.equals("안읽음") && !n.isRead());
+
             boolean matchSearch = n.getContent().toLowerCase().contains(search);
-            if (matchCat && matchSearch) filteredNotices.add(n);
+
+            if (matchCat && matchSearch) {
+                filteredNotices.add(n);
+            }
         }
+
         listView.setNotices(filteredNotices);
     }
 
@@ -70,6 +103,7 @@ public class NoticeController {
         if (viewIdx >= 0) {
             Notice sel = filteredNotices.get(viewIdx);
             int modelIdx = model.getNotices().indexOf(sel);
+
             editorView.showEditor(sel.getContent(), sel.getCategory());
             if (editorView.isSaved()) {
                 String text = editorView.getText();
@@ -89,8 +123,9 @@ public class NoticeController {
         if (viewIdx >= 0) {
             Notice sel = filteredNotices.get(viewIdx);
             int modelIdx = model.getNotices().indexOf(sel);
-            int choice = JOptionPane.showConfirmDialog(listView, "정말 삭제하시겠습니까?", "확인", JOptionPane.YES_NO_OPTION);
-            if (choice == JOptionPane.YES_OPTION) {
+
+            int confirm = JOptionPane.showConfirmDialog(listView, "정말 삭제하시겠습니까?", "확인", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
                 model.deleteNotice(modelIdx);
                 refreshList();
             }
