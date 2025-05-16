@@ -4,6 +4,8 @@
  */
 package Reservation;
 
+//터미널 창 구현 파일 ReservationView.java 파일로 볼 것
+
 import java.util.Scanner;
 
 /**

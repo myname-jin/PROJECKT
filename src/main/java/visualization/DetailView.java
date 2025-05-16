@@ -13,7 +13,7 @@ import java.util.*;
 public class DetailView extends JFrame {
     public DetailView(String room, Map<String, Integer> dayData) {
         setTitle("강의실 " + room + " 요일별 예약 통계");
-        setSize(500, 400);
+        setSize(550, 400);
         setLocationRelativeTo(null);
         setVisible(true);
 
@@ -24,7 +24,7 @@ public class DetailView extends JFrame {
                 int startX = 80, baseY = 300, barWidth = 50, spacing = 40, maxHeight = 150;
                 int max = dayData.values().stream().max(Integer::compareTo).orElse(1);
 
-                g.drawString("강의실 " + room + " 요일별 예약 수", 150, 80);
+                g.drawString("강의실 " + room + " 요일별 예약 수", 200, 60);
 
                 int i = 0;
                 for (String day : Arrays.asList("월", "화", "수", "목", "금")) {

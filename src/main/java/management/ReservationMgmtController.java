@@ -1,6 +1,6 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+     * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+     * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package management;
 
@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.io.*;
 import java.util.List;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -17,7 +18,7 @@ import java.util.List;
  */
 public class ReservationMgmtController {
 
-    private static final String FILE_PATH = "src/main/resources/mgmt_reservation.txt";
+    private static final String FILE_PATH = "src/main/resources/reservation.txt";
 
     public List<ReservationMgmtModel> getAllReservations() {
         List<ReservationMgmtModel> reservations = new ArrayList<>();
@@ -27,12 +28,16 @@ public class ReservationMgmtController {
 
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
-                if (data.length == 7) {
-                    ReservationMgmtModel reservation = new ReservationMgmtModel(
-                            data[0], data[1], data[2],
-                            data[3], data[4], data[5], data[6]
-                    );
-                    reservations.add(reservation);
+                if (data.length >= 12) {
+                    reservations.add(new ReservationMgmtModel(
+                            data[0], // name
+                            data[2], // studentId
+                            data[3], // department
+                            data[4], // room
+                            data[6], // date
+                            data[8] + "~" + data[9], // time
+                            data[11] // approved
+                    ));
                 }
             }
 
@@ -44,35 +49,37 @@ public class ReservationMgmtController {
     }
 
     public void updateApprovalStatus(String studentId, String newStatus) {
-        List<ReservationMgmtModel> reservations = getAllReservations();
-        boolean updated = false;
+        List<String> updatedLines = new ArrayList<>();
 
-        for (ReservationMgmtModel r : reservations) {
-            if (r.getStudentId().equals(studentId)) {
-                r.setApproved(newStatus);
-                updated = true;
+        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data.length >= 12 && data[2].equals(studentId)) {
+                    data[11] = newStatus;
+                    updatedLines.add(String.join(",", data));
+                } else {
+                    updatedLines.add(line);
+                }
             }
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        if (updated) {
-            saveAllReservations(reservations);
-            javax.swing.JOptionPane.showMessageDialog(null,
-                    "학번 " + studentId + "의 승인 여부가 '" + newStatus + "'(으)로 변경되었습니다.",
-                    "승인 결과",
-                    javax.swing.JOptionPane.INFORMATION_MESSAGE);
-        }
-    }
-
-    private void saveAllReservations(List<ReservationMgmtModel> reservations) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
-            for (ReservationMgmtModel r : reservations) {
-                String line = String.join(",", r.getStudentId(), r.getDepartment(), r.getName(),
-                        r.getRoom(), r.getDate(),r.getTime(), r.getApproved());
-                writer.write(line);
+            for (String updatedLine : updatedLines) {
+                writer.write(updatedLine);
                 writer.newLine();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        JOptionPane.showMessageDialog(null,
+                "학번 " + studentId + "의 승인 여부가 '" + newStatus + "'(으)로 변경되었습니다.",
+                "승인 결과",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 }

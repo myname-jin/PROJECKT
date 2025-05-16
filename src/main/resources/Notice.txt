@@ -1,0 +1,3 @@
+추가해야합니다|긴급|true
+ㄴㄴㅁㅇ|긴급|false
+sadsas|시스템|false

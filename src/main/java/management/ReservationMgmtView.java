@@ -12,6 +12,7 @@ import visualization.MainView;
 import visualization.ReservationModel;
 import visualization.ReservationController;
 
+import javax.swing.JOptionPane;
 import javax.swing.JComboBox;
 import javax.swing.DefaultCellEditor;
 import javax.swing.table.TableColumn;
@@ -22,18 +23,17 @@ import javax.swing.table.TableColumn;
  */
 public class ReservationMgmtView extends javax.swing.JFrame {
 
-    private ReservationMgmtController controller = new ReservationMgmtController();
-
     public ReservationMgmtView() {
         initComponents();
         setupTableListener();
         setupApprovalColumnEditor();
-        loadReservationData();  // 앱 시작 시 자동 불러오기
+        loadReservationData();
         setTitle("관리자 예약 목록");
     }
+    private ReservationMgmtController controller = new ReservationMgmtController();
 
     private void setupApprovalColumnEditor() {
-        String[] statusOptions = {"대기", "승인", "거절"};
+        String[] statusOptions = {"예약 대기", "승인", "거절"};
         JComboBox<String> comboBox = new JComboBox<>(statusOptions);
 
         TableColumn statusColumn = jTable1.getColumnModel().getColumn(6);
@@ -46,7 +46,7 @@ public class ReservationMgmtView extends javax.swing.JFrame {
             int column = e.getColumn();
 
             if (column == 6) {
-                String studentId = (String) jTable1.getValueAt(row, 0); // 학번으로 대상 찾기
+                String studentId = (String) jTable1.getValueAt(row, 2); // 학번으로 대상 찾기
                 String newStatus = (String) jTable1.getValueAt(row, 6);
 
                 controller.updateApprovalStatus(studentId, newStatus);
@@ -61,7 +61,7 @@ public class ReservationMgmtView extends javax.swing.JFrame {
 
         for (ReservationMgmtModel r : reservations) {
             model.addRow(new Object[]{
-                r.getStudentId(), r.getDepartment(), r.getName(),
+                r.getName(), r.getDepartment(), r.getStudentId(),
                 r.getRoom(), r.getDate(), r.getTime(), r.getApproved()
             });
         }
@@ -84,6 +84,9 @@ public class ReservationMgmtView extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        jButton4 = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        jButton5 = new javax.swing.JButton();
 
         javax.swing.GroupLayout jFrame1Layout = new javax.swing.GroupLayout(jFrame1.getContentPane());
         jFrame1.getContentPane().setLayout(jFrame1Layout);
@@ -108,7 +111,7 @@ public class ReservationMgmtView extends javax.swing.JFrame {
                 {null, null, null, null, null, null, null}
             },
             new String [] {
-                "학번", "학과", "이름", "강의실", "날짜", "시간", "승인 여부"
+                "이름", "학과", "학번", "강의실", "날짜", "시간", "승인 여부"
             }
         ));
         jScrollPane1.setViewportView(jTable1);
@@ -138,36 +141,65 @@ public class ReservationMgmtView extends javax.swing.JFrame {
 
         jLabel1.setText("관리자: test1");
 
+        jButton4.setText("강의실 정보");
+
+        jLabel2.setFont(new java.awt.Font("맑은 고딕", 0, 24)); // NOI18N
+        jLabel2.setText("예약 리스트");
+
+        jButton5.setText("로그아웃");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(52, 52, 52)
-                .addComponent(jButton1)
-                .addGap(69, 69, 69)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 74, Short.MAX_VALUE)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(48, 48, 48))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(244, 244, 244)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton5))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(542, 542, 542)
+                                .addComponent(jLabel1))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(43, 43, 43)
+                                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(40, 40, 40)
+                                .addComponent(jButton1)
+                                .addGap(47, 47, 47)
+                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(35, 35, 35)
+                                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
+            .addComponent(jScrollPane1)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 336, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(19, 19, 19)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addComponent(jButton5))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2)
-                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton4))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1)
-                .addGap(0, 6, Short.MAX_VALUE))
+                .addGap(8, 8, 8))
         );
 
         pack();
@@ -185,14 +217,31 @@ public class ReservationMgmtView extends javax.swing.JFrame {
         ReservationModel model = new ReservationModel();
         ReservationController controller = new ReservationController(model);
         new MainView(model, controller);
+        this.dispose();
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        int result = JOptionPane.showConfirmDialog(this, "로그아웃 하시겠습니까?", "로그아웃", JOptionPane.YES_NO_OPTION);
+
+        if (result == JOptionPane.YES_OPTION) {
+            login.LoginView view = new login.LoginView();
+            login.LoginModel model = new login.LoginModel();
+            new login.LoginController(view, model);
+            view.setVisible(true);
+
+            this.dispose();
+        }
+    }//GEN-LAST:event_jButton5ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     private javax.swing.JFrame jFrame1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables

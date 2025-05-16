@@ -16,8 +16,8 @@ public class ReservationGUIController {
     private static final List<String> LAB_ROOMS = Arrays.asList("911", "915", "916", "918");
     private List<RoomModel> allRooms = new ArrayList<>();
     private Workbook workbook;
-    private String userName = "설효주";
-    private String userId = "20233016";
+    private String userName = "김민준";
+    private String userId = "20211111";
     private String userDept = "컴퓨터소프트웨어공학";
 
     public ReservationGUIController() {
@@ -66,18 +66,21 @@ public class ReservationGUIController {
                 return;
             }
             
-            //가장 빠른 시작 시간과 가장 늦은 종료 시간 추출
+            view.showMessage("예약이 등록되었습니다. 관리자의 승인을 기다리는 중입니다.");
             
-            String[] first = times.get(0).split("~");
-            String[] last = times.get(times.size() - 1).split("~");
-            String startTime = first[0];
-            String endTime = last[1];
-
+            String dayOfWeek = getDayOfWeek(date);
+            
+            for (String selectedTime : times) {
+                String[] split = selectedTime.split("~");
+                if (split.length == 2) {
+                    String startTime = split[0].trim();
+                    String endTime = split[1].trim();
+            
             saveReservation(userName, "학생", userId, userDept,
                     selectedRoom.getType(), selectedRoom.getName(),
-                    date, startTime, endTime, purpose, "예약완료");
-
-            view.showMessage("예약이 완료되었습니다: " + date + " " + time);
+                    date, dayOfWeek, startTime, endTime, purpose, "예약대기");
+                }
+            }
         });
 
         view.setVisible(true);
@@ -90,11 +93,12 @@ public class ReservationGUIController {
         if (date == null || date.isEmpty() || roomName == null) return;
 
         int dayCol = getDayColumnIndex(date);
-        if (dayCol == -1) {
-            view.clearTimeSlots();
-            view.showMessage("주말은 예약할 수 없습니다.");
-            return;
-        }
+        //주말 예약 불가 로직
+        //if (dayCol == -1) {
+          //  view.clearTimeSlots();
+            // view.showMessage("주말은 예약할 수 없습니다.");
+            //return;
+        // }
 
         Sheet sheet = workbook.getSheet(roomName);
         List<String> availableTimes = getAvailableTimesByDay(sheet, dayCol);
@@ -182,6 +186,9 @@ public class ReservationGUIController {
                 case Calendar.WEDNESDAY -> 3;
                 case Calendar.THURSDAY -> 4;
                 case Calendar.FRIDAY -> 5;
+                case Calendar.SATURDAY -> 6;
+                case Calendar.SUNDAY -> 7;
+                    
                 default -> -1;
             };
         } catch (Exception e) {
@@ -206,20 +213,41 @@ public class ReservationGUIController {
         }
         return times;
     }
-
+    
     private void saveReservation(String name, String userType, String userId, String department,
                                  String roomType, String roomNumber,
-                                 String date, String startTime, String endTime,
+                                 String date, String dayOfWeek, String startTime, String endTime,
                                  String purpose, String status) {
         String filePath = "src/main/resources/reservation.txt";
         try (BufferedWriter writer = new BufferedWriter(
                 new OutputStreamWriter(new FileOutputStream(filePath, true), "UTF-8"))) {
             writer.write(String.join(",", name, userType, userId, department,
-                    roomType, roomNumber, date, startTime, endTime,
+                    roomType, roomNumber, date, dayOfWeek, startTime, endTime,
                     purpose, status));
             writer.newLine();
         } catch (IOException e) {
             System.out.println("예약 저장 실패: " + e.getMessage());
+        }
+    }
+    
+    private String getDayOfWeek(String dateStr) {
+    try {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = sdf.parse(dateStr);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return switch (calendar.get(Calendar.DAY_OF_WEEK)) {
+            case Calendar.SUNDAY -> "일";
+            case Calendar.MONDAY -> "월";
+            case Calendar.TUESDAY -> "화";
+            case Calendar.WEDNESDAY -> "수";
+            case Calendar.THURSDAY -> "목";
+            case Calendar.FRIDAY -> "금";
+            case Calendar.SATURDAY -> "토";
+            default -> "";
+            };
+        } catch (Exception e) {
+            return "";
         }
     }
 }
