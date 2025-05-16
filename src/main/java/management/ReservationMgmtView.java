@@ -11,7 +11,11 @@ import management.ReservationMgmtModel;
 import visualization.MainView;
 import visualization.ReservationModel;
 import visualization.ReservationController;
-
+import ServerClient.LogoutUtil;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.net.Socket;
+import javax.swing.JOptionPane;
 import javax.swing.JComboBox;
 import javax.swing.DefaultCellEditor;
 import javax.swing.table.TableColumn;
@@ -22,15 +26,14 @@ import javax.swing.table.TableColumn;
  */
 public class ReservationMgmtView extends javax.swing.JFrame {
 
-    private ReservationMgmtController controller = new ReservationMgmtController();
-
     public ReservationMgmtView() {
         initComponents();
         setupTableListener();
         setupApprovalColumnEditor();
-        loadReservationData();  // 앱 시작 시 자동 불러오기
+        loadReservationData();
         setTitle("관리자 예약 목록");
     }
+    private ReservationMgmtController controller = new ReservationMgmtController();
 
     private void setupApprovalColumnEditor() {
         String[] statusOptions = {"대기", "승인", "거절"};
@@ -111,7 +114,7 @@ public class ReservationMgmtView extends javax.swing.JFrame {
                 {null, null, null, null, null, null, null}
             },
             new String [] {
-                "학번", "학과", "이름", "강의실", "날짜", "시간", "승인 여부"
+                "이름", "학과", "학번", "강의실", "날짜", "시간", "승인 여부"
             }
         ));
         jScrollPane1.setViewportView(jTable1);
@@ -147,6 +150,11 @@ public class ReservationMgmtView extends javax.swing.JFrame {
         jLabel2.setText("예약 리스트");
 
         jButton5.setText("로그아웃");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -214,6 +222,20 @@ public class ReservationMgmtView extends javax.swing.JFrame {
         new MainView(model, controller);
         this.dispose();
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        int result = JOptionPane.showConfirmDialog(this, "로그아웃 하시겠습니까?", "로그아웃", JOptionPane.YES_NO_OPTION);
+
+        if (result == JOptionPane.YES_OPTION) {
+            // 로그인 창 띄우기
+            login.LoginView view = new login.LoginView();
+            login.LoginModel model = new login.LoginModel();
+            new login.LoginController(view, model);
+            view.setVisible(true);
+
+            this.dispose();
+        }
+    }//GEN-LAST:event_jButton5ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
