@@ -14,14 +14,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 관리용 UI. 규칙 목록에 체크박스를 표시하고,
- * 새 규칙 입력 및 삭제 기능 버튼을 제공합니다.
+ * 관리용 UI. 규칙 목록에 체크박스를 표시하고, 새 규칙 입력 및 삭제 기능 버튼을 제공합니다.
  */
 public class RuleManagementView extends JFrame {
+
     private final JPanel checkPanel = new JPanel();
     private final JTextField newRuleField = new JTextField(20);
     private final JButton addButton = new JButton("추가");
     private final JButton deleteButton = new JButton("삭제");
+    private final JButton backButton = new JButton("뒤로");
 
     public RuleManagementView(List<String> rules) {
         setTitle("강의실 사용 규칙 관리");
@@ -29,24 +30,36 @@ public class RuleManagementView extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
+        // 체크리스트 구성
         checkPanel.setLayout(new BoxLayout(checkPanel, BoxLayout.Y_AXIS));
         updateRules(rules);
-
         JScrollPane scrollPane = new JScrollPane(checkPanel);
 
+        // 입력창 구성
         JPanel inputPanel = new JPanel();
         inputPanel.add(new JLabel("새 규칙:"));
         inputPanel.add(newRuleField);
         inputPanel.add(addButton);
         inputPanel.add(deleteButton);
 
+        // 상단 영역에 버튼 추가
+        JPanel topPanel = new JPanel(null); // null layout for manual positioning
+        topPanel.setPreferredSize(new Dimension(500, 30));
+        backButton.setBounds(400, 10, 80, 20);
+        topPanel.add(backButton);
+
+        // 전체 구성
         setLayout(new BorderLayout());
-        add(new JLabel("강의실 사용 규칙을 관리하세요."), BorderLayout.NORTH);
+        add(topPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(inputPanel, BorderLayout.SOUTH);
+
+        setVisible(true);
     }
 
-    /** 체크박스로 표시된 규칙을 갱신 */
+    /**
+     * 체크박스로 표시된 규칙을 갱신
+     */
     public void updateRules(List<String> rules) {
         checkPanel.removeAll();
         for (String rule : rules) {
@@ -57,7 +70,9 @@ public class RuleManagementView extends JFrame {
         checkPanel.repaint();
     }
 
-    /** 현재 표시된 JCheckBox들을 반환 */
+    /**
+     * 현재 표시된 JCheckBox들을 반환
+     */
     public List<JCheckBox> getRuleCheckBoxes() {
         List<JCheckBox> list = new ArrayList<>();
         for (Component c : checkPanel.getComponents()) {
@@ -82,5 +97,9 @@ public class RuleManagementView extends JFrame {
 
     public JButton getDeleteButton() {
         return deleteButton;
+    }
+
+    public JButton getBackButton() {
+        return backButton;
     }
 }
