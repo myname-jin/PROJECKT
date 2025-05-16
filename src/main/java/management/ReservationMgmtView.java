@@ -11,10 +11,7 @@ import management.ReservationMgmtModel;
 import visualization.MainView;
 import visualization.ReservationModel;
 import visualization.ReservationController;
-import ServerClient.LogoutUtil;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.net.Socket;
+
 import javax.swing.JOptionPane;
 import javax.swing.JComboBox;
 import javax.swing.DefaultCellEditor;
@@ -36,7 +33,7 @@ public class ReservationMgmtView extends javax.swing.JFrame {
     private ReservationMgmtController controller = new ReservationMgmtController();
 
     private void setupApprovalColumnEditor() {
-        String[] statusOptions = {"대기", "승인", "거절"};
+        String[] statusOptions = {"예약 대기", "승인", "거절"};
         JComboBox<String> comboBox = new JComboBox<>(statusOptions);
 
         TableColumn statusColumn = jTable1.getColumnModel().getColumn(6);
@@ -49,7 +46,7 @@ public class ReservationMgmtView extends javax.swing.JFrame {
             int column = e.getColumn();
 
             if (column == 6) {
-                String studentId = (String) jTable1.getValueAt(row, 0); // 학번으로 대상 찾기
+                String studentId = (String) jTable1.getValueAt(row, 2); // 학번으로 대상 찾기
                 String newStatus = (String) jTable1.getValueAt(row, 6);
 
                 controller.updateApprovalStatus(studentId, newStatus);
@@ -64,7 +61,7 @@ public class ReservationMgmtView extends javax.swing.JFrame {
 
         for (ReservationMgmtModel r : reservations) {
             model.addRow(new Object[]{
-                r.getStudentId(), r.getDepartment(), r.getName(),
+                r.getName(), r.getDepartment(), r.getStudentId(),
                 r.getRoom(), r.getDate(), r.getTime(), r.getApproved()
             });
         }
@@ -227,7 +224,6 @@ public class ReservationMgmtView extends javax.swing.JFrame {
         int result = JOptionPane.showConfirmDialog(this, "로그아웃 하시겠습니까?", "로그아웃", JOptionPane.YES_NO_OPTION);
 
         if (result == JOptionPane.YES_OPTION) {
-            // 로그인 창 띄우기
             login.LoginView view = new login.LoginView();
             login.LoginModel model = new login.LoginModel();
             new login.LoginController(view, model);
