@@ -49,14 +49,23 @@ public class UserReservationListController {
        
         
         view = new UserReservationListView();
-        view.setVisible(true);
-
+    view.setController(this);  // 컨트롤러 참조 설정
+    
+    table = view.getTable();
+    
+    // 로그아웃 처리 등록
+    if (socket != null && out != null) {
         LogoutUtil.attach(view, userId, socket, out);
-        
-        table = view.getTable(); // JTable 연결
-        loadReservationData();
     }
     
+    loadReservationData();
+    view.setVisible(true);  // 화면 표시 - 이 부분이 있는지 확인
+    }
+    
+     public void backToMainPage() {
+    // 메인 페이지로 돌아가기
+    new UserFunction.UserMainPage(userId, socket, in, out);
+}
     
     public void loadReservationData() {
         String[] columns = {"이름", "학번", "강의실", "요일", "시작시간", "종료시간", "승인상태"};
