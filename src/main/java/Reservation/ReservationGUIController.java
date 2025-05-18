@@ -1,5 +1,6 @@
 package Reservation;
 
+import ServerClient.LogoutUtil;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -7,6 +8,7 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.awt.event.*;
+import java.net.Socket;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -19,6 +21,16 @@ public class ReservationGUIController {
     private String userName = "김민준";
     private String userId = "20211111";
     private String userDept = "컴퓨터소프트웨어공학";
+  //private final ReservationView view;
+  //private final Socket socket;
+  //private final BufferedWriter out;
+  //private final String userId;
+    
+//클라이언트-서버 연결 코드(로그인과 사용자 페이지 연결되면 주석 해제)
+//public ReservationGUIController(String userId, Socket socket, BufferedWriter out) {
+//    LogoutUtil.attach(this, userId, socket, out);
+//}
+
 
     public ReservationGUIController() {
         view = new ReservationView();
@@ -38,9 +50,16 @@ public class ReservationGUIController {
 
 
         // 날짜 or 강의실 선택 변경 시 시간대 갱신
-        ActionListener timeUpdateListener = e -> updateAvailableTimes();
-        view.addRoomSelectionListener(timeUpdateListener);
-        view.addDateSelectionListener(timeUpdateListener);
+    ActionListener timeUpdateListener = e -> {
+    updateAvailableTimes();  // 예약 가능한 시간대 갱신
+    String selectedRoom = view.getSelectedRoom();
+    if (selectedRoom != null && !selectedRoom.isEmpty()) {
+        String roomInfo = getRoomInfo(selectedRoom);  // 강의실 정보 가져오기
+        view.setRoomInfoText(roomInfo);               // View에 표시
+    }
+  };
+    view.addRoomSelectionListener(timeUpdateListener);
+    view.addDateSelectionListener(timeUpdateListener);
 
         // 예약 버튼 이벤트 처리
         view.addReserveButtonListener(e -> {
@@ -85,6 +104,23 @@ public class ReservationGUIController {
 
         view.setVisible(true);
     }
+    
+    private String getRoomInfo(String roomName) {
+    String filePath = "src/main/resources/classroom.txt";
+    try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] parts = line.split(",", -1);
+            if (parts.length == 4 && parts[0].equals(roomName)) {
+                return String.format("%s, %s, %s", parts[1], parts[2], parts[3]); // 위치, 인원, 비고
+            }
+        }
+    } catch (IOException e) {
+        System.out.println("강의실 정보 읽기 실패: " + e.getMessage());
+    }
+    return "정보 없음";
+}
+
     
 
     private void updateAvailableTimes() {

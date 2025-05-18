@@ -11,6 +11,7 @@ import java.util.*;
 public class ReservationView extends JFrame {
     private JLabel nameLabel, idLabel, deptLabel;
     private JComboBox<String> roomTypeComboBox;
+    private JLabel roomInfoLabel;
     private JComboBox<String> roomComboBox;
     private JPanel timeSlotPanel;
     private JDatePickerImpl datePicker;
@@ -53,6 +54,10 @@ public class ReservationView extends JFrame {
         roomComboBox = new JComboBox<>();
         roomPanel.add(roomComboBox);
         centerPanel.add(roomPanel);
+        
+        roomInfoLabel = new JLabel(" ");  // 초기 빈 라벨
+        roomPanel.add(roomInfoLabel);    // 강의실 선택 아래에 배치
+
 
         // 날짜 선택
         UtilDateModel model = new UtilDateModel();
@@ -257,6 +262,11 @@ centerPanel.add(purposePanel);
     public JButton getBackButton() {
     return backButton;
     }
+    
+    public void setRoomInfoText(String info) {
+    roomInfoLabel.setText(info);
+}
+
 
 
     
