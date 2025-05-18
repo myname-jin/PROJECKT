@@ -18,7 +18,7 @@ public class LogoutUtil {
 
     public static void attach(JFrame frame, String userId, Socket socket, BufferedWriter out) {
         if (frame == null || userId == null || socket == null || out == null) {
-            return; // 관리자거나 비정상 상황: 아무것도 하지 않음
+            return;
         }
 
         frame.addWindowListener(new WindowAdapter() {
@@ -27,11 +27,20 @@ public class LogoutUtil {
                 try {
                     out.write("LOGOUT:" + userId + "\n");
                     out.flush();
-                    socket.close(); // 소켓도 정리
+                    socket.close();
                 } catch (IOException ex) {
-                    ex.printStackTrace(); // 예외는 로깅만
+                    ex.printStackTrace();
                 }
             }
         });
+    }
+
+    // ✅ 테스트에서 필요한 logout 메서드
+    public static void logout(String userId, SessionManager sessions) {
+        try {
+            sessions.logout(userId);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
