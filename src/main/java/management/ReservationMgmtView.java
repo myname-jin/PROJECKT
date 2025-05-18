@@ -33,7 +33,7 @@ public class ReservationMgmtView extends javax.swing.JFrame {
     private ReservationMgmtController controller = new ReservationMgmtController();
 
     private void setupApprovalColumnEditor() {
-        String[] statusOptions = {"예약 대기", "승인", "거절"};
+        String[] statusOptions = {"예약대기", "승인", "거절"};
         JComboBox<String> comboBox = new JComboBox<>(statusOptions);
 
         TableColumn statusColumn = jTable1.getColumnModel().getColumn(6);
@@ -87,6 +87,8 @@ public class ReservationMgmtView extends javax.swing.JFrame {
         jButton4 = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jButton5 = new javax.swing.JButton();
+        jButton6 = new javax.swing.JButton();
+        jButton7 = new javax.swing.JButton();
 
         javax.swing.GroupLayout jFrame1Layout = new javax.swing.GroupLayout(jFrame1.getContentPane());
         jFrame1.getContentPane().setLayout(jFrame1Layout);
@@ -153,6 +155,20 @@ public class ReservationMgmtView extends javax.swing.JFrame {
             }
         });
 
+        jButton6.setText("제한");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+
+        jButton7.setText("해제");
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -160,7 +176,11 @@ public class ReservationMgmtView extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(244, 244, 244)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(109, 109, 109)
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton5))
@@ -186,8 +206,10 @@ public class ReservationMgmtView extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(19, 19, 19)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
+                    .addComponent(jButton6)
+                    .addComponent(jButton7)
                     .addComponent(jButton5))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -233,12 +255,33 @@ public class ReservationMgmtView extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton5ActionPerformed
 
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "제한할 사용자를 선택하세요.");
+            return;
+        }
+        String studentId = (String) jTable1.getValueAt(selectedRow, 2);
+        controller.banUser(studentId);
+        JOptionPane.showMessageDialog(this, studentId + " 사용자가 제한되었습니다.");
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        String studentId = JOptionPane.showInputDialog(this, "해제할 사용자의 학번을 입력하세요.");
+        if (studentId != null && !studentId.isEmpty()) {
+            controller.unbanUser(studentId);
+            JOptionPane.showMessageDialog(this, studentId + " 사용자의 제한이 해제되었습니다.");
+        }
+    }//GEN-LAST:event_jButton7ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
+    private javax.swing.JButton jButton7;
     private javax.swing.JFrame jFrame1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

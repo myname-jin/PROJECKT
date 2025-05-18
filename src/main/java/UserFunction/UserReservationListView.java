@@ -3,13 +3,24 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package UserFunction;
+import javax.swing.JTable;
+import java.net.Socket;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import UserFunction.UserMainPage;
 
 /**
  *
  * @author jms5310
  */
-public class UserReservationListView extends javax.swing.JFrame {
 
+
+public class UserReservationListView extends javax.swing.JFrame {
+private UserReservationListController controller;
+private String userId;
+private Socket socket;
+private BufferedReader in;
+private BufferedWriter out;
     /**
      * Creates new form UserReservationListView
      */
@@ -77,7 +88,7 @@ public class UserReservationListView extends javax.swing.JFrame {
                         .addGap(21, 21, 21)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(205, 205, 205)
+                        .addGap(110, 110, 110)
                         .addComponent(jButton1)))
                 .addContainerGap(23, Short.MAX_VALUE))
         );
@@ -98,12 +109,22 @@ public class UserReservationListView extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        UserReservationListController controller = new UserReservationListController(jTable1);
-    controller.loadReservationData();
+       // UserReservationListController controller = new UserReservationListController(jTable1);
+   // controller.loadReservationData();
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    
+    public void setController(UserReservationListController controller) {
+    this.controller = controller;
+}
+    
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
+         this.dispose();  // 현재 화면 닫기
+    
+   if (controller != null) {
+        controller.backToMainPage();  // 컨트롤러에 뒤로가기 요청
+    }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
@@ -140,7 +161,9 @@ public class UserReservationListView extends javax.swing.JFrame {
             }
         });
     }
-
+public JTable getTable() {
+    return jTable1; // ← 실제 변수 이름으로 변경
+}
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
