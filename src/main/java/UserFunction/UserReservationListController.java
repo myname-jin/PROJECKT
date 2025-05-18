@@ -9,31 +9,77 @@ import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import java.net.Socket;
+import ServerClient.LogoutUtil;
+
+
 /**
  *
  * @author jms5310
  */
 public class UserReservationListController {
-    private final JTable table;
-    private final String userId = "20221234"; // 임시 학번 (나중에 로그인 연동 예정)
-    private final String filePath = "src/main/resources/mgmt_reservation.txt";
 
+    private UserReservationListView view;
+    private final JTable table;
+    private  String userId;
+    private final String filePath = "src/main/resources/reservation.txt";
+  
+    private Socket socket;
+    private BufferedReader in;
+    private BufferedWriter out;
+    
+    
+    
     public UserReservationListController(JTable table) {
+         this.userId = "20211111"; // 하드코딩된 테스트 ID
         this.table = table;
+        loadReservationData();
     }
 
+    
+     public UserReservationListController(String userId, Socket socket, BufferedReader in, BufferedWriter out) {
+        this.userId = (userId != null && !userId.trim().isEmpty()) ? userId : "20211111"; // 조건분기로 처리
+        this.socket = socket;
+        this.in = in;
+        this.out = out;
+        
+        // ✅ 로그아웃 자동 처리 등록
+       
+        
+        view = new UserReservationListView();
+        view.setVisible(true);
+
+        LogoutUtil.attach(view, userId, socket, out);
+        
+        table = view.getTable(); // JTable 연결
+        loadReservationData();
+    }
+    
+    
     public void loadReservationData() {
-        String[] columns = {"학과", "이름", "학번", "강의실", "시간", "승인상태"};
+        String[] columns = {"이름", "학번", "강의실", "요일", "시작시간", "종료시간", "승인상태"};
         DefaultTableModel model = new DefaultTableModel(columns, 0);
 
+        System.out.println("현재 사용자 ID: " + userId); // 디버깅용
+
+        
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
+            boolean foundReservation = false;
 
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length == 6 && parts[0].equals(userId)) {
-                    model.addRow(new Object[]{
-                        parts[1], parts[2], parts[0], parts[3], parts[4], parts[5]
+               if (parts.length >= 12 && parts[2].equals(userId)) {
+                model.addRow(new Object[]{
+                    parts[0], // 이름
+                    parts[2], // 학번
+                    parts[5], // 강의실
+                    parts[7], // 요일
+                    parts[8], // 시작시간
+                    parts[9], // 종료시간
+                    parts[11] // 승인상태
                     });
                 }
             }
@@ -45,6 +91,8 @@ public class UserReservationListController {
         table.setModel(model);
         table.setAutoCreateRowSorter(true);
 
+        
+        
         // 승인 상태 컬러 적용
       table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
     @Override
@@ -56,23 +104,23 @@ public class UserReservationListController {
         // 기본 색상
         c.setForeground(Color.BLACK);
 
-        // 승인상태 컬럼만 색상 변경
-        if (column == 5) {
-            String status = table.getValueAt(row, column).toString();
-
-            switch (status) {
-                case "승인":
+       // 승인 상태 컬럼 색상
+            if (column == 6) {
+                String status = table.getValueAt(row, column).toString();
+                if (status.equals("승인")) {
                     c.setForeground(new Color(0, 128, 0)); // 초록
-                    break;
-                case "거절":
+                } else if (status.equals("거절")) {
                     c.setForeground(Color.RED); // 빨강
-                    break;
-                // 대기는 검정 (변경 없음)
+                } else {
+                    c.setForeground(Color.BLACK); // 대기
+                }
+            } else {
+                c.setForeground(Color.BLACK);
             }
-        }
 
-        return c;
+            return c;
     }
 });
+      
     }
 }

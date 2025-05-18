@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package UserFunction;
+import javax.swing.JTable;
 
 /**
  *
@@ -140,7 +141,9 @@ public class UserReservationListView extends javax.swing.JFrame {
             }
         });
     }
-
+public JTable getTable() {
+    return jTable1; // ← 실제 변수 이름으로 변경
+}
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
