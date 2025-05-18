@@ -23,9 +23,7 @@ public class DialogController {
     }
 
     public void handleDate(LocalDate date) {
-        // 1) 전체/일부/차단취소 선택
         BlockTypeDialogView blockDlg = new BlockTypeDialogView();
-        // 이미 전체 차단된 날짜면 '일부 차단' 비활성화
         boolean isFull = service.isFullyBlocked(date.toString());
         blockDlg.setDisablePartialBlock(isFull);
 
@@ -35,63 +33,79 @@ public class DialogController {
                 view.refresh();
                 blockDlg.close();
             }
+
             @Override public void onBlockPartial() {
                 blockDlg.close();
                 showRoomType(date);
             }
+
             @Override public void onUnblock() {
                 service.unblock(date.toString());
                 view.refresh();
                 blockDlg.close();
             }
+
             @Override public void onCancel() {
                 blockDlg.close();
             }
         });
-        blockDlg.show();  // 크기 조정은 뷰 내부에서 처리
+
+        blockDlg.show();
     }
 
     private void showRoomType(LocalDate date) {
-        RoomTypeDialogView rt = new RoomTypeDialogView();
-        rt.setHandler(new RoomTypeDialogView.Handler() {
+        RoomTypeDialogView roomTypeDialog = new RoomTypeDialogView();
+        roomTypeDialog.setHandler(new RoomTypeDialogView.Handler() {
             @Override public void onSelectLecture() {
-                rt.close(); showRoomNumber(date, "강의실");
+                roomTypeDialog.close();
+                showRoomNumber(date, "강의실");
             }
+
             @Override public void onSelectLab() {
-                rt.close(); showRoomNumber(date, "실습실");
+                roomTypeDialog.close();
+                showRoomNumber(date, "실습실");
             }
-            @Override public void onCancel() { rt.close(); }
+
+            @Override public void onCancel() {
+                roomTypeDialog.close();
+            }
         });
-        rt.show();
+
+        roomTypeDialog.show();
     }
 
     private void showRoomNumber(LocalDate date, String roomType) {
-        RoomNumberDialogView rnd = new RoomNumberDialogView();
-        rnd.setHandler(new RoomNumberDialogView.Handler() {
+        RoomNumberDialogView roomNumberDialog = new RoomNumberDialogView();
+        roomNumberDialog.setHandler(new RoomNumberDialogView.Handler() {
             @Override public void onSelect(String roomNumber) {
-                rnd.close(); showTimeSlot(date, roomType, roomNumber);
+                roomNumberDialog.close();
+                showTimeSlot(date, roomType, roomNumber);
             }
-            @Override public void onCancel() { rnd.close(); }
+
+            @Override public void onCancel() {
+                roomNumberDialog.close();
+            }
         });
-        rnd.show();
+
+        roomNumberDialog.show(roomType);
     }
 
     private void showTimeSlot(LocalDate date, String roomType, String roomNumber) {
-        // 2) 이미 차단된 시간대 읽어와서 뷰에 넘김
-        List<String> blockedSlots = service.getBlockedTimeSlots(
-            date.toString(), roomType, roomNumber);
+        List<String> blockedSlots = service.getBlockedTimeSlots(date.toString(), roomType, roomNumber);
 
-        TimeSlotDialogView ts = new TimeSlotDialogView(blockedSlots);
-        ts.setHandler(new TimeSlotDialogView.Handler() {
-            @Override public void onSelect(String slot) {
-                service.blockPartial(date.toString(), roomType, roomNumber, slot);
+        TimeSlotDialogView timeSlotDialog = new TimeSlotDialogView(blockedSlots);
+        timeSlotDialog.setHandler(new TimeSlotDialogView.Handler() {
+            @Override public void onSelect(String timeSlot) {
+                service.blockPartial(date.toString(), roomType, roomNumber, timeSlot);
                 view.refresh();
-                ts.close();
+                timeSlotDialog.close();
             }
+
             @Override public void onCancel() {
-                ts.close();
+                timeSlotDialog.close();
             }
         });
-        ts.show();
+
+        timeSlotDialog.show();
     }
 }
