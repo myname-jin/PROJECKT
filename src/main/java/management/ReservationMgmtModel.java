@@ -10,22 +10,26 @@ package management;
  */
 public class ReservationMgmtModel {
 
+    private String name;
     private String studentId;
     private String department;
-    private String name;
     private String room;
     private String date;
     private String time;
     private String approved;
 
-    public ReservationMgmtModel(String studentId, String department, String name, String room, String date, String time, String approved) {
+    public ReservationMgmtModel(String name, String studentId, String department, String room, String date, String time, String approved) {
+        this.name = name;
         this.studentId = studentId;
         this.department = department;
-        this.name = name;
         this.room = room;
         this.date = date;
         this.time = time;
         this.approved = approved;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getStudentId() {
@@ -34,10 +38,6 @@ public class ReservationMgmtModel {
 
     public String getDepartment() {
         return department;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public String getRoom() {

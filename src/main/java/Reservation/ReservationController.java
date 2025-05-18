@@ -4,6 +4,8 @@
  */
 package Reservation;
 
+//터미널 구현 파일(GUIController.java 파일로 볼 것)
+
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 

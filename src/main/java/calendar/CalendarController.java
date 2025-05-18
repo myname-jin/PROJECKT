@@ -10,6 +10,7 @@ package calendar;
  */
 // 뷰와 서비스 연결 및 날짜 더블클릭 이벤트 처리
 import java.time.LocalDate;
+import management.ReservationMgmtView;
 
 public class CalendarController {
     private final ReservationServiceModel service;
@@ -18,8 +19,17 @@ public class CalendarController {
     public CalendarController(ReservationServiceModel service) {
         this.service = service;
         this.view = new CalendarView();
-        // 뷰의 더블클릭 핸들러 등록
+
+        // 날짜 더블클릭 핸들러 등록
         view.setDayDoubleClickHandler(this::onDateDoubleClick);
+
+        // 🔁 뒤로가기 버튼 핸들러 등록
+        view.addBackButtonListener(e -> {
+            view.dispose();
+            ReservationMgmtView mgmtView = new ReservationMgmtView();
+            mgmtView.setLocationRelativeTo(null); // 정중앙에 띄우기
+            mgmtView.setVisible(true);
+        });
     }
 
     private void onDateDoubleClick(LocalDate date) {

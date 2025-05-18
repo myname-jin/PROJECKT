@@ -18,6 +18,7 @@ public class ReservationView extends JFrame {
     private JLabel totalDurationLabel;
     private JButton[] purposeButtons;
     private JButton reserveButton;
+    private JButton backButton;
     private String selectedPurpose = "";
     private Set<String> selectedTimes = new TreeSet<>();
 
@@ -137,7 +138,10 @@ centerPanel.add(purposePanel);
         add(centerPanel, BorderLayout.CENTER);
 
         reserveButton = new JButton("예약하기");
+        backButton = new JButton("뒤로가기");
+        
         JPanel bottomPanel = new JPanel();
+        bottomPanel.add(backButton);
         bottomPanel.add(reserveButton);
         add(bottomPanel, BorderLayout.SOUTH);
     }
@@ -249,6 +253,11 @@ centerPanel.add(purposePanel);
     public void setSelectedTime(String time) {
         selectedTimeField.setText(time);
     }
+    
+    public JButton getBackButton() {
+    return backButton;
+    }
+
 
     
    public void showMessage(String msg) {
