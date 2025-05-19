@@ -28,7 +28,8 @@ public class UserMainView extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
-        
+        setVisible(true); // 이 줄이 꼭 있어야 창이 뜹니다!
+
         // UI 초기화
         initUI();
     }
