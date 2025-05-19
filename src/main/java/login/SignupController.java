@@ -37,6 +37,9 @@ public class SignupController {
         boolean success = model.registerUser(userId, password, role, userName, userDept);
 
         if (success) {
+            // 회원가입 정보 전달 메서드 추가
+            model.adminTransfer();
+            model.userTransfer();
             JOptionPane.showMessageDialog(view, "회원가입 성공!");
             view.dispose();
             LoginView loginView = new LoginView();

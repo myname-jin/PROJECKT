@@ -12,11 +12,12 @@ import java.io.*;
 
 public class LoginExtractor {
     public static void main(String[] args) {
+        // 파일 경로 일괄 수정 classes -> resources
         String[] sourceFiles = {
-            "target/classes/ADMIN_LOGIN.txt",
-            "target/classes/USER_LOGIN.txt"
+            "src/main/resources/ADMIN_LOGIN.txt",
+            "src/main/resources/USER_LOGIN.txt"
         };
-        String outputFile = "target/classes/NEW_LOGIN.txt";
+        String outputFile = "src/main/resources/NEW_LOGIN.txt";
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
             for (String filePath : sourceFiles) {
