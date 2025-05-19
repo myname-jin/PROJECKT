@@ -26,8 +26,8 @@ private BufferedWriter out;
      */
     public UserReservationListView() {
         initComponents();
-        UserReservationListController controller = new UserReservationListController(jTable1);
-    controller.loadReservationData();
+      //  UserReservationListController controller = new UserReservationListController(jTable1);
+   // controller.loadReservationData();
 
     }
 
@@ -49,13 +49,13 @@ private BufferedWriter out;
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "이름", "학번", "강의실", "날짜", "요일", "시작시간", "종료시간", "승인상태"
             }
         ));
         jScrollPane1.setViewportView(jTable1);
@@ -85,12 +85,12 @@ private BufferedWriter out;
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(21, 21, 21)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
                         .addGap(110, 110, 110)
-                        .addComponent(jButton1)))
-                .addContainerGap(23, Short.MAX_VALUE))
+                        .addComponent(jButton1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(26, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -111,6 +111,9 @@ private BufferedWriter out;
         // TODO add your handling code here:
        // UserReservationListController controller = new UserReservationListController(jTable1);
    // controller.loadReservationData();
+    if (controller != null) {
+        controller.loadReservationData();
+    }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     
