@@ -111,7 +111,7 @@ public class ReservationMgmtController {
             saveBannedUsers(bannedUsers);
         }
     }
-    
+
     private void saveBannedUsers(List<String> bannedUsers) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(BAN_LIST_FILE))) {
             for (String id : bannedUsers) {
@@ -127,4 +127,30 @@ public class ReservationMgmtController {
         List<String> bannedUsers = getBannedUsers();
         return bannedUsers.contains(studentId);
     }
+
+    public List<ReservationMgmtModel> searchReservations(String name, String studentId, String room) {
+        List<ReservationMgmtModel> allReservations = getAllReservations();
+        List<ReservationMgmtModel> filtered = new ArrayList<>();
+
+        for (ReservationMgmtModel r : allReservations) {
+            boolean match = true;
+
+            if (name != null && !name.isEmpty() && !r.getName().contains(name)) {
+                match = false;
+            }
+            if (studentId != null && !studentId.isEmpty() && !r.getStudentId().contains(studentId)) {
+                match = false;
+            }
+            if (room != null && !room.isEmpty() && !r.getRoom().contains(room)) {
+                match = false;
+            }
+
+            if (match) {
+                filtered.add(r);
+            }
+        }
+
+        return filtered;
+    }
+
 }
