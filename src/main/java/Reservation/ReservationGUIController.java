@@ -27,13 +27,27 @@ public class ReservationGUIController {
   //private final Socket socket;
   //private final BufferedWriter out;
   //private final String userId;
+    private Socket socket;
+    private BufferedWriter out;
+
     
 //클라이언트-서버 연결 코드(로그인과 사용자 페이지 연결되면 주석 해제)
-//public ReservationGUIController(String userId, Socket socket, BufferedWriter out) {
-//    LogoutUtil.attach(this, userId, socket, out);
-//}
+    public ReservationGUIController(String userId, Socket socket, BufferedWriter out) {
+    this.userId = userId;
+    this.socket = socket;
+    this.out = out;
 
+    this.userName = "김민준";  // 이후 실제 로그인 정보로 대체
+    this.userDept = "컴퓨터소프트웨어공학";
+    this.userType = "학생"; // 또는 "교수"
 
+    view = new ReservationView(); // 이 클래스가 JFrame이라면 가능
+    view.setUserInfo(userName, userId, userDept);
+
+    LogoutUtil.attach(view, userId, socket, out);  
+    }
+
+    
     public ReservationGUIController() {
         view = new ReservationView();
         view.setUserInfo(userName, userId, userDept);
