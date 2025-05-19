@@ -19,6 +19,7 @@ import javax.swing.JOptionPane;
 public class ReservationMgmtController {
 
     private static final String FILE_PATH = "src/main/resources/reservation.txt";
+    private static final String BAN_LIST_FILE = "src/main/resources/banlist.txt";
 
     public List<ReservationMgmtModel> getAllReservations() {
         List<ReservationMgmtModel> reservations = new ArrayList<>();
@@ -81,5 +82,49 @@ public class ReservationMgmtController {
                 "학번 " + studentId + "의 승인 여부가 '" + newStatus + "'(으)로 변경되었습니다.",
                 "승인 결과",
                 JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public List<String> getBannedUsers() {
+        List<String> bannedUsers = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(BAN_LIST_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                bannedUsers.add(line.trim());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bannedUsers;
+    }
+
+    public void banUser(String studentId) {
+        List<String> bannedUsers = getBannedUsers();
+        if (!bannedUsers.contains(studentId)) {
+            bannedUsers.add(studentId);
+            saveBannedUsers(bannedUsers);
+        }
+    }
+
+    public void unbanUser(String studentId) {
+        List<String> bannedUsers = getBannedUsers();
+        if (bannedUsers.remove(studentId)) {
+            saveBannedUsers(bannedUsers);
+        }
+    }
+    
+    private void saveBannedUsers(List<String> bannedUsers) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(BAN_LIST_FILE))) {
+            for (String id : bannedUsers) {
+                writer.write(id);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean isUserBanned(String studentId) {
+        List<String> bannedUsers = getBannedUsers();
+        return bannedUsers.contains(studentId);
     }
 }

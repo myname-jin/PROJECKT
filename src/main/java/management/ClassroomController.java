@@ -21,10 +21,16 @@ import javax.swing.JOptionPane;
 public class ClassroomController {
 
     private DefaultTableModel tableModel;
-    private final String filePath = "src/main/resources/classroom.txt";
+    private String filePath; 
+    private static final String DEFAULT_FILE_PATH = "src/main/resources/classroom.txt";
 
     public ClassroomController(DefaultTableModel tableModel) {
+        this(tableModel, DEFAULT_FILE_PATH);
+    }
+
+    public ClassroomController(DefaultTableModel tableModel, String filePath) {
         this.tableModel = tableModel;
+        this.filePath = filePath;
     }
 
     public void addClassroom(ClassroomModel classroom) { // 강의실 정보 추가
@@ -110,7 +116,7 @@ public class ClassroomController {
                 updatedClassrooms.add(c);
             }
         }
-        
+
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             for (ClassroomModel c : updatedClassrooms) {
                 writer.write(c.toFileString());
