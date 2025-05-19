@@ -11,6 +11,7 @@ import java.util.*;
 public class ReservationView extends JFrame {
     private JLabel nameLabel, idLabel, deptLabel;
     private JComboBox<String> roomTypeComboBox;
+    private JLabel roomInfoLabel;
     private JComboBox<String> roomComboBox;
     private JPanel timeSlotPanel;
     private JDatePickerImpl datePicker;
@@ -53,6 +54,10 @@ public class ReservationView extends JFrame {
         roomComboBox = new JComboBox<>();
         roomPanel.add(roomComboBox);
         centerPanel.add(roomPanel);
+        
+        roomInfoLabel = new JLabel(" ");  // 초기 빈 라벨
+        roomPanel.add(roomInfoLabel);    // 강의실 선택 아래에 배치
+
 
         // 날짜 선택
         UtilDateModel model = new UtilDateModel();
@@ -257,9 +262,49 @@ centerPanel.add(purposePanel);
     public JButton getBackButton() {
     return backButton;
     }
-
-
     
+    public void setRoomInfoText(String info) {
+    roomInfoLabel.setText(info);
+}
+    
+    public void enableProfessorMode() {
+    JPanel professorPanel = new JPanel();
+    professorPanel.setLayout(new BoxLayout(professorPanel, BoxLayout.X_AXIS));
+    professorPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+    JLabel profLabel = new JLabel("📌 교수 전용 기능:");
+    profLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+
+    JButton importExcelButton = new JButton("엑셀 불러오기");
+    JButton overrideReserveButton = new JButton("강제 예약");
+
+    importExcelButton.setPreferredSize(new Dimension(120, 30));
+    overrideReserveButton.setPreferredSize(new Dimension(100, 30));
+
+    // 버튼 간 여백 추가
+    importExcelButton.setMargin(new Insets(5, 10, 5, 10));
+    overrideReserveButton.setMargin(new Insets(5, 10, 5, 10));
+
+    // 이벤트 리스너는 필요한 경우 추가
+    importExcelButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "엑셀 불러오기 준비 중"));
+    overrideReserveButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "강제 예약 준비 중"));
+
+    professorPanel.add(profLabel);
+    professorPanel.add(importExcelButton);
+    professorPanel.add(Box.createHorizontalStrut(10)); // 버튼 사이 여백
+    professorPanel.add(overrideReserveButton);
+
+    // 여백 추가 후 상단 중앙에 배치
+    JPanel wrapperPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    wrapperPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    wrapperPanel.add(professorPanel);
+
+    this.add(wrapperPanel, BorderLayout.NORTH); // 상단 배치
+    this.revalidate();
+    this.repaint();
+}
+
+
    public void showMessage(String msg) {
         JOptionPane.showMessageDialog(this, msg);
     }
