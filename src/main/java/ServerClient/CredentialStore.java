@@ -10,30 +10,44 @@ package ServerClient;
 // 사용자 ID/비밀번호를 파일에서 읽고 자격을 검증하는 클래스
 
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
+import java.io.*;
+import java.util.*;
 
 public class CredentialStore {
-    private final Map<String,String> store = new HashMap<>();
+    private Map<String, String> credentials = new HashMap<>();
+    private File credentialFile;
+    private long lastLoadedTime = 0;
 
-    public CredentialStore(String pathToFile) throws IOException {
-        try (BufferedReader r = new BufferedReader(new FileReader(pathToFile))) {
+    public CredentialStore(String filePath) {
+        this.credentialFile = new File(filePath);
+        loadCredentials();
+        lastLoadedTime = credentialFile.lastModified();
+    }
+
+    private void loadCredentials() {
+        credentials.clear();
+        try (BufferedReader reader = new BufferedReader(new FileReader(credentialFile))) {
             String line;
-            while ((line = r.readLine()) != null) {
-                String[] parts = line.split(",", 2);
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
                 if (parts.length == 2) {
-                    store.put(parts[0].trim(), parts[1].trim());
+                    credentials.put(parts[0].trim(), parts[1].trim());
                 }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    /** id와 pw가 일치하면 true */
-    public boolean validate(String userId, String password) {
-        return password.equals(store.get(userId));
+    public boolean isValidCredential(String username, String password) {
+        if (credentialFile.lastModified() > lastLoadedTime) {
+            loadCredentials();
+            lastLoadedTime = credentialFile.lastModified();
+        }
+        return credentials.containsKey(username) && credentials.get(username).equals(password);
+    }
+
+    public boolean validate(String username, String password) {
+        return isValidCredential(username, password);
     }
 }
