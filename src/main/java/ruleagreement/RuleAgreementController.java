@@ -11,7 +11,7 @@ package ruleagreement;
 import management.NextPage;
 import ServerClient.LogoutUtil;
 
-import UserFunction.UserReservationListView;
+import UserFunction.UserMainView;
 
 import javax.swing.*;
 import java.io.*;
@@ -34,7 +34,7 @@ public class RuleAgreementController {
             if (view.allChecked()) {
                 JOptionPane.showMessageDialog(view, "모든 규칙에 동의하셨습니다. 다음 단계로 이동합니다.");
                 view.dispose();
-                new UserReservationListView();
+                UserMainView userMainView = new UserMainView(); 
             } else {
                 JOptionPane.showMessageDialog(view, "모든 규칙에 동의해야 합니다.", "경고", JOptionPane.WARNING_MESSAGE);
             }
