@@ -64,7 +64,7 @@ public class UserReservationListController {
     
      public void backToMainPage() {
     // 메인 페이지로 돌아가기
-    new UserFunction.UserMainPage(userId, socket, in, out);
+    new UserFunction.UserMainController(userId, socket, in, out);
 }
     
     public void loadReservationData() {

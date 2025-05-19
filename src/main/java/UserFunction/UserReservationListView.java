@@ -7,7 +7,7 @@ import javax.swing.JTable;
 import java.net.Socket;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import UserFunction.UserMainPage;
+import UserFunction.UserMainController;
 
 /**
  *
