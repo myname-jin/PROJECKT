@@ -17,7 +17,7 @@ public class ReservationGUIController {
     private static final String EXCEL_PATH = "src/main/resources/available_rooms.xlsx";
     private static final List<String> LAB_ROOMS = Arrays.asList("911", "915", "916", "918");
     private List<RoomModel> allRooms = new ArrayList<>();
-    private Workbook workbook;
+    public Workbook workbook;
     
     private String userName = "김민준";
     private String userId = "20211111";
@@ -169,7 +169,7 @@ public class ReservationGUIController {
         }
     }
     
-    private int calculateTotalDuration(List<String> times) {
+    public int calculateTotalDuration(List<String> times) {
         int total = 0;
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         for (String time : times) {
@@ -214,7 +214,7 @@ public class ReservationGUIController {
         return null;
     }
 
-    private void loadRoomsFromExcel() {
+    public void loadRoomsFromExcel() {
         try (InputStream fis = new FileInputStream(EXCEL_PATH)) {
             workbook = new XSSFWorkbook(fis);
             for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
@@ -230,7 +230,7 @@ public class ReservationGUIController {
         }
     }
 
-    private int getDayColumnIndex(String selectedDate) {
+    public int getDayColumnIndex(String selectedDate) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date date = sdf.parse(selectedDate);
@@ -253,7 +253,7 @@ public class ReservationGUIController {
         }
     }
 
-    private List<String> getAvailableTimesByDay(Sheet sheet, int dayCol) {
+    public List<String> getAvailableTimesByDay(Sheet sheet, int dayCol) {
         List<String> times = new ArrayList<>();
         for (int rowIdx = 1; rowIdx <= sheet.getLastRowNum(); rowIdx++) {
             Row row = sheet.getRow(rowIdx);
@@ -287,7 +287,7 @@ public class ReservationGUIController {
         }
     }
     
-    private String getDayOfWeek(String dateStr) {
+    public String getDayOfWeek(String dateStr) {
     try {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date date = sdf.parse(dateStr);
