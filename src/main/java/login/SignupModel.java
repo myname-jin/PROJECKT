@@ -19,6 +19,14 @@ import java.io.IOException;
 public class SignupModel {
     // 5개의 매개변수를 받는 회원가입 메서드
     public boolean registerUser(String userId, String password, String role, String userName, String userDept) {
+        // 입력값 유효성 검사: 빈 값 입력 제한
+        if (userId.isEmpty() || password.isEmpty() || role.isEmpty() || userName.isEmpty() || userDept.isEmpty()) {
+            return false;
+        }
+        // role 값을 "admin" 또는 "user"로 제한
+        if (!role.equals("admin") && !role.equals("user")) {
+            return false;
+        }
         // role에 따라 저장할 파일 이름 선택
         String fileName = role.equals("admin") ? "admin_signup.txt" : "user_signup.txt";
 

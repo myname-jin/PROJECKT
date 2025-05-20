@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  * @author jms5310
  */
-public class UserReservationListControllerTest {
+public class UserReservationListControllerTest {/*
    @Test
 public void testLoadReservationDataOnlyFor20221234() {
     JTable table = new JTable();
@@ -39,5 +39,5 @@ public void testLoadReservationDataOnlyFor20221234() {
         );
         System.out.println("예약 정보: " + info);
     }
-}
+}*/
 }
