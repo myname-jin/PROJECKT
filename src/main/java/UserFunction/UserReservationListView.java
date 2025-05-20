@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import UserFunction.UserMainController;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -44,6 +45,7 @@ private BufferedWriter out;
         jTable1 = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -74,6 +76,13 @@ private BufferedWriter out;
             }
         });
 
+        jButton3.setText("취소하기");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -86,7 +95,9 @@ private BufferedWriter out;
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(110, 110, 110)
-                        .addComponent(jButton1))
+                        .addComponent(jButton1)
+                        .addGap(114, 114, 114)
+                        .addComponent(jButton3))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(18, 18, 18)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -100,7 +111,9 @@ private BufferedWriter out;
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(jButton3))
                 .addContainerGap(28, Short.MAX_VALUE))
         );
 
@@ -129,6 +142,27 @@ private BufferedWriter out;
         controller.backToMainPage();  // 컨트롤러에 뒤로가기 요청
     }
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+         int selectedRow = jTable1.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "취소할 예약을 선택해주세요.", "알림", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+    
+    // 선택된 행이 예약 가능한 상태인지 확인
+   // String status = jTable1.getValueAt(selectedRow, 7).toString(); // 승인 상태 열
+   // if ("거절".equals(status)) {
+   //     JOptionPane.showMessageDialog(this, "이미 거절된 예약은 취소할 수 없습니다.", "알림", JOptionPane.WARNING_MESSAGE);
+   //     return;
+  //  }
+    
+    // 취소 컨트롤러 생성 및 팝업창 표시
+    UserReservationCancelController cancelController = 
+        new UserReservationCancelController(this, selectedRow);
+    cancelController.showView();
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -170,6 +204,7 @@ public JTable getTable() {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
