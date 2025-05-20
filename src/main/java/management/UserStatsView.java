@@ -119,4 +119,3 @@ public class UserStatsView extends javax.swing.JFrame {
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
 }
-// 강의실 정보, 예약/제한 목록 페이지 전환만 일단 했음
