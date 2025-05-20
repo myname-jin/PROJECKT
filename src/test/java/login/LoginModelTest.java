@@ -22,18 +22,22 @@ public class LoginModelTest {
     
     @BeforeAll
     public static void setUpClass() {
+        System.out.println("setUpClass");
     }
     
     @AfterAll
     public static void tearDownClass() {
+        System.out.println("tearDownClass");
     }
     
     @BeforeEach
     public void setUp() {
+        System.out.println("setUp");
     }
     
     @AfterEach
     public void tearDown() {
+        System.out.println("tearDown");
     }
 
     /**
@@ -41,16 +45,14 @@ public class LoginModelTest {
      */
     @Test
     public void testValidateCredentials() {
-        System.out.println("validateCredentials");
-        String userId = "";
-        String password = "";
-        String role = "";
+        System.out.println("validateCredentials 테스트: role에 해당하는 txt 파일 정보와 일치하면 passed");
+        String userId = "user2";
+        String password = "qwerty";
+        String role = "user";
         LoginModel instance = new LoginModel();
-        boolean expResult = false;
+        boolean expResult = true;
         boolean result = instance.validateCredentials(userId, password, role);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
     
 }
