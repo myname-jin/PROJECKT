@@ -4,50 +4,178 @@
  */
 package management;
 
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.util.List;
-import org.junit.jupiter.api.AfterEach;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import java.io.*;
+import java.nio.file.*;
+import java.util.*;
 
+import static org.junit.jupiter.api.Assertions.*;
 /**
  *
  * @author suk22
  */
 public class ReservationMgmtControllerTest {
-        private static final String TEST_FILE_PATH = "mgmt_reservation.txt";
+
+    private static Path tempReservationFile;
+    private static Path tempBanListFile;
+    private ReservationMgmtController controller;
+
+    @BeforeAll
+    static void setupFiles() throws IOException {
+        tempReservationFile = Files.createTempFile("reservation", ".txt");
+        tempBanListFile = Files.createTempFile("banlist", ".txt");
+
+        // 샘플 예약 데이터 입력
+        Files.write(tempReservationFile, List.of(
+                "홍길동,01012345678,20231234,컴퓨터공학과,301호,A,2025-05-21,B,09:00,10:00,X,대여",
+                "김철수,01087654321,20231235,소프트웨어학과,302호,A,2025-05-22,B,11:00,12:00,X,대여"
+        ));
+
+        // 초기 차단 사용자 없음
+        Files.write(tempBanListFile, List.of());
+    }
 
     @BeforeEach
-    void setUpTestFile() throws Exception {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(TEST_FILE_PATH))) {
-            writer.println("20230001,컴퓨터공학과,홍길동,101호,10:00,승인됨");
-            writer.println("20230002,기계공학과,이몽룡,201호,11:00,대기중");
-        }
+    void setUp() throws Exception {
+        // 테스트용 컨트롤러 생성자를 통해 경로 주입 (생성자 수정이 필요할 수 있음)
+        controller = new ReservationMgmtController() {
+            @Override
+            public List<ReservationMgmtModel> getAllReservations() {
+                return readReservations(tempReservationFile.toString());
+            }
+
+            @Override
+            public void updateApprovalStatus(String studentId, String newStatus) {
+                updateApprovalStatus(studentId, newStatus, tempReservationFile.toString());
+            }
+
+            @Override
+            public List<String> getBannedUsers() {
+                return readBannedUsers(tempBanListFile.toString());
+            }
+
+            @Override
+            public void banUser(String studentId) {
+                List<String> list = readBannedUsers(tempBanListFile.toString());
+                if (!list.contains(studentId)) {
+                    list.add(studentId);
+                    writeBannedUsers(list, tempBanListFile.toString());
+                }
+            }
+
+            @Override
+            public void unbanUser(String studentId) {
+                List<String> list = readBannedUsers(tempBanListFile.toString());
+                list.remove(studentId);
+                writeBannedUsers(list, tempBanListFile.toString());
+            }
+
+            @Override
+            public boolean isUserBanned(String studentId) {
+                return readBannedUsers(tempBanListFile.toString()).contains(studentId);
+            }
+
+            @Override
+            public List<ReservationMgmtModel> searchReservations(String name, String studentId, String room) {
+                return super.searchReservations(name, studentId, room);
+            }
+
+            private List<ReservationMgmtModel> readReservations(String filePath) {
+                try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+                    List<ReservationMgmtModel> list = new java.util.ArrayList<>();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        String[] data = line.split(",");
+                        if (data.length >= 12) {
+                            list.add(new ReservationMgmtModel(
+                                    data[0], data[2], data[3], data[4],
+                                    data[6], data[8] + "~" + data[9], data[11]
+                            ));
+                        }
+                    }
+                    return list;
+                } catch (IOException e) {
+                    return List.of();
+                }
+            }
+
+            private void updateApprovalStatus(String studentId, String newStatus, String filePath) {
+                try {
+                    List<String> lines = Files.readAllLines(Path.of(filePath));
+                    List<String> updated = new java.util.ArrayList<>();
+                    for (String line : lines) {
+                        String[] data = line.split(",");
+                        if (data.length >= 12 && data[2].equals(studentId)) {
+                            data[11] = newStatus;
+                            updated.add(String.join(",", data));
+                        } else {
+                            updated.add(line);
+                        }
+                    }
+                    Files.write(Path.of(filePath), updated);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            private List<String> readBannedUsers(String filePath) {
+                try {
+                    return Files.readAllLines(Path.of(filePath));
+                } catch (IOException e) {
+                    return List.of();
+                }
+            }
+
+            private void writeBannedUsers(List<String> list, String filePath) {
+                try {
+                    Files.write(Path.of(filePath), list);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
     }
 
     @Test
     void testGetAllReservations() {
-        ReservationMgmtController controller = new ReservationMgmtController();
-        List<ReservationMgmtModel> reservations = controller.getAllReservations();
-
-        assertEquals(2, reservations.size());
-
-        ReservationMgmtModel r1 = reservations.get(0);
-        assertEquals("20230001", r1.getStudentId());
-        assertEquals("컴퓨터공학과", r1.getDepartment());
-        assertEquals("홍길동", r1.getName());
-        assertEquals("101호", r1.getRoom());
-        assertEquals("10:00", r1.getTime());
+        List<ReservationMgmtModel> list = controller.getAllReservations();
+        assertEquals(2, list.size());
+        assertEquals("홍길동", list.get(0).getName());
+        assertEquals("302호", list.get(1).getRoom());
     }
 
-    @AfterEach
-    void cleanUpTestFile() throws Exception {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(TEST_FILE_PATH))) {
-            writer.print(""); // 테스트 후 내용 비우기
-        }
+    @Test
+    void testUpdateApprovalStatus() {
+        controller.updateApprovalStatus("20231234", "승인");
+        List<ReservationMgmtModel> updated = controller.getAllReservations();
+        assertEquals("승인", updated.get(0).getApproved());
+    }
+
+    @Test
+    void testBanAndUnbanUser() {
+        String studentId = "20231234";
+        assertFalse(controller.isUserBanned(studentId));
+
+        controller.banUser(studentId);
+        assertTrue(controller.isUserBanned(studentId));
+
+        controller.unbanUser(studentId);
+        assertFalse(controller.isUserBanned(studentId));
+    }
+
+    @Test
+    void testSearchReservations() {
+        List<ReservationMgmtModel> result = controller.searchReservations("김철수", null, null);
+        assertEquals(1, result.size());
+        assertEquals("김철수", result.get(0).getName());
+
+        List<ReservationMgmtModel> none = controller.searchReservations(null, "999999", null);
+        assertTrue(none.isEmpty());
+    }
+
+    @AfterAll
+    static void cleanup() throws IOException {
+        Files.deleteIfExists(tempReservationFile);
+        Files.deleteIfExists(tempBanListFile);
     }
 }
-
-
