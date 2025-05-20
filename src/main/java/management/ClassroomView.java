@@ -237,27 +237,15 @@ public class ClassroomView extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "수용 인원은 숫자로 입력하세요.");
             return;
         }
+
+        ClassroomModel updatedClassroom = new ClassroomModel(room, newLocation, newCapacity, newNote);
+        controller.updateClassroom(updatedClassroom);  // 컨트롤러에 수정 요청
+
+        // 테이블도 업데이트
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setValueAt(newLocation, selectedRow, 1);
         model.setValueAt(newCapacity, selectedRow, 2);
         model.setValueAt(newNote, selectedRow, 3);
-
-        List<ClassroomModel> classrooms = controller.getClassroomList();
-        for (int i = 0; i < classrooms.size(); i++) {
-            if (classrooms.get(i).getRoom().equals(room)) {
-                classrooms.set(i, new ClassroomModel(room, newLocation, newCapacity, newNote));
-                break;
-            }
-        }
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/resources/classroom.txt"))) {
-            for (ClassroomModel c : classrooms) {
-                writer.write(c.toFileString());
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         JOptionPane.showMessageDialog(this, room + " 강의실 정보가 수정되었습니다.");
     }//GEN-LAST:event_jButton2ActionPerformed

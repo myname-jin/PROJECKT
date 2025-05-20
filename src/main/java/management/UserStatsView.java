@@ -21,6 +21,7 @@ public class UserStatsView extends javax.swing.JFrame {
         this.stats = stats;
         initComponents();
         loadStatsIntoTable();
+        setLocationRelativeTo(null);
     }
 
     public UserStatsView() {
@@ -111,22 +112,6 @@ public class UserStatsView extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        try {
-            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-        } catch (Exception ignored) {
-        } // 필요 시 완전 생략 가능
-
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new UserStatsController().showUserStatsUI(); // Controller 통해 실행
-            }
-        });
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
@@ -134,3 +119,4 @@ public class UserStatsView extends javax.swing.JFrame {
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
 }
+// 강의실 정보, 예약/제한 목록 페이지 전환만 일단 했음

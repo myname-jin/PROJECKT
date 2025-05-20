@@ -179,6 +179,11 @@ public class ReservationMgmtView extends javax.swing.JFrame {
         });
 
         jButton8.setText("예약/취소 현황");
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
 
         jTextField1.setText("검색해 주세요");
 
@@ -344,7 +349,15 @@ public class ReservationMgmtView extends javax.swing.JFrame {
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         ClassroomView classroomView = new ClassroomView();
         classroomView.setVisible(true);
+        classroomView.setLocationRelativeTo(null);
+        this.dispose();
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        UserStatsController userStatsController = new UserStatsController();
+        userStatsController.showUserStatsUI();
+        this.dispose();
+    }//GEN-LAST:event_jButton8ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
