@@ -37,9 +37,11 @@ public class SignupController {
         boolean success = model.registerUser(userId, password, role, userName, userDept);
 
         if (success) {
-            // 회원가입 정보 전달 메서드 추가
+            // 새로 회원가입한 정보롤 로그인 파일로 전달하는 메서드 호출
             model.adminTransfer();
             model.userTransfer();
+            // 모든 로그인 정보를 예약에 필요한 텍스트 파일로 전달하는 메서드 호출
+            model.bothinfoTransfer();
             JOptionPane.showMessageDialog(view, "회원가입 성공!");
             view.dispose();
             LoginView loginView = new LoginView();
