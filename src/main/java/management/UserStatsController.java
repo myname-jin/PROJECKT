@@ -64,7 +64,7 @@ public class UserStatsController {
         } catch (IOException e) {
             System.err.println("cancel_log.txt 읽기 실패: " + e.getMessage());
         }
-
+        
         // 사용자 목록 통합
         Set<String> allUsers = new HashSet<>();
         allUsers.addAll(reservations.keySet());
