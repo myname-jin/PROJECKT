@@ -26,7 +26,7 @@ public class UserMainController {
         
         // 뷰 초기화
         this.view = new UserMainView();
-        view.setWelcomeMessage(model.getUserId());
+        view.setWelcomeMessage(model.getUserName());
         
         // 리스너 등록
         initListeners();
@@ -74,16 +74,15 @@ public class UserMainController {
         );
         
         // ReservationGUIController 생성자 호출
-        new Reservation.ReservationGUIController(model.getUserId(), model.getSocket(), model.getOut());
-        
+       new ReservationGUIController(model.getUserId(), model.getSocket(), model.getOut());
     } catch (Exception e) {
-        // 예외 발생 시 메시지 표시
-        view.showMessage(
+        JOptionPane.showMessageDialog(
+            null,
             "예약 시스템 연결 중 오류가 발생했습니다: " + e.getMessage(),
             "오류",
             JOptionPane.ERROR_MESSAGE
         );
-        e.printStackTrace(); // 콘솔에 오류 내용 출력
+        e.printStackTrace();
     }
 }
 
