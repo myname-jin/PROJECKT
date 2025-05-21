@@ -44,16 +44,21 @@ public class LoginController {
         view.btnLogin.setEnabled(false);
         new Thread(() -> {
             try {
-                Socket socket = new Socket("localhost", 12345);
+                Socket socket = new Socket("localhost", 9999); // 포트 9999로 변경
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-                out.write("LOGIN:" + userId + ":" + password + "\n");
+                // 🔍 서버로 로그인 메시지 전송
+                String loginMsg = "LOGIN:" + userId + ":" + password + "\n";
+                out.write(loginMsg);
                 out.flush();
+                System.out.println("👉 보낸 메시지: " + loginMsg);
 
                 String response;
                 boolean waitingShown = false;
                 while ((response = in.readLine()) != null) {
+                    System.out.println("👈 서버 응답: " + response); // 🔍 응답 출력
+
                     if (response.startsWith("OK")) {
                         showNextPage(userId, role, socket, in, out);
                         break;
