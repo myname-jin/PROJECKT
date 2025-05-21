@@ -28,11 +28,11 @@ public class LoginView extends JFrame {
 
         txtUser.setBounds(80, 30, 180, 30);
         txtPass.setBounds(80, 70, 180, 30);
-        btnLogin.setBounds(80, 145, 80, 30); // 로그인 버튼 위치 수정(130 -> 80)
+        btnLogin.setBounds(80, 145, 80, 30);
         userRadio.setBounds(80, 110, 80, 20);
         adminRadio.setBounds(160, 110, 80, 20);
-        btnSignup.setBounds(170, 145, 85, 30); // 회원가입 버튼 위치 지정
-        btnPw.setBounds(80, 185, 175, 30);
+        btnSignup.setBounds(170, 145, 85, 30);
+        btnPw.setBounds(80, 185, 175, 30); // 비밀번호 찾기/변경 버튼 위치 지정
 
         ButtonGroup group = new ButtonGroup();
         group.add(userRadio);
