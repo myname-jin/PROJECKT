@@ -44,7 +44,7 @@ public class LoginController {
         view.btnLogin.setEnabled(false);
         new Thread(() -> {
             try {
-                Socket socket = new Socket("localhost", 9999); // 포트 9999로 변경
+                Socket socket = new Socket("192.168.0.22", 9999); // 포트 9999로 변경
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
