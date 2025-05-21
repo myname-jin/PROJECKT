@@ -10,68 +10,6 @@ package login;
  */
 import javax.swing.*;
 import java.awt.*;
-/*
-public class SignupView extends JFrame {
-    public JTextField txtId = new JTextField();           // ID
-    public JPasswordField txtPw = new JPasswordField();   // PW
-    public JTextField txtName = new JTextField();         // 이름
-    public JTextField txtDept = new JTextField();         // 학과
-    public JButton btnRegister = new JButton("등록");
-    public JRadioButton user = new JRadioButton("사용자");
-    public JRadioButton admin = new JRadioButton("관리자");
-
-
-    public SignupView() {
-        super("회원가입 화면");
-        setSize(350, 350);
-        setLayout(null);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-
-        txtId.setBounds(80, 30, 180, 30);
-        txtPw.setBounds(80, 70, 180, 30);
-        txtName.setBounds(80, 110, 180, 30);
-        txtDept.setBounds(80, 150, 180, 30);
-        user.setBounds(80, 190, 80, 20);
-        admin.setBounds(160, 190, 80, 20);
-        btnRegister.setBounds(130, 230, 80, 30);
-        
-
-        ButtonGroup group = new ButtonGroup();
-        group.add(user);
-        group.add(admin);
-        user.setSelected(true);
-
-        add(txtId);
-        add(txtPw);
-        add(btnRegister);
-        add(user);
-        add(admin);
-        add(txtName);
-        add(txtDept);
-    }
-
-    public String getId() {
-        return txtId.getText().trim();
-    }
-
-    public String getPw() {
-        return new String(txtPw.getPassword()).trim();
-    }
-
-    public String getRole() {
-        return user.isSelected() ? "user" : "admin";
-    }
-    // 이름 입력값을 반환
-    public String getName() {
-        return txtName.getText().trim();
-    }
-    // 학과 입력값을 반환
-    public String getDept() {
-        return txtDept.getText().trim();
-    }
-}
-*/
 
 public class SignupView extends JFrame {
     private JTextField txtId;
@@ -106,9 +44,9 @@ public class SignupView extends JFrame {
         txtDept = new JTextField();
         panel.add(txtDept);
 
-        // Role combo box
+        // 역할 콤보 박스
         panel.add(new JLabel("역할:"));
-        cmbRole = new JComboBox<>(new String[]{"admin", "user"});
+        cmbRole = new JComboBox<>(new String[]{"admin", "학생", "교수"});
         panel.add(cmbRole);
 
         btnRegister = new JButton("등록");
@@ -117,21 +55,21 @@ public class SignupView extends JFrame {
         getContentPane().add(panel, BorderLayout.CENTER);
         getContentPane().add(btnRegister, BorderLayout.SOUTH);
     }
-
+    
     public String getId() {
-        return txtId.getText();
+        return txtId.getText().trim();
     }
 
     public String getPw() {
-        return new String(txtPw.getPassword());
+        return new String(txtPw.getPassword()).trim();
     }
-
+    // 이름 입력값을 반환
     public String getName() {
-        return txtName.getText();
+        return txtName.getText().trim();
     }
-
+    // 학과 입력값을 반환
     public String getDept() {
-        return txtDept.getText();
+        return txtDept.getText().trim();
     }
 
     public String getRole() {

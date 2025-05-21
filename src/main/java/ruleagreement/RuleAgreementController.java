@@ -20,7 +20,7 @@ import java.net.Socket;
 public class RuleAgreementController {
     private final RuleAgreementModel model;
     private final RuleAgreementView view;
-
+    private BufferedReader in;
     // ✅ 소켓과 출력 스트림을 생성자에서 받아서 로그아웃 처리에 활용
     public RuleAgreementController(String userId, Socket socket, BufferedWriter out) throws Exception {
         String absolutePath = "src/main/resources/rules.txt"; // 경로는 필요시 수정
@@ -34,7 +34,8 @@ public class RuleAgreementController {
             if (view.allChecked()) {
                 JOptionPane.showMessageDialog(view, "모든 규칙에 동의하셨습니다. 다음 단계로 이동합니다.");
                 view.dispose();
-                UserMainView userMainView = new UserMainView(); 
+                new UserFunction.UserMainController(userId, socket, in, out);
+
             } else {
                 JOptionPane.showMessageDialog(view, "모든 규칙에 동의해야 합니다.", "경고", JOptionPane.WARNING_MESSAGE);
             }

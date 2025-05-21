@@ -31,16 +31,14 @@ public class UserReservationListController {
     private BufferedWriter out;
     
     
-    
-    public UserReservationListController(JTable table) {
-         this.userId = "20211111"; // 하드코딩된 테스트 ID
-        this.table = table;
-        loadReservationData();
-    }
-
-    
+    //하드코딩
+    //public UserReservationListController(JTable table) {
+   //      this.userId = "20211111"; // 하드코딩된 테스트 ID
+   //     this.table = table;
+    //    loadReservationData();
+   // }
      public UserReservationListController(String userId, Socket socket, BufferedReader in, BufferedWriter out) {
-        this.userId = (userId != null && !userId.trim().isEmpty()) ? userId : "20211111"; // 조건분기로 처리
+        this.userId = userId; // 조건분기로 처리
         this.socket = socket;
         this.in = in;
         this.out = out;
@@ -68,7 +66,7 @@ public class UserReservationListController {
 }
     
     public void loadReservationData() {
-        String[] columns = {"이름", "학번", "강의실", "요일", "시작시간", "종료시간", "승인상태"};
+        String[] columns = {"이름", "학번", "강의실", "날짜", "요일", "시작시간", "종료시간", "승인상태"};
         DefaultTableModel model = new DefaultTableModel(columns, 0);
 
         System.out.println("현재 사용자 ID: " + userId); // 디버깅용
@@ -81,14 +79,15 @@ public class UserReservationListController {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
                if (parts.length >= 12 && parts[2].equals(userId)) {
-                model.addRow(new Object[]{
-                    parts[0], // 이름
-                    parts[2], // 학번
-                    parts[5], // 강의실
-                    parts[7], // 요일
-                    parts[8], // 시작시간
-                    parts[9], // 종료시간
-                    parts[11] // 승인상태
+             model.addRow(new Object[]{
+                parts[0], // 이름
+                parts[2], // 학번
+                parts[5], // 강의실
+                parts[6], // 날짜 (추가)
+                parts[7], // 요일
+                parts[8], // 시작시간
+                parts[9], // 종료시간
+                parts[11] // 승인상태
                     });
                 }
             }
@@ -114,7 +113,7 @@ public class UserReservationListController {
         c.setForeground(Color.BLACK);
 
        // 승인 상태 컬럼 색상
-            if (column == 6) {
+            if (column == 7) {
                 String status = table.getValueAt(row, column).toString();
                 if (status.equals("승인")) {
                     c.setForeground(new Color(0, 128, 0)); // 초록
@@ -130,6 +129,15 @@ public class UserReservationListController {
             return c;
     }
 });
-      
+       if (table.getColumnCount() >= 8) { // 컬럼 수 확인
+        table.getColumnModel().getColumn(0).setPreferredWidth(80);  // 이름
+        table.getColumnModel().getColumn(1).setPreferredWidth(90);  // 학번
+        table.getColumnModel().getColumn(2).setPreferredWidth(70);  // 강의실
+        table.getColumnModel().getColumn(3).setPreferredWidth(100); // 날짜
+        table.getColumnModel().getColumn(4).setPreferredWidth(40);  // 요일
+        table.getColumnModel().getColumn(5).setPreferredWidth(80);  // 시작시간
+        table.getColumnModel().getColumn(6).setPreferredWidth(80);  // 종료시간
+        table.getColumnModel().getColumn(7).setPreferredWidth(80);  // 승인상태
+    }
     }
 }

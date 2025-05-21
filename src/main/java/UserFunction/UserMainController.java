@@ -13,6 +13,8 @@ import ServerClient.LogoutUtil;
 import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
+import Reservation.ReservationGUIController;
+import Reservation.ReservationView;
 
 public class UserMainController {
     private UserMainModel model;
@@ -24,7 +26,7 @@ public class UserMainController {
         
         // 뷰 초기화
         this.view = new UserMainView();
-        view.setWelcomeMessage(model.getUserId());
+        view.setWelcomeMessage(model.getUserName());
         
         // 리스너 등록
         initListeners();
@@ -35,7 +37,7 @@ public class UserMainController {
         }
         
         // 화면 표시
-        view.setVisible(true);
+       view.setVisible(true);
     }
 
     private void initListeners() {
@@ -63,6 +65,7 @@ public class UserMainController {
     }
 
     private void openReservationSystem() {
+       try {
         // 예약 시스템으로 연결
         view.showMessage(
             "강의실 예약 시스템으로 연결됩니다",
@@ -70,9 +73,26 @@ public class UserMainController {
             JOptionPane.INFORMATION_MESSAGE
         );
         
-        // 실제 구현에서는 다음과 같이 연결
-        // new ReservationGUIController(model.getUserId(), model.getSocket(), model.getIn(), model.getOut());
+        // ReservationGUIController 생성자 호출
+      // new ReservationGUIController(model.getUserId(), model.getSocket(), model.getOut());
+      new ReservationGUIController(
+            model.getUserId(),
+            model.getUserName(),
+            model.getUserDept(),
+            model.getUserType(),
+            model.getSocket(),
+            model.getOut()
+        );
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(
+            null,
+            "예약 시스템 연결 중 오류가 발생했습니다: " + e.getMessage(),
+            "오류",
+            JOptionPane.ERROR_MESSAGE
+        );
+        e.printStackTrace();
     }
+}
 
     private void openNoticeSystem() {
         // 공지사항 화면으로 연결

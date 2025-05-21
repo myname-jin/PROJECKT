@@ -16,35 +16,40 @@ public class ReservationGUIController {
     private ReservationView view;
     private static final String EXCEL_PATH = "src/main/resources/available_rooms.xlsx";
     private static final List<String> LAB_ROOMS = Arrays.asList("911", "915", "916", "918");
-    private List<RoomModel> allRooms = new ArrayList<>();
-    private Workbook workbook;
     
-    private String userName = "김민준";
-    private String userId = "20211111";
-    private String userDept = "컴퓨터소프트웨어공학";
-    private String userType = "학생"; // "학생" 또는 "교수"
-  //private final ReservationView view;
-  //private final Socket socket;
-  //private final BufferedWriter out;
-  //private final String userId;
+    private List<RoomModel> allRooms = new ArrayList<>();
+    public Workbook workbook;
+    
+    private String userName;
+    private String userId;
+    private String userDept;
+    private String userType; // "학생" 또는 "교수"
+ 
     private Socket socket;
     private BufferedWriter out;
 
     
 //클라이언트-서버 연결 코드(로그인과 사용자 페이지 연결되면 주석 해제)
-    public ReservationGUIController(String userId, Socket socket, BufferedWriter out) {
+    public ReservationGUIController(String userId, String userName, String userDept, String userType,
+                                    Socket socket, BufferedWriter out) {
     this.userId = userId;
+    this.userName = userName;
+    this.userDept = userDept;
+    this.userType = userType;
     this.socket = socket;
     this.out = out;
 
-    this.userName = "김민준";  // 이후 실제 로그인 정보로 대체
-    this.userDept = "컴퓨터소프트웨어공학";
-    this.userType = "학생"; // 또는 "교수"
 
-    view = new ReservationView(); // 이 클래스가 JFrame이라면 가능
+
+    view = new ReservationView(); 
     view.setUserInfo(userName, userId, userDept);
 
     LogoutUtil.attach(view, userId, socket, out);  
+
+    initializeReservationFeatures();
+    
+    view.setVisible(true);
+
     }
 
     
@@ -52,14 +57,20 @@ public class ReservationGUIController {
         view = new ReservationView();
         view.setUserInfo(userName, userId, userDept);
         
+        initializeReservationFeatures();
+        view.setVisible(true);
+    }
+
+    private void initializeReservationFeatures() {
+        
         if (userType.equals("교수")) {
             view.enableProfessorMode(); // View 내부에서 교수 전용 UI 구역 활성화
         }
         
         loadRoomsFromExcel();
-
  // 강의실 유형 선택시 → 해당 방 목록 표시
         view.setRoomTypeList(Arrays.asList("강의실", "실습실"));
+        
         view.addRoomTypeSelectionListener(e -> {
             String selectedType = view.getSelectedRoomType();
             List<String> filtered = allRooms.stream()
@@ -169,7 +180,7 @@ public class ReservationGUIController {
         }
     }
     
-    private int calculateTotalDuration(List<String> times) {
+    public int calculateTotalDuration(List<String> times) {
         int total = 0;
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         for (String time : times) {
@@ -214,7 +225,7 @@ public class ReservationGUIController {
         return null;
     }
 
-    private void loadRoomsFromExcel() {
+    public void loadRoomsFromExcel() {
         try (InputStream fis = new FileInputStream(EXCEL_PATH)) {
             workbook = new XSSFWorkbook(fis);
             for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
@@ -230,7 +241,7 @@ public class ReservationGUIController {
         }
     }
 
-    private int getDayColumnIndex(String selectedDate) {
+    public int getDayColumnIndex(String selectedDate) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date date = sdf.parse(selectedDate);
@@ -253,7 +264,7 @@ public class ReservationGUIController {
         }
     }
 
-    private List<String> getAvailableTimesByDay(Sheet sheet, int dayCol) {
+    public List<String> getAvailableTimesByDay(Sheet sheet, int dayCol) {
         List<String> times = new ArrayList<>();
         for (int rowIdx = 1; rowIdx <= sheet.getLastRowNum(); rowIdx++) {
             Row row = sheet.getRow(rowIdx);
@@ -287,7 +298,7 @@ public class ReservationGUIController {
         }
     }
     
-    private String getDayOfWeek(String dateStr) {
+    public String getDayOfWeek(String dateStr) {
     try {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date date = sdf.parse(dateStr);
