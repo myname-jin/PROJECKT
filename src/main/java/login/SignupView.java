@@ -46,7 +46,7 @@ public class SignupView extends JFrame {
 
         // 역할 콤보 박스
         panel.add(new JLabel("역할:"));
-        cmbRole = new JComboBox<>(new String[]{"admin", "user"});
+        cmbRole = new JComboBox<>(new String[]{"admin", "학생", "교수"});
         panel.add(cmbRole);
 
         btnRegister = new JButton("등록");

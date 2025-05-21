@@ -22,22 +22,24 @@ public class ReservationGUIController {
     
     private String userName;
     private String userId;
-    private String userDept = "컴퓨터소프트웨어공학";
-    private String userType = "학생"; // "학생" 또는 "교수"
+    private String userDept;
+    private String userType; // "학생" 또는 "교수"
  
     private Socket socket;
     private BufferedWriter out;
 
     
 //클라이언트-서버 연결 코드(로그인과 사용자 페이지 연결되면 주석 해제)
-    public ReservationGUIController(String userId, Socket socket, BufferedWriter out) {
+    public ReservationGUIController(String userId, String userName, String userDept, String userType,
+                                    Socket socket, BufferedWriter out) {
     this.userId = userId;
+    this.userName = userName;
+    this.userDept = userDept;
+    this.userType = userType;
     this.socket = socket;
     this.out = out;
 
-//    this.userName = "김민준";  // 이후 실제 로그인 정보로 대체
-//    this.userDept = "컴퓨터소프트웨어공학";
-//    this.userType = "학생"; // 또는 "교수"
+
 
     view = new ReservationView(); 
     view.setUserInfo(userName, userId, userDept);

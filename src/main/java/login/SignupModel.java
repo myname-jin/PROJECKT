@@ -24,7 +24,7 @@ public class SignupModel {
             return false;
         }
         // role 값을 "admin" 또는 "user"로 제한
-        if (!role.equals("admin") && !role.equals("user")) {
+        if (!role.equals("admin") && !role.equals("학생")&& !role.equals("교수")) {
             return false;
         }
         // role에 따라 저장할 파일 이름 선택
@@ -35,7 +35,7 @@ public class SignupModel {
 
             // role에 따라 해당되는 파일에 사용자 정보 추가
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
-                writer.write(userId + "," + password + "," + userName + "," + userDept);
+                writer.write(userId + "," + password + "," + userName + "," + userDept + "," + role);
                 writer.newLine();
                 return true;
             }

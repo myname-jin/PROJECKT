@@ -74,7 +74,15 @@ public class UserMainController {
         );
         
         // ReservationGUIController 생성자 호출
-       new ReservationGUIController(model.getUserId(), model.getSocket(), model.getOut());
+      // new ReservationGUIController(model.getUserId(), model.getSocket(), model.getOut());
+      new ReservationGUIController(
+            model.getUserId(),
+            model.getUserName(),
+            model.getUserDept(),
+            model.getUserType(),
+            model.getSocket(),
+            model.getOut()
+        );
     } catch (Exception e) {
         JOptionPane.showMessageDialog(
             null,
