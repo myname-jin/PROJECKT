@@ -16,17 +16,15 @@ public class ReservationGUIController {
     private ReservationView view;
     private static final String EXCEL_PATH = "src/main/resources/available_rooms.xlsx";
     private static final List<String> LAB_ROOMS = Arrays.asList("911", "915", "916", "918");
+    
     private List<RoomModel> allRooms = new ArrayList<>();
     public Workbook workbook;
     
-    private String userName = "김민준";
-    private String userId = "20211111";
+    private String userName;
+    private String userId;
     private String userDept = "컴퓨터소프트웨어공학";
     private String userType = "학생"; // "학생" 또는 "교수"
-  //private final ReservationView view;
-  //private final Socket socket;
-  //private final BufferedWriter out;
-  //private final String userId;
+ 
     private Socket socket;
     private BufferedWriter out;
 
@@ -37,14 +35,18 @@ public class ReservationGUIController {
     this.socket = socket;
     this.out = out;
 
-    this.userName = "김민준";  // 이후 실제 로그인 정보로 대체
-    this.userDept = "컴퓨터소프트웨어공학";
-    this.userType = "학생"; // 또는 "교수"
+//    this.userName = "김민준";  // 이후 실제 로그인 정보로 대체
+//    this.userDept = "컴퓨터소프트웨어공학";
+//    this.userType = "학생"; // 또는 "교수"
 
-    view = new ReservationView(); // 이 클래스가 JFrame이라면 가능
+    view = new ReservationView(); 
     view.setUserInfo(userName, userId, userDept);
 
     LogoutUtil.attach(view, userId, socket, out);  
+    
+    initializeReservationFeatures();
+    
+    view.setVisible(true);
     }
 
     
@@ -52,14 +54,20 @@ public class ReservationGUIController {
         view = new ReservationView();
         view.setUserInfo(userName, userId, userDept);
         
+        initializeReservationFeatures();
+        view.setVisible(true);
+    }
+
+    private void initializeReservationFeatures() {
+        
         if (userType.equals("교수")) {
             view.enableProfessorMode(); // View 내부에서 교수 전용 UI 구역 활성화
         }
         
         loadRoomsFromExcel();
-
  // 강의실 유형 선택시 → 해당 방 목록 표시
         view.setRoomTypeList(Arrays.asList("강의실", "실습실"));
+        
         view.addRoomTypeSelectionListener(e -> {
             String selectedType = view.getSelectedRoomType();
             List<String> filtered = allRooms.stream()
