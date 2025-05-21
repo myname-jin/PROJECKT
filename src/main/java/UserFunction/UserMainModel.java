@@ -25,7 +25,29 @@ public class UserMainModel {
         this.in = in;
         this.out = out;
     }
-
+public String getUserName() {
+    String name = "사용자"; // 기본값
+    
+    try {
+        File file = new File("src/main/resources/user_signup.txt");
+        if (file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] parts = line.split(",");
+                    if (parts.length >= 3 && parts[0].equals(userId)) {
+                        name = parts[2]; // 이름은 세 번째 필드
+                        break;
+                    }
+                }
+            }
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+    
+    return name;
+}
     // Getters
     public String getUserId() { return userId; }
     public Socket getSocket() { return socket; }

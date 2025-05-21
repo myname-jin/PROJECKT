@@ -45,6 +45,8 @@ public class ReservationGUIController {
     view.setUserInfo(userName, userId, userDept);
 
     LogoutUtil.attach(view, userId, socket, out);  
+    view.setVisible(true); // 화면 표시
+
     }
 
     
