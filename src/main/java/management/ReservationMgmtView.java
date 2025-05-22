@@ -34,6 +34,7 @@ public class ReservationMgmtView extends javax.swing.JFrame {
         setupApprovalColumnEditor();
         loadReservationData();
         setTitle("관리자 예약 목록");
+        setLocationRelativeTo(null);
     }
 
     private ReservationMgmtController controller = new ReservationMgmtController();

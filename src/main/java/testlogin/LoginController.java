@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package login;
+package testlogin;
 
 /**
  *
@@ -15,22 +15,24 @@ import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
 
-public class LoginService {
-    private final LoginModel model;
+public class LoginController {
     private final LoginView view;
+    private final LoginModel model;
     private final Socket socket;
     private final BufferedWriter out;
     private final BufferedReader in;
 
-    public LoginService(LoginModel model, LoginView view, Socket socket) throws IOException {
-        this.model = model;
+    public LoginController(LoginView view, LoginModel model, Socket socket) throws IOException {
         this.view = view;
+        this.model = model;
         this.socket = socket;
         this.out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+        view.getLoginButton().addActionListener(e -> attemptLogin());
     }
 
-    public void attemptLogin() {
+    private void attemptLogin() {
         String userId = view.getUserId();
         String password = view.getPassword();
         String role = view.getRole();
@@ -44,9 +46,10 @@ public class LoginService {
 
             if ("LOGIN_SUCCESS".equals(response)) {
                 JOptionPane.showMessageDialog(view, userId + "님 로그인 성공");
+
                 try {
                     if ("admin".equalsIgnoreCase(role)) {
-                        new ReservationMgmtView(userId).setVisible(true);
+                        new ReservationMgmtView().setVisible(true);
                     } else {
                         new RuleAgreementController(userId, socket, out);
                     }
@@ -62,15 +65,11 @@ public class LoginService {
                     if ("LOGIN_SUCCESS".equals(response)) {
                         JOptionPane.showMessageDialog(view, userId + "님 자동 로그인 성공");
                         try {
-                            if ("admin".equalsIgnoreCase(role)) {
-                                new ReservationMgmtView(userId).setVisible(true);
-                            } else {
-                                new RuleAgreementController(userId, socket, out);
-                            }
+                            new RuleAgreementController(userId, socket, out);
                             view.dispose();
                         } catch (Exception ex) {
                             ex.printStackTrace();
-                            JOptionPane.showMessageDialog(view, "화면 전환 오류: " + ex.getMessage());
+                            JOptionPane.showMessageDialog(view, "이용 동의 화면 오류: " + ex.getMessage());
                         }
                         break;
                     }
@@ -82,7 +81,7 @@ public class LoginService {
 
         } catch (IOException ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(view, "서버 연결 실패: " + ex.getMessage());
+            JOptionPane.showMessageDialog(view, "서버 통신 오류: " + ex.getMessage());
         }
     }
 }

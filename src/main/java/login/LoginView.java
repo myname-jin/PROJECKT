@@ -5,69 +5,91 @@
 package login;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class LoginView extends JFrame {
-    public JTextField txtUser = new JTextField();
-    public JPasswordField txtPass = new JPasswordField();
-    public JButton btnLogin = new JButton("로그인");
-    public JRadioButton userRadio = new JRadioButton("사용자");
-    public JRadioButton adminRadio = new JRadioButton("관리자");
-    public JButton btnSignup = new JButton("회원가입");
-    public JButton btnPw = new JButton("비밀번호 찾기/변경 "); // 비밀번호 찾기/변경 버튼 생성
-    public JTextField txtServerIp = new JTextField("127.0.0.1"); // 서버 IP 입력 필드 (기본값)
+    private JTextField userIdField;
+    private JPasswordField passwordField;
+    private JRadioButton userRadio;
+    private JRadioButton adminRadio;
+    private JButton loginButton;
+    private JButton registerButton;
+    private JButton findPasswordButton;
 
     public LoginView() {
-        super("로그인 화면");
-        setSize(350, 320);
-        setLayout(null);
-        setLocationRelativeTo(null);
+        setTitle("로그인 화면");
+        setSize(330, 330);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
 
-        JLabel ipLabel = new JLabel("서버 IP:");
-        ipLabel.setBounds(20, 225, 60, 30);
-        txtServerIp.setBounds(80, 225, 180, 30);
-
-        txtUser.setBounds(80, 30, 180, 30);
-        txtPass.setBounds(80, 70, 180, 30);
-        btnLogin.setBounds(80, 145, 80, 30);
-        userRadio.setBounds(80, 110, 80, 20);
-        adminRadio.setBounds(160, 110, 80, 20);
-        btnSignup.setBounds(170, 145, 85, 30);
-        btnPw.setBounds(80, 185, 175, 30);
+        // ✅ 컴포넌트 생성
+        userIdField = new JTextField(15);
+        passwordField = new JPasswordField(15);
+        userRadio = new JRadioButton("사용자", true);
+        adminRadio = new JRadioButton("관리자");
 
         ButtonGroup group = new ButtonGroup();
         group.add(userRadio);
         group.add(adminRadio);
-        userRadio.setSelected(true);
 
-        add(txtUser);
-        add(txtPass);
-        add(btnLogin);
-        add(userRadio);
-        add(adminRadio);
-        add(btnSignup);
-        add(btnPw);
-        add(ipLabel);
-        add(txtServerIp);
+        loginButton = new JButton("로그인");
+        registerButton = new JButton("회원가입");
+        findPasswordButton = new JButton("비밀번호 찾기/변경");
+
+        // ✅ 레이아웃 구성
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        gbc.insets = new Insets(5, 5, 5, 5); // 간격
+        gbc.gridx = 0; gbc.gridy = 0;
+        panel.add(new JLabel("아이디:"), gbc);
+        gbc.gridx = 1;
+        panel.add(userIdField, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 1;
+        panel.add(new JLabel("비밀번호:"), gbc);
+        gbc.gridx = 1;
+        panel.add(passwordField, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 2;
+        panel.add(userRadio, gbc);
+        gbc.gridx = 1;
+        panel.add(adminRadio, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 3;
+        panel.add(loginButton, gbc);
+        gbc.gridx = 1;
+        panel.add(registerButton, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 2;
+        panel.add(findPasswordButton, gbc);
+
+        // ✅ 프레임에 적용
+        add(panel);
     }
 
     public String getUserId() {
-        return txtUser.getText().trim();
+        return userIdField.getText().trim();
     }
 
     public String getPassword() {
-        return new String(txtPass.getPassword()).trim();
+        return new String(passwordField.getPassword()).trim();
     }
 
     public String getRole() {
         return userRadio.isSelected() ? "user" : "admin";
     }
 
-    public String getServerIp() {
-        return txtServerIp.getText().trim();
+    public JButton getLoginButton() {
+        return loginButton;
     }
 
-    public JButton getLoginButton() {
-        return btnLogin;
+    public JButton getRegisterButton() {
+        return registerButton;
+    }
+
+    public JButton getFindPasswordButton() {
+        return findPasswordButton;
     }
 }

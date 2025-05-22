@@ -2,16 +2,16 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package login;
+package testlogin;
 
 /**
  *
  * @author adsd3
  */
-import login.ConnectView;
+import testlogin.ConnectView;
 
 public class Main {
     public static void main(String[] args) {
-        new ConnectView(); // IP 입력 전용 창 실행
+        new ConnectView(); // 서버 IP 입력창 먼저 실행
     }
 }
