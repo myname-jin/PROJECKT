@@ -4,76 +4,32 @@
  */
 package login;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import login.UserFileWatcher;
+import ruleagreement.RuleAgreementController;
+import management.ReservationMgmtView;
+
+import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
-import javax.swing.*;
-
-import ruleagreement.RuleAgreementController;
 
 public class LoginController {
-    private LoginView view;
-    private LoginModel model;
+    private final LoginView view;
+    private final LoginService loginService;
 
     public LoginController(LoginView view, LoginModel model) {
         this.view = view;
-        this.model = model;
+        this.loginService = new LoginService(model, view);
 
-        view.getLoginButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String userId = view.getUserId();
-                String password = view.getPassword();
-                String role = view.getRole();
-                String serverIp = view.getServerIp().trim();
+        // 로그인 버튼 이벤트
+        view.getLoginButton().addActionListener(e -> loginService.attemptLogin());
 
-                try {
-                    Socket socket = new Socket(serverIp, 5000);
-                    BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-                    out.write("LOGIN:" + userId + "," + password + "," + role);
-                    out.newLine();
-                    out.flush();
-
-                    String response = in.readLine();
-
-                    if ("LOGIN_SUCCESS".equals(response)) {
-                        JOptionPane.showMessageDialog(view, userId + "님 로그인 성공");
-                        try {
-                            new RuleAgreementController(userId, socket, out);
-                            view.dispose();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                            JOptionPane.showMessageDialog(view, "이용 동의 창 표시 오류: " + ex.getMessage());
-                        }
-
-                    } else if ("WAIT".equals(response)) {
-                        JOptionPane.showMessageDialog(view, "현재 접속 인원 초과로 대기 중입니다.");
-                        while ((response = in.readLine()) != null) {
-                            if ("LOGIN_SUCCESS".equals(response)) {
-                                JOptionPane.showMessageDialog(view, userId + "님 자동 로그인 성공");
-                                try {
-                                    new RuleAgreementController(userId, socket, out);
-                                    view.dispose();
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                    JOptionPane.showMessageDialog(view, "이용 동의 창 오류: " + ex.getMessage());
-                                }
-                                break;
-                            }
-                        }
-
-                    } else {
-                        JOptionPane.showMessageDialog(view, "로그인 실패");
-                    }
-
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                    JOptionPane.showMessageDialog(view, "서버 연결 실패: " + ex.getMessage());
-                }
-            }
-        });
+        // ✅ 감시 쓰레드 자동 실행
+        try {
+            Socket watcherSocket = new Socket(view.getServerIp().trim(), 5000);
+            new UserFileWatcher("USER_LOCAL.txt", watcherSocket).start();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(view, "회원가입 감시 시작 실패: " + ex.getMessage());
+        }
     }
 }

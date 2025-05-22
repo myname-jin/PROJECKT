@@ -38,6 +38,12 @@ public class ReservationMgmtView extends javax.swing.JFrame {
 
     private ReservationMgmtController controller = new ReservationMgmtController();
 
+    public ReservationMgmtView(String userId) {
+        initComponents();
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
     private void setupApprovalColumnEditor() {
         String[] statusOptions = {"예약대기", "승인", "거절"};
         JComboBox<String> comboBox = new JComboBox<>(statusOptions);
