@@ -17,6 +17,7 @@ public class ReservationView extends JFrame {
     private JDatePickerImpl datePicker;
     private JTextField selectedTimeField;
     private JLabel totalDurationLabel;
+    private JPanel purposePanel;
     private JButton[] purposeButtons;
     private JButton reserveButton;
     private JButton backButton;
@@ -105,7 +106,7 @@ public class ReservationView extends JFrame {
         purposeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         centerPanel.add(purposeLabel);
         
-        JPanel purposePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        purposePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         String[] purposes = {"수업", "시험", "스터디", "세미나", "기타"};
         purposeButtons = new JButton[purposes.length];
         
@@ -267,43 +268,50 @@ centerPanel.add(purposePanel);
     roomInfoLabel.setText(info);
 }
     
+    //교수용 설정. 일단은 호출만. 필요시 기능 추가
     public void enableProfessorMode() {
-    JPanel professorPanel = new JPanel();
-    professorPanel.setLayout(new BoxLayout(professorPanel, BoxLayout.X_AXIS));
-    professorPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+//    JPanel professorPanel = new JPanel();
+//    professorPanel.setLayout(new BoxLayout(professorPanel, BoxLayout.X_AXIS));
+//    professorPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+    }
 
-    JLabel profLabel = new JLabel("📌 교수 전용 기능:");
-    profLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+    // 목적 버튼 외부 설정 메서드
+    public void setPurposeOptions(java.util.List<String> options) {
+        purposePanel.removeAll();
+        purposeButtons = new JButton[options.size()];
 
-    JButton importExcelButton = new JButton("엑셀 불러오기");
-    JButton overrideReserveButton = new JButton("강제 예약");
+        Dimension fixedSize = new Dimension(80, 30);
+        Insets margin = new Insets(5, 10, 5, 10);
 
-    importExcelButton.setPreferredSize(new Dimension(120, 30));
-    overrideReserveButton.setPreferredSize(new Dimension(100, 30));
+        for (int i = 0; i < options.size(); i++) {
+            final String purpose = options.get(i);
+            JButton btn = new JButton(purpose);
+            btn.setPreferredSize(fixedSize);
+            btn.setMargin(margin);
+            btn.setFocusPainted(false);
+            btn.setBackground(null);
 
-    // 버튼 간 여백 추가
-    importExcelButton.setMargin(new Insets(5, 10, 5, 10));
-    overrideReserveButton.setMargin(new Insets(5, 10, 5, 10));
+            btn.addActionListener(e -> {
+                selectedPurpose = purpose;
+                for (JButton b : purposeButtons) {
+                    b.setBackground(null);
+                    b.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+                }
+                btn.setBackground(new Color(200, 230, 255));
+                btn.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
+            });
 
-    // 이벤트 리스너는 필요한 경우 추가
-    importExcelButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "엑셀 불러오기 준비 중"));
-    overrideReserveButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "강제 예약 준비 중"));
+            purposeButtons[i] = btn;
+            purposePanel.add(btn);
+        }
 
-    professorPanel.add(profLabel);
-    professorPanel.add(importExcelButton);
-    professorPanel.add(Box.createHorizontalStrut(10)); // 버튼 사이 여백
-    professorPanel.add(overrideReserveButton);
+        purposePanel.revalidate();
+        purposePanel.repaint();
 
-    // 여백 추가 후 상단 중앙에 배치
-    JPanel wrapperPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-    wrapperPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-    wrapperPanel.add(professorPanel);
-
-    this.add(wrapperPanel, BorderLayout.NORTH); // 상단 배치
-    this.revalidate();
-    this.repaint();
-}
-
+        if (purposeButtons.length > 0) {
+            purposeButtons[0].doClick(); // 기본 선택
+        }
+    }
 
    public void showMessage(String msg) {
         JOptionPane.showMessageDialog(this, msg);
