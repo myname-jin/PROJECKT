@@ -10,6 +10,8 @@ import java.io.*;
 import java.net.Socket;
 import javax.swing.*;
 
+import ruleagreement.RuleAgreementController;
+
 public class LoginController {
     private LoginView view;
     private LoginModel model;
@@ -24,29 +26,52 @@ public class LoginController {
                 String userId = view.getUserId();
                 String password = view.getPassword();
                 String role = view.getRole();
-                String serverIp = view.getServerIp();
-
-                boolean valid = model.validateCredentials(userId, password, role);
-
-                if (!valid) {
-                    JOptionPane.showMessageDialog(view, "로그인 실패: 아이디 또는 비밀번호 오류");
-                    return;
-                }
+                String serverIp = view.getServerIp().trim();
 
                 try {
                     Socket socket = new Socket(serverIp, 5000);
                     BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                    out.write(userId + "\n");
+                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+                    out.write("LOGIN:" + userId + "," + password + "," + role);
+                    out.newLine();
                     out.flush();
 
-                    System.out.println("서버 연결 성공 및 로그인 정보 전송 완료");
+                    String response = in.readLine();
 
-                    // 여기서 역할 기반으로 다음 뷰로 전환하는 로직을 추가할 수 있음
-                    // 예: new UserReservationView(userId, socket);
+                    if ("LOGIN_SUCCESS".equals(response)) {
+                        JOptionPane.showMessageDialog(view, userId + "님 로그인 성공");
+                        try {
+                            new RuleAgreementController(userId, socket, out);
+                            view.dispose();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                            JOptionPane.showMessageDialog(view, "이용 동의 창 표시 오류: " + ex.getMessage());
+                        }
+
+                    } else if ("WAIT".equals(response)) {
+                        JOptionPane.showMessageDialog(view, "현재 접속 인원 초과로 대기 중입니다.");
+                        while ((response = in.readLine()) != null) {
+                            if ("LOGIN_SUCCESS".equals(response)) {
+                                JOptionPane.showMessageDialog(view, userId + "님 자동 로그인 성공");
+                                try {
+                                    new RuleAgreementController(userId, socket, out);
+                                    view.dispose();
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                    JOptionPane.showMessageDialog(view, "이용 동의 창 오류: " + ex.getMessage());
+                                }
+                                break;
+                            }
+                        }
+
+                    } else {
+                        JOptionPane.showMessageDialog(view, "로그인 실패");
+                    }
 
                 } catch (IOException ex) {
                     ex.printStackTrace();
-                    JOptionPane.showMessageDialog(view, "서버 연결 실패");
+                    JOptionPane.showMessageDialog(view, "서버 연결 실패: " + ex.getMessage());
                 }
             }
         });
