@@ -16,21 +16,31 @@ import java.util.*;
  */
 public class UserStatsController {
 
-    private static final String RESERVATION_FILE = "src/main/resources/reservation.txt";
-    private static final String CANCEL_LOG_FILE = "src/main/resources/cancel.txt";
+    private String reservationFile;
+    private String cancelLogFile;
+
+    public UserStatsController() {
+        this("src/main/resources/reservation.txt", "src/main/resources/cancel.txt");
+    }
+
+    // 파일 경로를 외부에서 주입받는 생성자 (테스트용)
+    public UserStatsController(String reservationFile, String cancelLogFile) {
+        this.reservationFile = reservationFile;
+        this.cancelLogFile = cancelLogFile;
+    }
 
     public void showUserStatsUI() {
         List<UserStatsModel> stats = loadUserStats();
         new UserStatsView(stats).setVisible(true);
     }
 
-    private List<UserStatsModel> loadUserStats() {
+    public  List<UserStatsModel> loadUserStats() {
         Map<String, Integer> reservations = new HashMap<>();
         Map<String, Integer> cancels = new HashMap<>();
         Map<String, String> userNames = new HashMap<>();
         Map<String, List<String>> cancelReasonsMap = new HashMap<>();
 
-        try (BufferedReader br = new BufferedReader(new FileReader(RESERVATION_FILE))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(reservationFile))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
@@ -46,7 +56,7 @@ public class UserStatsController {
         }
 
         // 취소 로그 읽기
-        try (BufferedReader br = new BufferedReader(new FileReader(CANCEL_LOG_FILE))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(cancelLogFile))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",", 2);  // userId, reason 두 부분으로 분리
@@ -64,7 +74,7 @@ public class UserStatsController {
         } catch (IOException e) {
             System.err.println("cancel_log.txt 읽기 실패: " + e.getMessage());
         }
-        
+
         // 사용자 목록 통합
         Set<String> allUsers = new HashSet<>();
         allUsers.addAll(reservations.keySet());
