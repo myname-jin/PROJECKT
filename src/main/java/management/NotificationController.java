@@ -18,47 +18,78 @@ public class NotificationController {
 
     private NotificationModel model;
     private NotificationView view;
-    private Set<String> shownMessages = new HashSet<>();
+
+    // 예약 상태 별로 이전 상태 저장
+    private Set<String> shownPending = new HashSet<>(); // "예약 대기" 상태 알림용
+    private Set<String> shownAll = new HashSet<>();     // 모든 상태 감지용 (취소 감지용)
+
     private Timer timer;
 
     public NotificationController() {
-        this.model = new NotificationModel(); // 기본 생성자 혹은 필요한 생성자 사용
+        this.model = new NotificationModel();
     }
 
     // 기존 10초마다 예약 상태 확인
     public void startMonitoring() {
-        timer = new Timer(true); // 데몬 스레드로 실행
+        timer = new Timer(true);
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                checkAndShowNewNotifications();
+                List<String> pendingList = model.getPendingReservations(); // 예약 대기 상태
+                List<String> allList = model.getAllReservations();         // 전체 예약
+
+                Set<String> currentPendingSet = new HashSet<>(pendingList);
+                Set<String> currentAllSet = new HashSet<>(allList);
+
+                List<String> newPendingMessages = new ArrayList<>();
+                List<String> removedReservations = new ArrayList<>();
+
+                // 예약 대기 추가 감지
+                for (String msg : pendingList) {
+                    if (!shownPending.contains(msg)) {
+                        newPendingMessages.add(msg);
+                    }
+                }
+
+                // 예약 취소 감지 (상태 무관 전체 목록 기준)
+                for (String old : shownAll) {
+                    if (!currentAllSet.contains(old)) {
+                        removedReservations.add(old);
+                    }
+                }
+
+                // 상태 갱신
+                shownPending = currentPendingSet;
+                shownAll = currentAllSet;
+
+                // 알림 표시
+                if (!newPendingMessages.isEmpty() || !removedReservations.isEmpty()) {
+                    SwingUtilities.invokeLater(() -> {
+                        StringBuilder sb = new StringBuilder();
+
+                        if (!newPendingMessages.isEmpty()) {
+                            sb.append("📌 새로운 예약 대기 ").append(newPendingMessages.size()).append("건\n");
+                        }
+
+                        for (String removed : removedReservations) {
+                            String name = removed.split(",")[0];
+                            sb.append("❌ ").append(name).append("님의 예약이 취소되었습니다.\n");
+                        }
+
+                        JOptionPane.showMessageDialog(null, sb.toString(), "알림", JOptionPane.INFORMATION_MESSAGE);
+                    });
+                }
             }
-        }, 0, 10_000); // 10초마다 검사
+        }, 0, 5_000);
     }
 
     // 예약 상태 즉시 갱신용 공개 메서드
     public void refreshNotifications() {
-        checkAndShowNewNotifications();
-    }
-
-    // 중복 코드를 함수로 분리
-    private void checkAndShowNewNotifications() {
         List<String> pendingList = model.getPendingReservations();
-        List<String> newMessages = new ArrayList<>();
+        shownPending = new HashSet<>(pendingList); // 상태만 초기화
 
-        for (String msg : pendingList) {
-            if (!shownMessages.contains(msg)) {
-                shownMessages.add(msg);
-                newMessages.add(msg);
-            }
-        }
-
-        if (!newMessages.isEmpty()) {
-            SwingUtilities.invokeLater(() -> {
-                String message = "새로운 알림이 " + newMessages.size() + "건 있습니다.";
-                JOptionPane.showMessageDialog(null, message, "알림", JOptionPane.INFORMATION_MESSAGE);
-            });
-        }
+        List<String> allList = model.getAllReservations();
+        shownAll = new HashSet<>(allList);
     }
 
     public void showNotificationView() {

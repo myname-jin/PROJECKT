@@ -46,4 +46,19 @@ public class NotificationModel {
 
         return pendingList;
     }
+
+    public List<String> getAllReservations() {
+        List<String> allList = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(RESERVATION_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                allList.add(line.trim());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return allList;
+    }
 }
