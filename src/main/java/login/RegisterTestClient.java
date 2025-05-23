@@ -58,8 +58,9 @@ public class RegisterTestClient extends JFrame {
             out.write("REGISTER:" + id + "," + pw);
             out.newLine();
             out.flush();
-
             String response = in.readLine();
+            
+            
             if ("REGISTER_SUCCESS".equals(response)) {
                 JOptionPane.showMessageDialog(this, "✅ 회원가입 성공!");
             } else {
