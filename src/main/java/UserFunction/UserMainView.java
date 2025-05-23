@@ -12,6 +12,7 @@ package UserFunction;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import UserNotification.NotificationButton;
 
 public class UserMainView extends JFrame {
     private JLabel welcomeLabel;
@@ -20,6 +21,7 @@ public class UserMainView extends JFrame {
     private JButton createReservationButton;
     private JButton noticeButton;
     private JButton logoutButton;
+    private NotificationButton notificationButton;
 
     public UserMainView() {
         // 기본 프레임 설정
@@ -98,11 +100,35 @@ public class UserMainView extends JFrame {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
         
+         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        // notificationButton은 나중에 setNotificationButton()으로 설정
+        leftPanel.add(new JLabel("알림: ")); // 플레이스홀더
+        
+       JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         logoutButton = new JButton("로그아웃");
         logoutButton.setFocusPainted(false);
-        panel.add(logoutButton);
+        rightPanel.add(logoutButton);
+        
+        panel.add(leftPanel, BorderLayout.WEST);
+        panel.add(rightPanel, BorderLayout.EAST);
         
         return panel;
+    }
+    
+     public void setNotificationButton(NotificationButton button) {
+        this.notificationButton = button;
+        
+        // 기존 플레이스홀더 제거 후 실제 버튼 추가
+        JPanel footerPanel = (JPanel) getContentPane().getComponent(2); // 하단 패널
+        JPanel leftPanel = (JPanel) footerPanel.getComponent(0); // 왼쪽 패널
+        
+        leftPanel.removeAll(); // 기존 내용 제거
+        leftPanel.add(new JLabel("알림: "));
+        leftPanel.add(notificationButton);
+        
+        // 화면 갱신
+        leftPanel.revalidate();
+        leftPanel.repaint();
     }
     
     // 사용자 정보 설정
@@ -130,5 +156,9 @@ public class UserMainView extends JFrame {
     // 메시지 표시
     public void showMessage(String message, String title, int messageType) {
         JOptionPane.showMessageDialog(this, message, title, messageType);
+    }
+    //알림버튼
+      public NotificationButton getNotificationButton() {
+        return notificationButton;
     }
 }
