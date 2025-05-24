@@ -54,7 +54,8 @@ public class LoginController {
 
     private void setupListeners() {
         view.getLoginButton().addActionListener(e -> attemptLogin());
-        view.getRegisterButton().addActionListener(e -> handleSignup());
+        view.getRegisterButton().addActionListener(e -> handleSignup()); // 회원가입 버튼
+        view.getFindPasswordButton().addActionListener(e -> handlePw()); // 비밀번호 찾기/변경 버튼
 
     }
 
@@ -114,14 +115,26 @@ public class LoginController {
             JOptionPane.showMessageDialog(view, "서버 통신 오류: " + ex.getMessage());
         }
     }
-    
+    /**
+     * 회원가입 버튼 실행 관련 메서드
+     */
     private void handleSignup() {
         view.dispose();
 
         SignupView signupView = new SignupView();
         SignupModel signupModel = new SignupModel();
         new SignupController(signupView, signupModel);
+        signupView.setVisible(true);
+    }
+    /**
+     * 비밀번호 버튼 실행 관련 메서드
+     */
+    private void handlePw() {
+        view.dispose();
 
-        signupView.setVisible(true); // 회원가입 화면 띄우기
+        PasswordFindView passwordFindView = new PasswordFindView();
+        PasswordFindModel passwordFindModel = new PasswordFindModel();
+        new PasswordFindController(passwordFindView, passwordFindModel);
+        passwordFindView.setVisible(true);
     }
 }
