@@ -83,6 +83,11 @@ public class UserStatsView extends javax.swing.JFrame {
         jLabel1.setText("예약/취소 현황");
 
         jButton1.setText("새로고침");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("뒤로가기");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -136,6 +141,13 @@ public class UserStatsView extends javax.swing.JFrame {
         view.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        UserStatsController controller = new UserStatsController();
+        List<UserStatsModel> latestStats = controller.loadUserStats();
+        this.stats = latestStats;
+        loadStatsIntoTable();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;

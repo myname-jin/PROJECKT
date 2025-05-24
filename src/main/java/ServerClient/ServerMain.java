@@ -4,10 +4,7 @@
  */
 package ServerClient;
 
-
-
 // 서버를 시작하고 클라이언트 연결을 수락하는 진입점 클래스
-
 /**
  *
  * @author adsd3
@@ -20,6 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ServerMain {
+
     private static final int PORT = 9999;
 
     public static void main(String[] args) {
