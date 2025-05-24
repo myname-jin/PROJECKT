@@ -17,6 +17,7 @@ public class SignupView extends JFrame {
     private JTextField txtName;
     private JTextField txtDept;
     public JButton btnRegister;
+    public JButton btnBack; // 뒤로가기 버튼
     JComboBox<String> cmbRole;
 
     public SignupView() {
@@ -24,36 +25,36 @@ public class SignupView extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(350, 250);
         setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
 
-        // Panel with GridLayout for clean label + input alignment
-        JPanel panel = new JPanel(new GridLayout(5, 2, 10, 10));
-
-        panel.add(new JLabel("ID:"));
         txtId = new JTextField();
-        panel.add(txtId);
-
-        panel.add(new JLabel("PW:"));
         txtPw = new JPasswordField();
-        panel.add(txtPw);
-
-        panel.add(new JLabel("이름:"));
         txtName = new JTextField();
-        panel.add(txtName);
-
-        panel.add(new JLabel("학과:"));
         txtDept = new JTextField();
-        panel.add(txtDept);
-
-        // 역할 콤보 박스
-        panel.add(new JLabel("역할:"));
         cmbRole = new JComboBox<>(new String[]{"admin", "학생", "교수"});
-        panel.add(cmbRole);
-
         btnRegister = new JButton("등록");
+        btnBack = new JButton("뒤로가기");
 
-        // Main layout
-        getContentPane().add(panel, BorderLayout.CENTER);
-        getContentPane().add(btnRegister, BorderLayout.SOUTH);
+        // 입력 부분
+        JPanel panel = new JPanel(new GridLayout(5, 2, 5, 5));
+        panel.add(new JLabel("ID:"));
+        panel.add(txtId);
+        panel.add(new JLabel("PW:"));        
+        panel.add(txtPw);
+        panel.add(new JLabel("이름:"));        
+        panel.add(txtName);
+        panel.add(new JLabel("학과:"));        
+        panel.add(txtDept);
+        panel.add(new JLabel("역할:"));        
+        panel.add(cmbRole);
+        
+        JPanel buttonpanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        buttonpanel.add(btnRegister);
+        buttonpanel.add(btnBack);
+
+        // 프레임에 붙이기
+        add(panel, BorderLayout.CENTER);
+        add(buttonpanel, BorderLayout.SOUTH);
     }
     
     public String getId() {
