@@ -68,7 +68,6 @@ public class NotificationController {
             // 새로운 인스턴스 생성
             instance = new NotificationController(userId, socket, in, out);
             instances.put(userId, instance);
-            System.out.println("✅ 새로운 NotificationController 생성: " + userId);
         } else {
             // 기존 인스턴스의 연결 정보 업데이트 (필요시)
             instance.updateConnection(socket, in, out);
@@ -100,7 +99,6 @@ public class NotificationController {
         if (instance != null) {
             instance.shutdown();
             instances.remove(userId);
-            System.out.println("✅ NotificationController 인스턴스 제거: " + userId);
         }
     }
     
@@ -144,7 +142,7 @@ public class NotificationController {
                     });
                     
                     lastShownAlerts.put(reservationKey, now);
-                    System.out.println("✅ 접속 시 예약 알림 표시: " + reservationKey);
+                   
                 }
             }
         }
@@ -165,7 +163,7 @@ public class NotificationController {
                 });
                 
                 lastShownDialogs.put(reservationKey, now);
-                System.out.println("✅ 접속 시 입실 확인 다이얼로그 표시: " + reservationKey);
+                
             }
         }
         
@@ -258,7 +256,6 @@ public class NotificationController {
         }
     }, 0, 60 * 1000);
     
-    System.out.println("✅ 알림 타이머 시작됨 (1분마다)");
     
     checkinTimer = new Timer();
     checkinTimer.schedule(new TimerTask() {
@@ -268,10 +265,9 @@ public class NotificationController {
         }
     }, 0, 5 * 60 * 1000);
     
-    System.out.println("✅ 체크인 타이머 시작됨 (5분마다)");
     
     isTimerRunning = true;
-    System.out.println("✅ 타이머 초기화 완료");
+ 
 }
     
     public void stopTimers() {
@@ -308,7 +304,6 @@ public class NotificationController {
     }
     
     private void checkReservations() {
-            System.out.println("🔔 checkReservations() 실행됨 - " + LocalDateTime.now());
 
         int newNotificationCount = model.checkUpcomingReservations();
 
@@ -501,7 +496,6 @@ public class NotificationController {
         // 기록 정리
         cleanupOldRecords();
         
-        System.out.println("✅ NotificationController 정리 완료");
     }
     
     // Getter 메서드들

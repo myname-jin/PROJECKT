@@ -258,7 +258,6 @@ public class NotificationModel {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
                 if (parts.length < 12) continue;
-                System.out.println("📋 예약 라인: " + line);
 
                 // userId가 현재 사용자와 일치하는 예약만 처리
                 if (!parts[2].equals(userId)) continue;

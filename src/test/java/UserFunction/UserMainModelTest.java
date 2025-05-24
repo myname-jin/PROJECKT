@@ -55,7 +55,7 @@ public class UserMainModelTest {
     
     @Test
     public void testDefaultConstructor() {
-          // userId가 null이거나 빈 문자열일 때 구현 확인
+         
     UserMainModel defaultModel = new UserMainModel(null, null, null, null);
     // 실제 구현은 null을 그대로 유지하므로 그에 맞게 테스트
     assertNull(defaultModel.getUserId(), "UserID가 null이면 그대로 null을 반환해야 함");

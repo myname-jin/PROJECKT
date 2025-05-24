@@ -142,7 +142,6 @@ public class UserReservationModelTest {
         System.out.println("빈 문자열로 생성자 테스트");
         UserReservationModel emptyModel = new UserReservationModel("", "", "", "", "", "");
         
-        // 빈 문자열은 그대로 유지
         assertEquals("", emptyModel.getStudentId(), "빈 학번은 그대로 유지되어야 합니다");
         assertEquals("", emptyModel.getDepartment(), "빈 학과는 그대로 유지되어야 합니다");
         assertEquals("", emptyModel.getName(), "빈 이름은 그대로 유지되어야 합니다");
