@@ -34,10 +34,14 @@ public class NotificationController {
     private BufferedWriter out;
     private boolean isTimerRunning = false;
     
-    // ✅ 중복 방지 로직 (페이지 이동해도 유지됨)
-    private Set<String> processedReservations = new HashSet<>();
-    private Set<String> shownAlerts = new HashSet<>();
-    private Set<String> shownDialogs = new HashSet<>();
+    // ✅ 시간 기반 중복 방지로 변경 (영구 저장 대신)
+    private Map<String, LocalDateTime> lastShownAlerts = new HashMap<>();
+    private Map<String, LocalDateTime> lastShownDialogs = new HashMap<>();
+    private Map<String, LocalDateTime> processedCancellations = new HashMap<>();
+    
+    // 알림 재표시 간격 (분)
+    private static final int ALERT_COOLDOWN_MINUTES = 5;
+    private static final int DIALOG_COOLDOWN_MINUTES = 10;
 
     /**
      * ✅ private 생성자 (싱글톤 패턴)
@@ -80,6 +84,12 @@ public class NotificationController {
         this.socket = socket;
         this.in = in;
         this.out = out;
+        // ✅ 연결 업데이트 시 타이머 재시작
+    System.out.println("🔄 연결 업데이트 - 타이머 재시작");
+    initializeTimers();
+    
+    // ✅ 즉시 현재 상황 체크
+    checkCurrentSituation();
     }
     
     /**
@@ -95,7 +105,7 @@ public class NotificationController {
     }
     
     /**
-     * ✅ 접속 시 현재 상황 즉시 체크 (이미 체크한 것은 스킵)
+     * ✅ 접속 시 현재 상황 즉시 체크
      */
     private void checkCurrentSituation() {
         LocalDateTime now = LocalDateTime.now();
@@ -111,15 +121,9 @@ public class NotificationController {
             LocalDateTime reservationTime = item.getReservationTime();
             String reservationKey = generateReservationKey(item);
             
-            // ✅ 이미 처리된 예약은 완전히 스킵
-            if (processedReservations.contains(reservationKey)) {
-                continue;
-            }
-            
-            if (Math.abs(java.time.Duration.between(now, reservationTime).toMinutes()) <= 10) {
-                
-                if (!shownAlerts.contains(reservationKey)) {
-                    
+            // ✅ 시간 기반 중복 체크
+            if (shouldShowAlert(reservationKey)) {
+                if (Math.abs(java.time.Duration.between(now, reservationTime).toMinutes()) <= 10) {
                     SwingUtilities.invokeLater(() -> {
                         String message;
                         if (reservationTime.isAfter(now)) {
@@ -139,7 +143,7 @@ public class NotificationController {
                         );
                     });
                     
-                    shownAlerts.add(reservationKey);
+                    lastShownAlerts.put(reservationKey, now);
                     System.out.println("✅ 접속 시 예약 알림 표시: " + reservationKey);
                 }
             }
@@ -150,9 +154,7 @@ public class NotificationController {
         for (NotificationModel.NotificationItem item : pendingCheckins) {
             String reservationKey = generateReservationKey(item);
             
-            if (!shownDialogs.contains(reservationKey) && 
-                !processedReservations.contains(reservationKey)) {
-                
+            if (shouldShowDialog(reservationKey) && !item.isCheckedIn()) {
                 SwingUtilities.invokeLater(() -> {
                     if (view == null) {
                         view = new NotificationView(this);
@@ -162,12 +164,45 @@ public class NotificationController {
                     dialog.setVisible(true);
                 });
                 
-                shownDialogs.add(reservationKey);
+                lastShownDialogs.put(reservationKey, now);
                 System.out.println("✅ 접속 시 입실 확인 다이얼로그 표시: " + reservationKey);
             }
         }
         
         checkAndProcessExpiredReservations();
+    }
+    
+    /**
+     * ✅ 알림 표시 여부 결정 (시간 기반)
+     */
+    private boolean shouldShowAlert(String reservationKey) {
+        LocalDateTime lastShown = lastShownAlerts.get(reservationKey);
+        if (lastShown == null) {
+            return true;
+        }
+        
+        LocalDateTime now = LocalDateTime.now();
+        return java.time.Duration.between(lastShown, now).toMinutes() >= ALERT_COOLDOWN_MINUTES;
+    }
+    
+    /**
+     * ✅ 다이얼로그 표시 여부 결정 (시간 기반)
+     */
+    private boolean shouldShowDialog(String reservationKey) {
+        LocalDateTime lastShown = lastShownDialogs.get(reservationKey);
+        if (lastShown == null) {
+            return true;
+        }
+        
+        LocalDateTime now = LocalDateTime.now();
+        return java.time.Duration.between(lastShown, now).toMinutes() >= DIALOG_COOLDOWN_MINUTES;
+    }
+    
+    /**
+     * ✅ 만료된 예약 처리 여부 확인
+     */
+    private boolean hasProcessedCancellation(String reservationKey) {
+        return processedCancellations.containsKey(reservationKey);
     }
     
     private void checkAndProcessExpiredReservations() {
@@ -181,7 +216,7 @@ public class NotificationController {
                 
                 String reservationKey = generateReservationKey(item);
                 
-                if (!processedReservations.contains(reservationKey)) {
+                if (!hasProcessedCancellation(reservationKey)) {
                     System.out.println("✅ 접속 시 만료된 예약 발견 - 취소 처리: " + reservationKey);
                     
                     int cancelCount = model.processMissedCheckins();
@@ -199,7 +234,7 @@ public class NotificationController {
                         });
                     }
                     
-                    processedReservations.add(reservationKey);
+                    processedCancellations.put(reservationKey, now);
                     break;
                 }
             }
@@ -207,28 +242,37 @@ public class NotificationController {
     }
     
     private void initializeTimers() {
-        if (isTimerRunning) return; // 이미 실행 중이면 스킵
-        
-        stopTimers();
-        
-        notificationTimer = new Timer();
-        notificationTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                checkReservations();
-            }
-        }, 0, 60 * 1000);
-        
-        checkinTimer = new Timer();
-        checkinTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                processMissedCheckins();
-            }
-        }, 0, 5 * 60 * 1000);
-        
-        isTimerRunning = true;
+    
+    if (isTimerRunning) {
+        System.out.println("⚠️ 이미 타이머 실행 중 - 리턴");
+        return;
     }
+    
+    stopTimers();
+    
+    notificationTimer = new Timer();
+    notificationTimer.schedule(new TimerTask() {
+        @Override
+        public void run() {
+            checkReservations();
+        }
+    }, 0, 60 * 1000);
+    
+    System.out.println("✅ 알림 타이머 시작됨 (1분마다)");
+    
+    checkinTimer = new Timer();
+    checkinTimer.schedule(new TimerTask() {
+        @Override
+        public void run() {
+            processMissedCheckins();
+        }
+    }, 0, 5 * 60 * 1000);
+    
+    System.out.println("✅ 체크인 타이머 시작됨 (5분마다)");
+    
+    isTimerRunning = true;
+    System.out.println("✅ 타이머 초기화 완료");
+}
     
     public void stopTimers() {
         if (notificationTimer != null) {
@@ -264,7 +308,10 @@ public class NotificationController {
     }
     
     private void checkReservations() {
+            System.out.println("🔔 checkReservations() 실행됨 - " + LocalDateTime.now());
+
         int newNotificationCount = model.checkUpcomingReservations();
+
         checkAndShowReservationAlerts();
         checkAndShowCheckinDialogs();
         
@@ -285,14 +332,14 @@ public class NotificationController {
             LocalDateTime reservationTime = item.getReservationTime();
             String reservationKey = generateReservationKey(item);
             
-            if (processedReservations.contains(reservationKey)) {
+            if (hasProcessedCancellation(reservationKey)) {
                 continue;
             }
             
             if (reservationTime.isAfter(now) && 
                 reservationTime.isBefore(now.plusMinutes(10))) {
                 
-                if (shownAlerts.contains(reservationKey)) {
+                if (!shouldShowAlert(reservationKey)) {
                     continue;
                 }
                 
@@ -309,7 +356,7 @@ public class NotificationController {
                     );
                 });
                 
-                shownAlerts.add(reservationKey);
+                lastShownAlerts.put(reservationKey, now);
                 System.out.println("✅ 10분 전 알림 표시: " + reservationKey);
             }
         }
@@ -317,15 +364,16 @@ public class NotificationController {
     
     private void checkAndShowCheckinDialogs() {
         List<NotificationModel.NotificationItem> pendingCheckins = model.getPendingCheckins();
+        LocalDateTime now = LocalDateTime.now();
         
         for (NotificationModel.NotificationItem item : pendingCheckins) {
             String reservationKey = generateReservationKey(item);
             
-            if (processedReservations.contains(reservationKey)) {
+            if (hasProcessedCancellation(reservationKey)) {
                 continue;
             }
             
-            if (shownDialogs.contains(reservationKey)) {
+            if (!shouldShowDialog(reservationKey)) {
                 continue;
             }
             
@@ -338,7 +386,7 @@ public class NotificationController {
                 dialog.setVisible(true);
             });
             
-            shownDialogs.add(reservationKey);
+            lastShownDialogs.put(reservationKey, now);
             System.out.println("✅ 입실 확인 다이얼로그 표시: " + reservationKey);
         }
     }
@@ -371,9 +419,10 @@ public class NotificationController {
         if (item != null) {
             String reservationKey = generateReservationKey(item);
             
-            shownAlerts.remove(reservationKey);
-            shownDialogs.remove(reservationKey);
-            processedReservations.add(reservationKey);
+            // ✅ 입실 확인 완료 시 해당 예약에 대한 알림 기록 제거
+            lastShownAlerts.remove(reservationKey);
+            lastShownDialogs.remove(reservationKey);
+            processedCancellations.put(reservationKey, LocalDateTime.now());
             
             System.out.println("✅ 입실 확인 완료 - 예약 처리 완료: " + reservationKey);
         }
@@ -433,13 +482,24 @@ public class NotificationController {
         }
     }
     
+    /**
+     * ✅ 오래된 기록 정리 (메모리 관리)
+     */
+    private void cleanupOldRecords() {
+        LocalDateTime cutoffTime = LocalDateTime.now().minusDays(1);
+        
+        // 24시간 이상 지난 기록 제거
+        lastShownAlerts.entrySet().removeIf(entry -> entry.getValue().isBefore(cutoffTime));
+        lastShownDialogs.entrySet().removeIf(entry -> entry.getValue().isBefore(cutoffTime));
+        processedCancellations.entrySet().removeIf(entry -> entry.getValue().isBefore(cutoffTime));
+    }
+    
     public void shutdown() {
         stopTimers();
         closeView();
         
-        shownAlerts.clear();
-        shownDialogs.clear();
-        processedReservations.clear();
+        // 기록 정리
+        cleanupOldRecords();
         
         System.out.println("✅ NotificationController 정리 완료");
     }
