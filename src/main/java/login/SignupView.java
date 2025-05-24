@@ -12,12 +12,12 @@ import javax.swing.*;
 import java.awt.*;
 
 public class SignupView extends JFrame {
-    private JTextField txtId;
-    private JPasswordField txtPw;
+    JTextField txtId;
+    JPasswordField txtPw;
     private JTextField txtName;
     private JTextField txtDept;
     public JButton btnRegister;
-    private JComboBox<String> cmbRole;
+    JComboBox<String> cmbRole;
 
     public SignupView() {
         super("회원가입");

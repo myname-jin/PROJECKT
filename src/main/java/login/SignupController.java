@@ -8,6 +8,13 @@ package login;
  *
  * @author msj02
  */
+import java.awt.event.ActionEvent;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
 import javax.swing.*;
 
 public class SignupController {
@@ -18,9 +25,41 @@ public class SignupController {
         this.view = view;
         this.model = model;
 
-        view.btnRegister.addActionListener(e -> handleRegister());
-    }
+        //view.btnRegister.addActionListener(e -> handleRegister());
+        view.btnRegister.addActionListener(this::sendRegister);
 
+    }
+    private void sendRegister(ActionEvent e) {
+        String id = view.txtId.getText().trim();
+        String pw = new String(view.txtPw.getPassword()).trim();
+        String role = (String) view.cmbRole.getSelectedItem();
+
+        if (id.isEmpty() || pw.isEmpty()) {
+            JOptionPane.showMessageDialog(view, "아이디와 비밀번호를 모두 입력해주세요.");
+            return;
+        }
+
+        try (Socket socket = new Socket("127.0.0.1", 5000);
+             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+
+            out.write("REGISTER:" + id + "," + pw + "," + role);
+            out.newLine();
+            out.flush();
+            String response = in.readLine();
+
+            if ("REGISTER_SUCCESS".equals(response)) {
+                JOptionPane.showMessageDialog(view, "회원가입 되었습니다.");
+            } else {
+                JOptionPane.showMessageDialog(view, "회원가입에 실패하였습니다.");
+            }
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(view, "서버 연결 오류: " + ex.getMessage());
+        }
+    }
+    /*
     private void handleRegister() {
         String userId = view.getId();
         String password = view.getPw();
@@ -58,5 +97,5 @@ public class SignupController {
         } else {
             JOptionPane.showMessageDialog(view, "회원가입 실패. 다시 시도하세요.");
         }
-    }
+    }*/
 }
