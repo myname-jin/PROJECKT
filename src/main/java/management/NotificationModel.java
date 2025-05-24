@@ -14,12 +14,21 @@ import java.util.List;
  */
 public class NotificationModel {
 
-    private static final String RESERVATION_FILE = "src/main/resources/reservation.txt";
+    private final String reservationFile;
+
+    public NotificationModel() {
+        this("src/main/resources/reservation.txt");
+    }
+
+    // 테스트용 생성자 (경로 주입 가능)
+    public NotificationModel(String reservationFile) {
+        this.reservationFile = reservationFile;
+    }
 
     public List<String> getPendingReservations() {
         List<String> pendingList = new ArrayList<>();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(RESERVATION_FILE))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(reservationFile))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
@@ -50,7 +59,7 @@ public class NotificationModel {
     public List<String> getAllReservations() {
         List<String> allList = new ArrayList<>();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(RESERVATION_FILE))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(reservationFile))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 allList.add(line.trim());

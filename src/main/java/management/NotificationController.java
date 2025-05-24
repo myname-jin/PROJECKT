@@ -20,8 +20,8 @@ public class NotificationController {
     private NotificationView view;
 
     // 예약 상태 별로 이전 상태 저장
-    private Set<String> shownPending = new HashSet<>(); // "예약 대기" 상태 알림용
-    private Set<String> shownAll = new HashSet<>();     // 모든 상태 감지용 (취소 감지용)
+    protected Set<String> shownPending = new HashSet<>();
+    protected Set<String> shownAll = new HashSet<>();
 
     private Timer timer;
 
@@ -108,5 +108,38 @@ public class NotificationController {
         if (timer != null) {
             timer.cancel();
         }
+    }
+
+    public Map<String, List<String>> detectNotificationChanges() {
+        List<String> pendingList = model.getPendingReservations(); // 예약 대기 상태
+        List<String> allList = model.getAllReservations();         // 전체 예약
+
+        Set<String> currentPendingSet = new HashSet<>(pendingList);
+        Set<String> currentAllSet = new HashSet<>(allList);
+
+        List<String> newPendingMessages = new ArrayList<>();
+        List<String> removedReservations = new ArrayList<>();
+
+        for (String msg : pendingList) {
+            if (!shownPending.contains(msg)) {
+                newPendingMessages.add(msg);
+            }
+        }
+
+        for (String old : shownAll) {
+            if (!currentAllSet.contains(old)) {
+                removedReservations.add(old);
+            }
+        }
+
+        // 상태 갱신
+        shownPending = currentPendingSet;
+        shownAll = currentAllSet;
+
+        Map<String, List<String>> result = new HashMap<>();
+        result.put("newPending", newPendingMessages);
+        result.put("removed", removedReservations);
+
+        return result;
     }
 }
