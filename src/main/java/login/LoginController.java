@@ -12,6 +12,7 @@ import java.io.*;
 import java.net.Socket;
 
 public class LoginController {
+
     private final LoginView view;
     private final LoginModel model;
     private final Socket socket;
@@ -72,6 +73,10 @@ public class LoginController {
 
                 try {
                     if ("admin".equalsIgnoreCase(role)) {
+                        try {
+                            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+                        } catch (Exception ignored) {
+                        } // 필요 시 생략 가능
                         new ReservationMgmtView().setVisible(true);
                     } else {
                         new RuleAgreementController(userId, socket, out);
