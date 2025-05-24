@@ -29,7 +29,10 @@ public class NotificationController {
         this.model = new NotificationModel();
     }
 
-    // 기존 10초마다 예약 상태 확인
+    public void setModel(NotificationModel model) {
+        this.model = model;
+    }
+
     public void startMonitoring() {
         timer = new Timer(true);
         timer.schedule(new TimerTask() {
@@ -53,8 +56,13 @@ public class NotificationController {
 
                 // 예약 취소 감지 (상태 무관 전체 목록 기준)
                 for (String old : shownAll) {
-                    if (!currentAllSet.contains(old)) {
+                    String oldName = old.split(",")[0];
+                    boolean stillExists = currentAllSet.stream()
+                            .anyMatch(newLine -> newLine.split(",")[0].equals(oldName));
+
+                    if (!stillExists) {
                         removedReservations.add(old);
+
                     }
                 }
 
@@ -110,7 +118,7 @@ public class NotificationController {
         }
     }
 
-    public Map<String, List<String>> detectNotificationChanges() {
+    public Map<String, List<String>> detectNotificationChangesForTest() {
         List<String> pendingList = model.getPendingReservations(); // 예약 대기 상태
         List<String> allList = model.getAllReservations();         // 전체 예약
 

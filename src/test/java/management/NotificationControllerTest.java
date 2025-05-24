@@ -4,86 +4,94 @@
  */
 package management;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 /**
  *
  * @author suk22
  */
 public class NotificationControllerTest {
 
-    NotificationController controller;
+    private NotificationController controller;
+    private MockNotificationModel mockModel;
 
     @BeforeEach
-    void setup() {
-        // 테스트용 controller 생성
-        controller = new NotificationController() {
-            @Override
-            public void refreshNotifications() {
-                // 초기 상태 강제 세팅
-                List<String> initialPending = Arrays.asList(
-                        "홍길동님이 강의실 101호를 2025-05-24(금) 13:00~15:00에 수업 목적으로 예약 신청하였고, 현재 예약 대기 상태입니다."
-                );
-                List<String> initialAll = Arrays.asList(
-                        "홍길동,컴퓨터공학과,...,예약 대기"
-                );
-                shownPending = new HashSet<>(initialPending);
-                shownAll = new HashSet<>(initialAll);
-            }
+    void setUp() {
+        mockModel = new MockNotificationModel();
+        controller = new NotificationController();
+        controller.setModel(mockModel);  // setter로 주입
 
-            @Override
-            public Map<String, List<String>> detectNotificationChanges() {
-                // 새로 들어온 예약 1건, 취소된 예약 1건 있다고 가정
-                List<String> pending = Arrays.asList(
-                        "홍길동님이 강의실 101호를 2025-05-24(금) 13:00~15:00에 수업 목적으로 예약 신청하였고, 현재 예약 대기 상태입니다.",
-                        "김영희님이 실습실 202호를 2025-05-25(토) 10:00~12:00에 실습 목적으로 예약 신청하였고, 현재 예약 대기 상태입니다."
-                );
-                List<String> all = Arrays.asList(
-                        "김영희,전자공학과,...,예약 대기"
-                );
-
-                Set<String> currentPendingSet = new HashSet<>(pending);
-                Set<String> currentAllSet = new HashSet<>(all);
-
-                List<String> newPendingMessages = new ArrayList<>();
-                List<String> removedReservations = new ArrayList<>();
-
-                for (String msg : pending) {
-                    if (!shownPending.contains(msg)) {
-                        newPendingMessages.add(msg);
-                    }
-                }
-
-                for (String old : shownAll) {
-                    if (!currentAllSet.contains(old)) {
-                        removedReservations.add(old);
-                    }
-                }
-
-                shownPending = currentPendingSet;
-                shownAll = currentAllSet;
-
-                Map<String, List<String>> result = new HashMap<>();
-                result.put("newPending", newPendingMessages);
-                result.put("removed", removedReservations);
-                return result;
-            }
-        };
-
-        controller.refreshNotifications(); // 초기 상태 설정
+        mockModel.setPendingReservations(Collections.emptyList());
+        mockModel.setAllReservations(Collections.emptyList());
+        controller.refreshNotifications();
     }
 
     @Test
-    void testNotificationChangeDetection() {
-        Map<String, List<String>> changes = controller.detectNotificationChanges();
+    void testNewPendingReservationDetected() {
+        // 새로운 대기 예약 추가
+        mockModel.setPendingReservations(List.of("홍길동,2024-05-25 10:00,강의실 A"));
+        mockModel.setAllReservations(List.of("홍길동,2024-05-25 10:00,강의실 A"));
 
-        assertEquals(1, changes.get("newPending").size());
-        assertTrue(changes.get("newPending").get(0).contains("김영희"));
+        Map<String, List<String>> result = controller.detectNotificationChangesForTest();
 
-        assertEquals(1, changes.get("removed").size());
-        assertTrue(changes.get("removed").get(0).contains("홍길동"));
+        assertEquals(1, result.get("newPending").size());
+        assertEquals("홍길동,2024-05-25 10:00,강의실 A", result.get("newPending").get(0));
+        assertTrue(result.get("removed").isEmpty());
+    }
+
+    @Test
+    void testRemovedReservationDetected() {
+        // 먼저 예약이 있는 상태로 초기화
+        mockModel.setPendingReservations(List.of("홍길동,2024-05-25 10:00,강의실 A"));
+        mockModel.setAllReservations(List.of("홍길동,2024-05-25 10:00,강의실 A"));
+        controller.refreshNotifications();
+
+        // 이후 취소 상태로 전환
+        mockModel.setPendingReservations(Collections.emptyList());
+        mockModel.setAllReservations(Collections.emptyList());
+
+        Map<String, List<String>> result = controller.detectNotificationChangesForTest();
+
+        assertTrue(result.get("newPending").isEmpty());
+        assertEquals(1, result.get("removed").size());
+        assertEquals("홍길동,2024-05-25 10:00,강의실 A", result.get("removed").get(0));
+    }
+
+    @Test
+    void testNoChangesDetected() {
+        mockModel.setPendingReservations(Collections.emptyList());
+        mockModel.setAllReservations(Collections.emptyList());
+
+        Map<String, List<String>> result = controller.detectNotificationChangesForTest();
+
+        assertTrue(result.get("newPending").isEmpty());
+        assertTrue(result.get("removed").isEmpty());
+    }
+
+    private static class MockNotificationModel extends NotificationModel {
+
+        private List<String> pendingReservations = new ArrayList<>();
+        private List<String> allReservations = new ArrayList<>();
+
+        @Override
+        public List<String> getPendingReservations() {
+            return pendingReservations;
+        }
+
+        @Override
+        public List<String> getAllReservations() {
+            return allReservations;
+        }
+
+        public void setPendingReservations(List<String> list) {
+            this.pendingReservations = list;
+        }
+
+        public void setAllReservations(List<String> list) {
+            this.allReservations = list;
+        }
     }
 }
