@@ -54,6 +54,8 @@ public class LoginController {
 
     private void setupListeners() {
         view.getLoginButton().addActionListener(e -> attemptLogin());
+        view.getRegisterButton().addActionListener(e -> handleSignup());
+
     }
 
     private void attemptLogin() {
@@ -111,5 +113,15 @@ public class LoginController {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(view, "서버 통신 오류: " + ex.getMessage());
         }
+    }
+    
+    private void handleSignup() {
+        view.dispose();
+
+        SignupView signupView = new SignupView();
+        SignupModel signupModel = new SignupModel();
+        new SignupController(signupView, signupModel);
+
+        signupView.setVisible(true); // 회원가입 화면 띄우기
     }
 }
