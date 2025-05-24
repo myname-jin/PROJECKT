@@ -107,9 +107,22 @@ public class ReservationMgmtController {
 
     public void unbanUser(String studentId) {
         List<String> bannedUsers = getBannedUsers();
-        if (bannedUsers.remove(studentId)) {
-            saveBannedUsers(bannedUsers);
+
+        if (!bannedUsers.contains(studentId)) {
+            JOptionPane.showMessageDialog(null,
+                    "제한된 사용자 목록에 없는 학번입니다: " + studentId,
+                    "알림",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
         }
+
+        bannedUsers.remove(studentId);
+        saveBannedUsers(bannedUsers);
+
+        JOptionPane.showMessageDialog(null,
+                "학번 " + studentId + "의 예약 제한이 해제되었습니다.",
+                "알림",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void saveBannedUsers(List<String> bannedUsers) {

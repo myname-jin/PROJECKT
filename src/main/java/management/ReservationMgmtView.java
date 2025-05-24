@@ -346,7 +346,6 @@ public class ReservationMgmtView extends javax.swing.JFrame {
         String studentId = JOptionPane.showInputDialog(this, "해제할 사용자의 학번을 입력하세요.");
         if (studentId != null && !studentId.isEmpty()) {
             controller.unbanUser(studentId);
-            JOptionPane.showMessageDialog(this, studentId + " 사용자의 제한이 해제되었습니다.");
         }
     }//GEN-LAST:event_jButton7ActionPerformed
 
