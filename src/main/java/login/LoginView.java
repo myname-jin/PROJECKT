@@ -8,74 +8,55 @@ import javax.swing.*;
 import java.awt.*;
 
 public class LoginView extends JFrame {
-    private JTextField userIdField;
-    private JPasswordField passwordField;
-    private JRadioButton userRadio;
-    private JRadioButton adminRadio;
-    private JButton loginButton;
-    private JButton registerButton;
-    private JButton findPasswordButton;
+    private JTextField userIdField = new JTextField(15);
+    private JPasswordField passwordField = new JPasswordField(15);
+    private JRadioButton userRadio = new JRadioButton("사용자", true);
+    private JRadioButton adminRadio = new JRadioButton("관리자");
+    private JButton loginButton = new JButton("로그인");
+    private JButton registerButton = new JButton("회원가입");
+    private JButton findPasswordButton = new JButton("비밀번호 찾기/변경");
+    public JLabel labelId = new JLabel("ID:"); // ID: 라벨 생성
+    public JLabel labelPw = new JLabel("PW:"); // PW: 라벨 생성
 
     public LoginView() {
         setTitle("로그인 화면");
-        setSize(330, 330);
+        setSize(350, 270);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+        setLayout(null);
 
-        // ✅ 컴포넌트 생성
-        userIdField = new JTextField(15);
-        passwordField = new JPasswordField(15);
-        userRadio = new JRadioButton("사용자", true);
-        adminRadio = new JRadioButton("관리자");
-
+        userIdField.setBounds(80, 30, 180, 30);
+        passwordField.setBounds(80, 70, 180, 30);
+        loginButton.setBounds(80, 145, 80, 30);
+        userRadio.setBounds(80, 110, 80, 20);
+        adminRadio.setBounds(160, 110, 80, 20);
+        registerButton.setBounds(170, 145, 85, 30);
+        findPasswordButton.setBounds(80, 185, 175, 30);
+        labelId.setBounds(50, 30, 80, 30); // ID: 라벨 위치 지정
+        labelPw.setBounds(50, 70, 80, 30); // PW: 라벨 위치 지정
+        
         ButtonGroup group = new ButtonGroup();
         group.add(userRadio);
         group.add(adminRadio);
-
-        loginButton = new JButton("로그인");
-        registerButton = new JButton("회원가입");
-        findPasswordButton = new JButton("비밀번호 찾기/변경");
-
-        // ✅ 레이아웃 구성
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-
-        gbc.insets = new Insets(5, 5, 5, 5); // 간격
-        gbc.gridx = 0; gbc.gridy = 0;
-        panel.add(new JLabel("아이디:"), gbc);
-        gbc.gridx = 1;
-        panel.add(userIdField, gbc);
-
-        gbc.gridx = 0; gbc.gridy = 1;
-        panel.add(new JLabel("비밀번호:"), gbc);
-        gbc.gridx = 1;
-        panel.add(passwordField, gbc);
-
-        gbc.gridx = 0; gbc.gridy = 2;
-        panel.add(userRadio, gbc);
-        gbc.gridx = 1;
-        panel.add(adminRadio, gbc);
-
-        gbc.gridx = 0; gbc.gridy = 3;
-        panel.add(loginButton, gbc);
-        gbc.gridx = 1;
-        panel.add(registerButton, gbc);
-
-        gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 2;
-        panel.add(findPasswordButton, gbc);
-
-        // ✅ 프레임에 적용
-        add(panel);
+        
+        add(userIdField);
+        add(passwordField);
+        add(loginButton);
+        add(userRadio);
+        add(adminRadio);
+        add(registerButton);
+        add(findPasswordButton); // 비밀번호 찾기/변경 버튼 추가
+        add(labelId); // ID: 라벨 추가
+        add(labelPw); // PW: 라벨 추가        
     }
 
     public String getUserId() {
         return userIdField.getText().trim();
-    }
+    }    
 
     public String getPassword() {
         return new String(passwordField.getPassword()).trim();
-    }
+    }    
 
     public String getRole() {
         return userRadio.isSelected() ? "user" : "admin";
