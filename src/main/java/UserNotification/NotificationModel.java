@@ -23,6 +23,7 @@ public class NotificationModel {
     public static class NotificationItem {
         private String id;
         private String userId;
+        private String userType;
         private String title;
         private String content;
         private LocalDateTime createdTime;

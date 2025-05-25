@@ -28,21 +28,43 @@ public class ReservationGUIController {
     private String userType; // "학생" 또는 "교수"
 
     private Socket socket;
+    private BufferedReader in; // ✅ 반드시 있어야 함
+
     private BufferedWriter out;
 
 //클라이언트-서버 연결 코드(로그인과 사용자 페이지 연결되면 주석 해제)
-    public ReservationGUIController(String userId, String userName, String userDept, String userType,
-            Socket socket, BufferedWriter out) {
+    public ReservationGUIController(String userId, String name, String dept, String type,
+                         Socket socket, BufferedReader in, BufferedWriter out) {
         this.userId = userId;
-        this.userName = userName;
-        this.userDept = userDept;
-        this.userType = userType;
-        this.socket = socket;
-        this.out = out;
+    this.userName = name;       // ✅ 수정
+    this.userDept = dept;       // ✅ 수정
+    this.userType = type;       // ✅ 수정
+    this.socket = socket;
+    this.in = in;
+    this.out = out;
 
         view = new ReservationView();
         view.setUserInfo(userName, userId, userDept);
+        if ((userName == null || userName.isEmpty()) || (userDept == null || userDept.isEmpty())) {
+    try {
+        out.write("INFO_REQUEST:" + userId + "\n");
+        out.flush();
 
+        String response = in.readLine(); // ✅ 기존 in 사용
+        System.out.println("서버 응답 내용: " + response); // 확인용
+
+        if (response != null && response.startsWith("INFO_RESPONSE:")) {
+            String[] parts = response.substring("INFO_RESPONSE:".length()).split(",");
+            if (parts.length >= 3) {
+                this.userName = parts[1];
+                this.userDept = parts[2];
+                view.setUserInfo(this.userName, userId, this.userDept);
+            }
+        }
+    } catch (IOException e) {
+        System.out.println("❌ 사용자 정보 요청 오류: " + e.getMessage());
+    }
+}
         LogoutUtil.attach(view, userId, socket, out);
 
         initializeReservationFeatures();
@@ -52,7 +74,7 @@ public class ReservationGUIController {
     }
 
     public ReservationGUIController() {
-        
+
 //        this.userName = "테스트용";
 //    this.userId = "20230004";
 //    this.userDept = "컴퓨터소프트웨어공학과";
@@ -60,6 +82,24 @@ public class ReservationGUIController {
         view = new ReservationView();
         view.setUserInfo(userName, userId, userDept);
 
+        // 추가: userName이나 userDept가 비어 있으면 서버에 사용자 정보 요청
+        if ((userName == null || userName.isEmpty()) || (userDept == null || userDept.isEmpty())) { // 추가
+            try { // 추가
+                out.write("INFO_REQUEST:" + userId + "\n"); // 추가
+                out.flush(); // 추가
+                String response = new BufferedReader(new InputStreamReader(socket.getInputStream())).readLine(); // 추가
+                if (response != null && response.startsWith("INFO_RESPONSE:")) { // 추가
+                    String[] parts = response.substring("INFO_RESPONSE:".length()).split(","); // 추가
+                    if (parts.length >= 3) { // 추가
+                        this.userName = parts[1]; // 추가
+                        this.userDept = parts[2]; // 추가
+                        view.setUserInfo(this.userName, userId, this.userDept); // 추가
+                    } // 추가
+                } // 추가
+            } catch (IOException e) { // 추가
+                System.out.println("❌ 사용자 정보 요청 오류: " + e.getMessage()); // 추가
+            } // 추가
+        } // 추가
         initializeReservationFeatures();
         view.setVisible(true);
     }
@@ -69,8 +109,8 @@ public class ReservationGUIController {
         if (userType.equals("교수")) {
             view.enableProfessorMode(); // View 내부에서 교수 전용 UI 구역 활성화
             view.setPurposeOptions(List.of("강의 전용", "세미나", "기타"));  // 교수 전용
-    } else {
-            view.setPurposeOptions(List.of("스터디", "동아리 활동", "면담","팀 회의"));  // 학생용
+        } else {
+            view.setPurposeOptions(List.of("스터디", "동아리 활동", "면담", "팀 회의"));  // 학생용
         }
 
         loadRoomsFromExcel();
@@ -118,7 +158,7 @@ public class ReservationGUIController {
                 view.showMessage("해당 사용자는 예약이 제한되어 있습니다. 관리자에게 문의하세요.");
                 return;
             }
-            
+
             // ✅ 시간 중복 체크 (교수/학생 공통)
             if (isTimeSlotAlreadyReserved(selectedRoomName, date, times)) {
                 view.showMessage("선택한 시간대에 이미 예약이 존재합니다.");
@@ -131,17 +171,17 @@ public class ReservationGUIController {
                     view.showMessage("학생은 하루 1회만 예약할 수 있습니다.");
                     return;
                 }
-                       
-            int totalMinutes = calculateTotalDuration(times);
-            if (totalMinutes > 120) {
-                view.showMessage("총 예약 시간이 2시간(120분)을 초과할 수 없습니다.");
-                return;
+
+                int totalMinutes = calculateTotalDuration(times);
+                if (totalMinutes > 120) {
+                    view.showMessage("총 예약 시간이 2시간(120분)을 초과할 수 없습니다.");
+                    return;
+                }
             }
-            }
-            
+
             String status = userType.equals("교수") ? "예약확정" : "예약대기";
 
-             if (userType.equals("교수")) {
+            if (userType.equals("교수")) {
                 view.showMessage("예약이 확정되었습니다.");
             } else {
                 view.showMessage("예약이 등록되었습니다. 관리자의 승인을 기다리는 중입니다.");
@@ -161,13 +201,13 @@ public class ReservationGUIController {
                 }
             }
         });
-        
+
         view.addBackButtonListener(e -> {
-        view.dispose();  // 현재 ReservationView 닫기
-        
-           // UserMainController 생성 (기존 로그인 정보 전달)
-        new UserMainController(userId, socket, null, out);
-    });
+            view.dispose();  // 현재 ReservationView 닫기
+
+            // UserMainController 생성 (기존 로그인 정보 전달)
+            new UserMainController(userId,userType, socket, null, out);
+        });
 
         view.setVisible(true);
     }
@@ -250,47 +290,46 @@ public class ReservationGUIController {
         }
         return false;
     }
-    
+
     private boolean isTimeSlotAlreadyReserved(String roomName, String date, List<String> newTimes) {
-    String path = "src/main/resources/reservation.txt";
-    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        String path = "src/main/resources/reservation.txt";
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
-    try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF-8"))) {
-        String line;
-        while ((line = reader.readLine()) != null) {
-            String[] parts = line.split(",");
-            if (parts.length >= 10) {
-                String reservedRoom = parts[5];
-                String reservedDate = parts[6];
-                String reservedStart = parts[8];
-                String reservedEnd = parts[9];
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF-8"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 10) {
+                    String reservedRoom = parts[5];
+                    String reservedDate = parts[6];
+                    String reservedStart = parts[8];
+                    String reservedEnd = parts[9];
 
-                if (reservedRoom.equals(roomName) && reservedDate.equals(date)) {
-                    Date reservedStartTime = sdf.parse(reservedStart);
-                    Date reservedEndTime = sdf.parse(reservedEnd);
+                    if (reservedRoom.equals(roomName) && reservedDate.equals(date)) {
+                        Date reservedStartTime = sdf.parse(reservedStart);
+                        Date reservedEndTime = sdf.parse(reservedEnd);
 
-                    for (String timeSlot : newTimes) {
-                        String[] range = timeSlot.split("~");
-                        if (range.length == 2) {
-                            Date newStartTime = sdf.parse(range[0].trim());
-                            Date newEndTime = sdf.parse(range[1].trim());
+                        for (String timeSlot : newTimes) {
+                            String[] range = timeSlot.split("~");
+                            if (range.length == 2) {
+                                Date newStartTime = sdf.parse(range[0].trim());
+                                Date newEndTime = sdf.parse(range[1].trim());
 
-                            // 중복 조건: 시작 시간이 기존 예약의 끝 이전 && 끝 시간이 기존 예약의 시작 이후
-                            if (newStartTime.before(reservedEndTime) && newEndTime.after(reservedStartTime)) {
-                                return true;
+                                // 중복 조건: 시작 시간이 기존 예약의 끝 이전 && 끝 시간이 기존 예약의 시작 이후
+                                if (newStartTime.before(reservedEndTime) && newEndTime.after(reservedStartTime)) {
+                                    return true;
+                                }
                             }
                         }
                     }
                 }
             }
+        } catch (IOException | ParseException e) {
+            System.out.println("중복 시간 검사 오류: " + e.getMessage());
         }
-    } catch (IOException | ParseException e) {
-        System.out.println("중복 시간 검사 오류: " + e.getMessage());
+
+        return false;
     }
-
-    return false;
-}
-
 
     private RoomModel getRoomByName(String name) {
         for (RoomModel r : allRooms) {

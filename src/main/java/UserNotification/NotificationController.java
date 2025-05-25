@@ -29,6 +29,7 @@ public class NotificationController {
     private Timer notificationTimer;
     private Timer checkinTimer;
     private String userId;
+    private String userType;
     private Socket socket;
     private BufferedReader in;
     private BufferedWriter out;
@@ -46,33 +47,30 @@ public class NotificationController {
     /**
      * ✅ private 생성자 (싱글톤 패턴)
      */
-    private NotificationController(String userId, Socket socket, BufferedReader in, BufferedWriter out) {
-        this.userId = userId;
-        this.socket = socket;
-        this.in = in;
-        this.out = out;
-        this.model = new NotificationModel(userId);
-        
-        checkCurrentSituation();
-        initializeTimers();
-        loadNotifications();
-    }
+    private NotificationController(String userId, String userType, Socket socket, BufferedReader in, BufferedWriter out) {
+    this.userId = userId;
+    this.userType = userType;
+    this.socket = socket;
+    this.in = in;
+    this.out = out;
+    this.model = new NotificationModel(userId);
+
+    checkCurrentSituation();
+    initializeTimers();
+    loadNotifications();
+}
     
     /**
      * ✅ 싱글톤 인스턴스 반환 (userId별로 관리)
      */
-    public static NotificationController getInstance(String userId, Socket socket, BufferedReader in, BufferedWriter out) {
+       public static NotificationController getInstance(String userId, String userType, Socket socket, BufferedReader in, BufferedWriter out) {
         NotificationController instance = instances.get(userId);
-        
         if (instance == null) {
-            // 새로운 인스턴스 생성
-            instance = new NotificationController(userId, socket, in, out);
+            instance = new NotificationController(userId, userType, socket, in, out);
             instances.put(userId, instance);
         } else {
-            // 기존 인스턴스의 연결 정보 업데이트 (필요시)
             instance.updateConnection(socket, in, out);
         }
-        
         return instance;
     }
     
@@ -518,4 +516,7 @@ public class NotificationController {
     public BufferedWriter getOut() {
         return out;
     }
+    public String getUserType() {
+    return userType;
+}
 }

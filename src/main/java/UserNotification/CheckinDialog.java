@@ -105,7 +105,7 @@ public class CheckinDialog extends JDialog {
             }
             
             // 컨트롤러를 통해 입실 확인 처리
-           NotificationController controller = ((NotificationView)getParent()).getController();
+            NotificationController controller = parentView.getController();
             controller.checkIn(notification.getId());
             
             dispose();

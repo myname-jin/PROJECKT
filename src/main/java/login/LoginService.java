@@ -33,7 +33,7 @@ public class LoginService {
     public void attemptLogin() {
         String userId = view.getUserId();
         String password = view.getPassword();
-        String role = view.getRole();
+        String role = view.getRole(); // "학생", "교수", "admin"
 
         try {
             out.write("LOGIN:" + userId + "," + password + "," + role);
@@ -44,11 +44,13 @@ public class LoginService {
 
             if ("LOGIN_SUCCESS".equals(response)) {
                 JOptionPane.showMessageDialog(view, userId + "님 로그인 성공");
+                String userType = role; // ✅ 역할을 userType으로 저장
+
                 try {
                     if ("admin".equalsIgnoreCase(role)) {
                         new ReservationMgmtView(userId).setVisible(true);
                     } else {
-                        new RuleAgreementController(userId, socket, out);
+                        new RuleAgreementController(userId, userType, socket, out);
                     }
                     view.dispose();
                 } catch (Exception ex) {
@@ -61,11 +63,13 @@ public class LoginService {
                 while ((response = in.readLine()) != null) {
                     if ("LOGIN_SUCCESS".equals(response)) {
                         JOptionPane.showMessageDialog(view, userId + "님 자동 로그인 성공");
+                        String userType = role; // ✅ 대기 후 로그인에도 동일하게 선언
+
                         try {
                             if ("admin".equalsIgnoreCase(role)) {
                                 new ReservationMgmtView(userId).setVisible(true);
                             } else {
-                                new RuleAgreementController(userId, socket, out);
+                                new RuleAgreementController(userId, userType, socket, out);
                             }
                             view.dispose();
                         } catch (Exception ex) {

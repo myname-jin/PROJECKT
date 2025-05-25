@@ -30,24 +30,29 @@ public class NotificationButton extends JButton {
     private BufferedReader in;
     private BufferedWriter out;
     private String userId;
+    private String userType; 
+
 
     /**
      * 생성자 (싱글톤 패턴 사용)
      * @param userId 사용자 ID
      */
-    public NotificationButton(String userId, Socket socket, BufferedReader in, BufferedWriter out) {
+    public NotificationButton(String userId, String userType, Socket socket, BufferedReader in, BufferedWriter out)
+ {
         this.userId = userId;
         this.socket = socket;
         this.in = in;
         this.out = out;
-        
+        this.userType = userType;
+
         setText("알림");
         setFocusPainted(false);
         originalBackground = getBackground();
         
         // ✅ 싱글톤 인스턴스 사용
         try {
-        controller = NotificationController.getInstance(userId, socket, in, out);
+        controller = NotificationController.getInstance(userId, userType, socket, in, out);
+
         } catch (Exception e) {
             System.err.println("❌ NotificationButton: 컨트롤러 초기화 실패 - " + e.getMessage());
             e.printStackTrace();

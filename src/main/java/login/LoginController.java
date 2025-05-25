@@ -39,7 +39,7 @@ public class LoginController {
         BufferedReader tempIn = null;
 
         try {
-            tempSocket = new Socket("127.0.0.1", 5000); // 기본 서버 주소
+            tempSocket = new Socket("127.0.0.1", 5000);
             tempOut = new BufferedWriter(new OutputStreamWriter(tempSocket.getOutputStream()));
             tempIn = new BufferedReader(new InputStreamReader(tempSocket.getInputStream()));
         } catch (IOException e) {
@@ -54,15 +54,14 @@ public class LoginController {
 
     private void setupListeners() {
         view.getLoginButton().addActionListener(e -> attemptLogin());
-        view.getRegisterButton().addActionListener(e -> handleSignup()); // 회원가입 버튼
-        view.getFindPasswordButton().addActionListener(e -> handlePw()); // 비밀번호 찾기/변경 버튼
-
+        view.getRegisterButton().addActionListener(e -> handleSignup());
+        view.getFindPasswordButton().addActionListener(e -> handlePw());
     }
 
     private void attemptLogin() {
         String userId = view.getUserId();
         String password = view.getPassword();
-        String role = view.getRole();
+        String role = view.getRole(); // "학생", "교수", "admin"
 
         try {
             out.write("LOGIN:" + userId + "," + password + "," + role);
@@ -73,16 +72,14 @@ public class LoginController {
 
             if ("LOGIN_SUCCESS".equals(response)) {
                 JOptionPane.showMessageDialog(view, userId + "님 로그인 성공");
+                String userType = role; // ✅ 역할 전달용 userType 변수 생성
 
                 try {
                     if ("admin".equalsIgnoreCase(role)) {
-                        try {
-                            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-                        } catch (Exception ignored) {
-                        } // 필요 시 생략 가능
+                        UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
                         new ReservationMgmtView().setVisible(true);
                     } else {
-                        new RuleAgreementController(userId, socket, out);
+                        new RuleAgreementController(userId, userType, socket, out);
                     }
                     view.dispose();
                 } catch (Exception ex) {
@@ -95,8 +92,9 @@ public class LoginController {
                 while ((response = in.readLine()) != null) {
                     if ("LOGIN_SUCCESS".equals(response)) {
                         JOptionPane.showMessageDialog(view, userId + "님 자동 로그인 성공");
+                        String userType = role;
                         try {
-                            new RuleAgreementController(userId, socket, out);
+                            new RuleAgreementController(userId, userType, socket, out);
                             view.dispose();
                         } catch (Exception ex) {
                             ex.printStackTrace();
@@ -115,23 +113,17 @@ public class LoginController {
             JOptionPane.showMessageDialog(view, "서버 통신 오류: " + ex.getMessage());
         }
     }
-    /**
-     * 회원가입 버튼 실행 관련 메서드
-     */
+
     private void handleSignup() {
         view.dispose();
-
         SignupView signupView = new SignupView();
         SignupModel signupModel = new SignupModel();
         new SignupController(signupView, signupModel);
         signupView.setVisible(true);
     }
-    /**
-     * 비밀번호 버튼 실행 관련 메서드
-     */
+
     private void handlePw() {
         view.dispose();
-
         PasswordFindView passwordFindView = new PasswordFindView();
         PasswordFindModel passwordFindModel = new PasswordFindModel();
         new PasswordFindController(passwordFindView, passwordFindModel);

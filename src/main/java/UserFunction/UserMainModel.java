@@ -22,12 +22,12 @@ public class UserMainModel {
     private BufferedReader in;
     private BufferedWriter out;
 
-    public UserMainModel(String userId, Socket socket, BufferedReader in, BufferedWriter out) {
-        // 기본값으로 설정하지만, 유효한 값이 제공되면 그것을 사용
-        this.userId = userId;
-        this.socket = socket;
-        this.in = in;
-        this.out = out;
+   public UserMainModel(String userId, String userType, Socket socket, BufferedReader in, BufferedWriter out) {
+    this.userId = userId;
+    this.userType = userType;
+    this.socket = socket;
+    this.in = in;
+    this.out = out;
         
         loadUserInfoFromFile(); // ✅ 파일에서 userName, userDept, userType 한 번만 읽어서 저장
     }

@@ -114,6 +114,7 @@ public class UserNoticeController {
         view.dispose();
         new UserMainController(
             model.getUserId(), 
+            model.getUserType(), 
             model.getSocket(), 
             model.getIn(), 
             model.getOut()

@@ -25,7 +25,7 @@ public class UserReservationListController {
     private final JTable table;
     private  String userId;
     private final String filePath = "src/main/resources/reservation.txt";
-  
+    private String userType;
     private Socket socket;
     private BufferedReader in;
     private BufferedWriter out;
@@ -37,12 +37,13 @@ public class UserReservationListController {
    //     this.table = table;
     //    loadReservationData();
    // }
-     public UserReservationListController(String userId, Socket socket, BufferedReader in, BufferedWriter out) {
+     public UserReservationListController(String userId, String userType, Socket socket, BufferedReader in, BufferedWriter out) {
         this.userId = userId; // 조건분기로 처리
         this.socket = socket;
         this.in = in;
         this.out = out;
-        
+        this.userType = userType;
+
         // ✅ 로그아웃 자동 처리 등록
        
         
@@ -62,7 +63,8 @@ public class UserReservationListController {
     
      public void backToMainPage() {
     // 메인 페이지로 돌아가기
-    new UserFunction.UserMainController(userId, socket, in, out);
+    new UserFunction.UserMainController(userId, userType, socket, in, out);
+
 }
     
     public void loadReservationData() {
