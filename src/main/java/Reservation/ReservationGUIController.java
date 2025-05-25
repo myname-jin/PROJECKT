@@ -1,6 +1,7 @@
 package Reservation;
 
 import ServerClient.LogoutUtil;
+import UserFunction.UserMainController;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -160,6 +161,13 @@ public class ReservationGUIController {
                 }
             }
         });
+        
+        view.addBackButtonListener(e -> {
+        view.dispose();  // 현재 ReservationView 닫기
+        
+           // UserMainController 생성 (기존 로그인 정보 전달)
+        new UserMainController(userId, socket, null, out);
+    });
 
         view.setVisible(true);
     }

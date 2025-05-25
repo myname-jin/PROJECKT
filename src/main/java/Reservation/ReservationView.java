@@ -251,6 +251,11 @@ centerPanel.add(purposePanel);
     public void addReserveButtonListener(ActionListener listener) {
         reserveButton.addActionListener(listener);
     }
+    
+    public void addBackButtonListener(ActionListener listener) {
+    backButton.addActionListener(listener);
+    }
+
 
     public String getSelectedTime() {
         return selectedTimeField.getText().trim();
