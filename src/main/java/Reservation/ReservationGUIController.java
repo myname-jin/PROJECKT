@@ -28,43 +28,28 @@ public class ReservationGUIController {
     private String userType; // "학생" 또는 "교수"
 
     private Socket socket;
-    private BufferedReader in; // ✅ 반드시 있어야 함
+    private BufferedReader in; //
 
     private BufferedWriter out;
 
 //클라이언트-서버 연결 코드(로그인과 사용자 페이지 연결되면 주석 해제)
     public ReservationGUIController(String userId, String name, String dept, String type,
-                         Socket socket, BufferedReader in, BufferedWriter out) {
+            Socket socket, BufferedReader in, BufferedWriter out) {
         this.userId = userId;
-    this.userName = name;       // ✅ 수정
-    this.userDept = dept;       // ✅ 수정
-    this.userType = type;       // ✅ 수정
-    this.socket = socket;
-    this.in = in;
-    this.out = out;
+        this.userName = name;
+        this.userDept = dept;
+        this.userType = type;
+        this.socket = socket;
+        this.in = in;
+        this.out = out;
 
         view = new ReservationView();
+
+        initializeUserInfoFromServer();
+        System.out.println("최종 유저 정보 - 이름: " + userName + ", 학과: " + userDept);
+
         view.setUserInfo(userName, userId, userDept);
-        if ((userName == null || userName.isEmpty()) || (userDept == null || userDept.isEmpty())) {
-    try {
-        out.write("INFO_REQUEST:" + userId + "\n");
-        out.flush();
 
-        String response = in.readLine(); // ✅ 기존 in 사용
-        System.out.println("서버 응답 내용: " + response); // 확인용
-
-        if (response != null && response.startsWith("INFO_RESPONSE:")) {
-            String[] parts = response.substring("INFO_RESPONSE:".length()).split(",");
-            if (parts.length >= 3) {
-                this.userName = parts[1];
-                this.userDept = parts[2];
-                view.setUserInfo(this.userName, userId, this.userDept);
-            }
-        }
-    } catch (IOException e) {
-        System.out.println("❌ 사용자 정보 요청 오류: " + e.getMessage());
-    }
-}
         LogoutUtil.attach(view, userId, socket, out);
 
         initializeReservationFeatures();
@@ -206,7 +191,7 @@ public class ReservationGUIController {
             view.dispose();  // 현재 ReservationView 닫기
 
             // UserMainController 생성 (기존 로그인 정보 전달)
-            new UserMainController(userId,userType, socket, null, out);
+            new UserMainController(userId, userType, socket, null, out);
         });
 
         view.setVisible(true);
@@ -453,4 +438,33 @@ public class ReservationGUIController {
             return "";
         }
     }
+
+    //서버에서 불러오기
+    private void initializeUserInfoFromServer() {
+    try {
+        out.write("INFO_REQUEST:" + userId + "\n");
+        out.flush();
+
+        String response = in.readLine();
+        System.out.println("📥 서버 응답: " + response);
+
+        if (response != null && response.startsWith("INFO_RESPONSE:")) {
+            String[] parts = response.substring("INFO_RESPONSE:".length()).split(",");
+            System.out.println("📦 분해된 응답: " + Arrays.toString(parts));
+
+            if (parts.length >= 4) {
+    this.userName = parts[1];  // ✅ 이름
+    this.userDept = parts[2];  // ✅ 학과
+    this.userType = parts[3];  // ✅ 역할
+    view.setUserInfo(this.userName, userId, this.userDept);
+} else {
+                System.out.println("❗ 응답 형식 오류: 5개 요소가 아님");
+            }
+        } else {
+            System.out.println("❌ 서버 응답 없음 또는 형식 오류");
+        }
+    } catch (IOException e) {
+        System.out.println("❌ 사용자 정보 요청 실패: " + e.getMessage());
+    }
+}
 }
