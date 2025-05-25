@@ -34,13 +34,4 @@ public class LogoutUtil {
             }
         });
     }
-
-    // ✅ 테스트에서 필요한 logout 메서드
-    public static void logout(String userId, SessionManager sessions) {
-        try {
-            sessions.logout(userId);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }
