@@ -9,7 +9,6 @@ package ruleagreement;
  * @author adsd3
  */
 
-import management.NextPage;
 import ServerClient.LogoutUtil;
 import UserFunction.UserMainController;
 
