@@ -15,7 +15,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
-import javax.swing.*;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 public class SignupController {
     private final SignupView view;
@@ -25,58 +26,66 @@ public class SignupController {
         this.view = view;
         this.model = model;
 
-        //view.btnRegister.addActionListener(e -> handleRegister());
+        // 등록 버튼 → 서버로 전송
         view.btnRegister.addActionListener(this::sendRegister);
+        // 뒤로가기 버튼 → 로그인 화면으로
         view.btnBack.addActionListener(e -> {
             view.dispose();
-            
             SwingUtilities.invokeLater(() -> {
-                LoginView loginview = new LoginView();
-                LoginModel loginmodel = new LoginModel();
-                new LoginController(loginview, loginmodel);
-                loginview.setLocationRelativeTo(null);
-                loginview.setVisible(true);
+                LoginView loginView = new LoginView();
+                LoginModel loginModel = new LoginModel();
+                new LoginController(loginView, loginModel);
+                loginView.setLocationRelativeTo(null);
+                loginView.setVisible(true);
             });
         });
-
     }
+
     private void sendRegister(ActionEvent e) {
-        String id = view.txtId.getText().trim();
-        String pw = new String(view.txtPw.getPassword()).trim();
-        String role = (String) view.cmbRole.getSelectedItem();
-        
-        if (id.isEmpty() || pw.isEmpty()) {
-            JOptionPane.showMessageDialog(view, "아이디와 비밀번호를 모두 입력해주세요.");
+        String id   = view.getId();
+        String pw   = view.getPw();
+        String name = view.getName();
+        String dept = view.getDept();
+        String role = view.getRole();
+
+        // 빈칸 체크
+        if (id.isEmpty() || pw.isEmpty() || name.isEmpty() || dept.isEmpty()) {
+            JOptionPane.showMessageDialog(view, "모든 항목을 입력해주세요.", "경고", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
+        // 서버 연결 & 메시지 전송
         try (Socket socket = new Socket("127.0.0.1", 5000);
              BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+             BufferedReader in  = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
 
-            out.write("REGISTER:" + id + "," + pw + "," + role);
+            // 프로토콜: REGISTER:role:id:pw:name:dept
+            String msg = String.join(":", "REGISTER", role, id, pw, name, dept);
+            out.write(msg);
             out.newLine();
             out.flush();
-            String response = in.readLine();
 
+            // 서버 응답 처리
+            String response = in.readLine();
             if ("REGISTER_SUCCESS".equals(response)) {
-                JOptionPane.showMessageDialog(view, "회원가입 되었습니다.");
+                JOptionPane.showMessageDialog(view, "회원가입 되었습니다.", "메시지", JOptionPane.INFORMATION_MESSAGE);
                 view.dispose();
-                
+
+                // 가입 후 로그인 화면으로 이동
                 SwingUtilities.invokeLater(() -> {
-                LoginView view = new LoginView();
-                LoginModel model = new LoginModel();
-                LoginController logincontroller = new LoginController(view, model);
-                view.setLocationRelativeTo(null);
-                view.setVisible(true);
+                    LoginView loginView = new LoginView();
+                    LoginModel loginModel = new LoginModel();
+                    new LoginController(loginView, loginModel);
+                    loginView.setLocationRelativeTo(null);
+                    loginView.setVisible(true);
                 });
             } else {
-                JOptionPane.showMessageDialog(view, "회원가입에 실패하였습니다.");
+                JOptionPane.showMessageDialog(view, "회원가입에 실패하였습니다.", "에러", JOptionPane.ERROR_MESSAGE);
             }
 
         } catch (IOException ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(view, "서버 연결 오류: " + ex.getMessage());
+            JOptionPane.showMessageDialog(view, "서버 연결 오류: " + ex.getMessage(), "에러", JOptionPane.ERROR_MESSAGE);
         }
     }
 }
