@@ -8,6 +8,10 @@ package login;
  *
  * @author adsd3
  */
+import login.LoginView;
+import login.LoginModel;
+import login.LoginController;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -36,25 +40,23 @@ public class ConnectView extends JFrame {
         add(panel, BorderLayout.CENTER);
         add(connectButton, BorderLayout.SOUTH);
 
-        connectButton.addActionListener((ActionEvent e) -> handleConnect());
-
-        setVisible(true);
-    }
-
-    // 서버 IP로 소켓을 생성하고, LoginController에 전달
-    private void handleConnect() {
-        String ip = ipField.getText().trim();
-        if (!ip.isEmpty()) {
+        connectButton.addActionListener((ActionEvent e) -> {
+            String ip = ipField.getText().trim();
             try {
-                // 소켓을 생성하여 LoginController로 전달
-                Socket socket = new Socket(ip, 5000);  // 서버에 연결하는 소켓 생성
-                new LoginController(socket);  // 생성된 소켓만 전달
+                Socket socket = new Socket(ip, 5000);
+                JOptionPane.showMessageDialog(this, "서버 연결 성공");
+
+                LoginView loginView = new LoginView(); // IP칸 없음
+                LoginModel loginModel = new LoginModel();
+                new LoginController(loginView, loginModel, socket);
+                loginView.setVisible(true);
+
+                dispose(); // 연결창 닫기
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(this, "서버 연결 실패: " + ex.getMessage());
             }
-            this.dispose(); // 연결 후 연결 창 닫기
-        } else {
-            JOptionPane.showMessageDialog(this, "IP를 입력하세요.");
-        }
+        });
+
+        setVisible(true);
     }
 }
