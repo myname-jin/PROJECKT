@@ -12,22 +12,42 @@ import java.io.*;
 import java.net.Socket;
 
 public class LoginController {
+
     private final LoginView view;
     private final LoginModel model;
     private final Socket socket;
     private final BufferedWriter out;
     private final BufferedReader in;
 
-    // 생성자: LoginView, LoginModel을 내부에서 생성하고, Socket을 외부에서 전달받음
-    public LoginController(Socket socket) throws IOException {
-        this.view = new LoginView();  // 내부에서 LoginView 생성
-        this.model = new LoginModel();  // 내부에서 LoginModel 생성
-        this.socket = socket;
-        this.out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-        this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        setupListeners();  // 리스너 설정
-    }
+    public LoginController(LoginView view, LoginModel model) {
+        this.view = view;
+        this.model = model;
 
+        Socket tempSocket = null;
+        BufferedWriter tempOut = null;
+        BufferedReader tempIn = null;
+
+        try {
+            tempSocket = new Socket("127.0.0.1", 5000);
+            tempOut = new BufferedWriter(new OutputStreamWriter(tempSocket.getOutputStream()));
+            tempIn = new BufferedReader(new InputStreamReader(tempSocket.getInputStream()));
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(view, "서버 접속 실패: " + e.getMessage());
+        }
+
+        this.socket = tempSocket;
+        this.out = tempOut;
+        this.in = tempIn;
+        setupListeners();
+    }
+public LoginController(LoginView view, LoginModel model, Socket socket) throws IOException {
+    this.view = view;
+    this.model = model;
+    this.socket = socket;
+    this.out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+    this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+    setupListeners();
+}
     private void setupListeners() {
         view.getLoginButton().addActionListener(e -> attemptLogin());
         view.getRegisterButton().addActionListener(e -> handleSignup());
@@ -49,6 +69,7 @@ public class LoginController {
             if ("LOGIN_SUCCESS".equals(response)) {
                 JOptionPane.showMessageDialog(view, userId + "님 로그인 성공");
 
+                // 🔽 서버에 유저 정보 요청
                 out.write("INFO_REQUEST:" + userId + "\n");
                 out.flush();
 
