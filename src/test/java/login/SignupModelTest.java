@@ -45,11 +45,11 @@ public class SignupModelTest {
      */
     @Test
     public void testRegisterUser() {
-        System.out.println("registerUser 테스트: 빈 값 입력하거나 role에 admin또는user 외 값 입력 시 false");
+        System.out.println("registerUser 테스트: 빈 값 입력하거나 정해진 role이 아닌 값 입력 시 false");
         String userId = "m77776666";
         String password = "77776666";
-        String role = "admin";
-        String userName = "칠관리";
+        String role = "교수";
+        String userName = "테스트";
         String userDept = "컴퓨터소프트웨어공학과";
         SignupModel instance = new SignupModel();
         boolean expResult = true;
