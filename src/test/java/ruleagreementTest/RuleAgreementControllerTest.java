@@ -4,73 +4,84 @@
  */
 package ruleagreementTest;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import rulemanagement.RuleManagementModel;  // ← 여기를 꼭 추가하세요
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.io.TempDir;
+
+import java.io.IOException;
+import java.nio.file.*;
+import java.util.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.net.Socket;
-import ruleagreement.RuleAgreementController;
+class RuleAgreementControllerTest {
 
-/**
- * RuleAgreementController 테스트 클래스
- * 
- * @author jms5310
- */
-public class RuleAgreementControllerTest {
+    @TempDir
+    Path tempDir;
 
-    public RuleAgreementControllerTest() {
-    }
-    
-    @BeforeAll
-    public static void setUpClass() {
-    }
-    
-    @AfterAll
-    public static void tearDownClass() {
-    }
-    
+    Path rulesFile;
+    HeadlessRuleAgreementController controller;
+
     @BeforeEach
-    public void setUp() {
-    }
-    
-    @AfterEach
-    public void tearDown() {
+    void setUp() throws Exception {
+        // 1) 임시 파일 생성 및 초기 데이터 쓰기
+        rulesFile = tempDir.resolve("rules.txt");
+        Files.write(rulesFile, Arrays.asList("ruleA", "ruleB"));
+
+        // 2) 헤드리스 컨트롤러 생성
+        controller = new HeadlessRuleAgreementController(rulesFile.toString());
     }
 
-    
-     // 생성자 테스트
-     
     @Test
-    public void testConstructor() throws Exception {
-        System.out.println("RuleAgreementController 생성자 테스트");
-        
-        // 테스트 파라미터
-        String userId = "testUser";
-        
-        // 더미 Socket과 BufferedWriter 생성
-        Socket dummySocket = new Socket() {
-            @Override
-            public void close() throws IOException {
-                // 오버라이드하여 실제 소켓을 닫지 않음
-            }
-        };
-        
-        StringWriter stringWriter = new StringWriter();
-        BufferedWriter dummyOut = new BufferedWriter(stringWriter);
-        
-        // 컨트롤러 생성 - 예외가 발생하지 않아야 함
-        RuleAgreementController controller = null;
-        try {
-            controller = new RuleAgreementController(userId, dummySocket, dummyOut);
-            assertNotNull(controller, "컨트롤러 객체가 생성되어야 함");
-        } catch (Exception e) {
-            fail("컨트롤러 생성 중 예외 발생 : " + e.getMessage());
+    void addRule_appendsToFileAndRulesList() throws IOException {
+        // 새 규칙 추가
+        controller.addRule("ruleC");
+
+        // 파일에도 추가되었는지 확인
+        List<String> fileLines = Files.readAllLines(rulesFile);
+        assertTrue(fileLines.contains("ruleC"), "파일에 ruleC가 추가되어야 합니다.");
+
+        // 내부 리스트에도 반영되었는지 확인
+        assertTrue(controller.getRules().contains("ruleC"), "컨트롤러 리스트에 ruleC가 있어야 합니다.");
+    }
+
+    @Test
+    void deleteRules_removesFromFileAndRulesList() throws IOException {
+        // ruleA 삭제
+        controller.deleteRules(Collections.singletonList("ruleA"));
+
+        // 파일에서 제거되었는지 확인
+        List<String> fileLines = Files.readAllLines(rulesFile);
+        assertFalse(fileLines.contains("ruleA"), "파일에서 ruleA가 제거되어야 합니다.");
+
+        // 내부 리스트에서도 제거되었는지 확인
+        assertFalse(controller.getRules().contains("ruleA"), "컨트롤러 리스트에서 ruleA가 제거되어야 합니다.");
+    }
+
+    /**
+     * 테스트 전용, Swing 뷰 없이 모델의 add/delete만 감싸는 헤드리스 컨트롤러
+     */
+    static class HeadlessRuleAgreementController {
+        private final RuleManagementModel model;
+        private final List<String> rules;
+
+        HeadlessRuleAgreementController(String filePath) throws IOException {
+            this.model = new RuleManagementModel(filePath);
+            this.rules = new ArrayList<>(model.getRules());
+        }
+
+        void addRule(String rule) throws IOException {
+            model.addRule(rule);
+            rules.add(rule);
+        }
+
+        void deleteRules(List<String> toDelete) throws IOException {
+            model.deleteRules(toDelete);
+            rules.removeAll(toDelete);
+        }
+
+        List<String> getRules() {
+            return new ArrayList<>(rules);
         }
     }
 }
