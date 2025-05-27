@@ -51,7 +51,6 @@ public LoginController(LoginView view, LoginModel model, Socket socket) throws I
     private void setupListeners() {
         view.getLoginButton().addActionListener(e -> attemptLogin());
         view.getRegisterButton().addActionListener(e -> handleSignup());
-        view.getFindPasswordButton().addActionListener(e -> handlePw());
     }
 
     private void attemptLogin() {
@@ -147,11 +146,5 @@ public LoginController(LoginView view, LoginModel model, Socket socket) throws I
         signupView.setVisible(true);
     }
 
-    private void handlePw() {
-        view.dispose();
-        PasswordFindView passwordFindView = new PasswordFindView();
-        PasswordFindModel passwordFindModel = new PasswordFindModel();
-        new PasswordFindController(passwordFindView, passwordFindModel);
-        passwordFindView.setVisible(true);
-    }
+  
 }
