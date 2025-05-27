@@ -22,22 +22,22 @@ public class SignupControllerTest {
     
     @BeforeAll
     public static void setUpClass() {
-        System.out.println("setUpClass");
+        System.out.println("setUpClass()");
     }
     
     @AfterAll
     public static void tearDownClass() {
-        System.out.println("tearDownClass");
+        System.out.println("tearDownClass()");
     }
     
     @BeforeEach
     public void setUp() {
-        System.out.println("setUp");
+        System.out.println("setUp()");
     }
     
     @AfterEach
     public void tearDown() {
-        System.out.println("tearDown");
+        System.out.println("tearDown()");
     }
 
     @Test

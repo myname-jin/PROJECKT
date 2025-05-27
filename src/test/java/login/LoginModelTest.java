@@ -22,22 +22,22 @@ public class LoginModelTest {
     
     @BeforeAll
     public static void setUpClass() {
-        System.out.println("setUpClass");
+        System.out.println("setUpClass()");
     }
     
     @AfterAll
     public static void tearDownClass() {
-        System.out.println("tearDownClass");
+        System.out.println("tearDownClass()");
     }
     
     @BeforeEach
     public void setUp() {
-        System.out.println("setUp");
+        System.out.println("setUp()");
     }
     
     @AfterEach
     public void tearDown() {
-        System.out.println("tearDown");
+        System.out.println("tearDown()");
     }
 
     /**
@@ -45,10 +45,10 @@ public class LoginModelTest {
      */
     @Test
     public void testValidateCredentials() {
-        System.out.println("validateCredentials 테스트: role에 해당하는 txt 파일 정보와 일치하면 passed");
-        String userId = "user2";
-        String password = "qwerty";
-        String role = "user";
+        System.out.println("로그인 검증 테스트: role에 해당하는 txt 파일 정보와 일치하면 passed");
+        String userId = "test0524";
+        String password = "0524";
+        String role = "admin";
         LoginModel instance = new LoginModel();
         boolean expResult = true;
         boolean result = instance.validateCredentials(userId, password, role);
