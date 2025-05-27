@@ -100,6 +100,8 @@ public class UserMainController {
 
     private void openReservationSystem() {
         try {
+            view.dispose();
+            shutdownNotificationSystem();
             view.showMessage("강의실 예약 시스템으로 연결됩니다", "안내", JOptionPane.INFORMATION_MESSAGE);
             new ReservationGUIController(model.getUserId(), model.getUserName(), model.getUserDept(),
                                          model.getUserType(), model.getSocket(), model.getIn(), model.getOut());
@@ -112,7 +114,6 @@ public class UserMainController {
     private void openNoticeSystem() {
         try {
             view.dispose();
-            shutdownNotificationSystem();
             new UserNoticeController(model.getUserId(), model.getSocket(), model.getIn(), model.getOut());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(view, "공지사항 시스템 연결 중 오류: " + e.getMessage(),

@@ -191,7 +191,7 @@ public class ReservationGUIController {
             view.dispose();  // 현재 ReservationView 닫기
 
             // UserMainController 생성 (기존 로그인 정보 전달)
-            new UserMainController(userId, userType, socket, null, out);
+            new UserMainController(userId, userType, socket, in, out);
         });
 
         view.setVisible(true);

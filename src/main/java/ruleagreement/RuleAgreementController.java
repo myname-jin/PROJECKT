@@ -50,4 +50,10 @@ public class RuleAgreementController {
 
         view.setVisible(true);
     }
+    public void showView() {
+    SwingUtilities.invokeLater(() -> {
+        view.setLocationRelativeTo(null);
+        view.setVisible(true);
+    });
+}
 }

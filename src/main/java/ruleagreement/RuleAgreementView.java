@@ -47,4 +47,5 @@ public class RuleAgreementView extends JFrame {
     public boolean allChecked() {
         return checkBoxes.stream().allMatch(AbstractButton::isSelected);
     }
+    
 }
