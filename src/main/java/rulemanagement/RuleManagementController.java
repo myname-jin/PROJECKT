@@ -19,7 +19,7 @@ import management.ReservationMgmtView;
  */
 public class RuleManagementController {
 
-    private final RuleManagementModel model;
+    final RuleManagementModel model;
     private final RuleManagementView view;
 
     /**

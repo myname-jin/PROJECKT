@@ -4,100 +4,97 @@
  */
 package rulemanagement;
 
-
-
 /**
  *
  * @author adsd3
  */
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import javax.swing.*;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.lang.reflect.Field;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RuleManagementControllerTest {
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.nio.file.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import javax.swing.AbstractButton;
+import javax.swing.JButton;
+import javax.swing.JTextField;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+class RuleManagementControllerTest {
+
+    @TempDir Path tempDir;
     private RuleManagementController controller;
+    private RuleManagementModel  model;
+    private RuleManagementView   view;
 
     @BeforeEach
-    public void setUp() throws IOException {
-        // 테스트용 규칙 파일 생성
-        FileWriter writer = new FileWriter("test_rules.txt");
-        writer.write("안전모 착용\n");
-        writer.close();
+    void setUp() throws Exception {
+        // 임시 rules.txt 생성 및 초기화
+        Path rulesFile = tempDir.resolve("rules.txt");
+        Files.write(rulesFile, List.of("rule1", "rule2"),
+                    StandardOpenOption.CREATE, StandardOpenOption.WRITE);
 
-        controller = new RuleManagementController("test_rules.txt");
-    }
-
-    private void setPrivateField(String fieldName, Object value) {
-        try {
-            Field field = RuleManagementController.class.getDeclaredField(fieldName);
-            field.setAccessible(true);
-            field.set(controller, value);
-        } catch (Exception e) {
-            fail("Failed to set field '" + fieldName + "': " + e.getMessage());
-        }
-    }
-
-    private Object getPrivateField(String fieldName) {
-        try {
-            Field field = RuleManagementController.class.getDeclaredField(fieldName);
-            field.setAccessible(true);
-            return field.get(controller);
-        } catch (Exception e) {
-            fail("Failed to get field '" + fieldName + "': " + e.getMessage());
-            return null;
-        }
+        // 컨트롤러/모델/뷰 초기화
+        controller = new RuleManagementController(rulesFile.toString());
+        Field mf = RuleManagementController.class.getDeclaredField("model");
+        mf.setAccessible(true);
+        model = (RuleManagementModel) mf.get(controller);
+        Field vf = RuleManagementController.class.getDeclaredField("view");
+        vf.setAccessible(true);
+        view = (RuleManagementView) vf.get(controller);
     }
 
     @Test
-    public void testAddRuleButtonClick() {
-        RuleManagementView view = (RuleManagementView) getPrivateField("view");
-        JTextField textField = new JTextField("장갑 착용");
-        setPrivateFieldInView(view, "newRuleField", textField);
+    void testInitialLoad_viaController() {
+        List<String> fromModel = model.getRules();
+        List<String> fromView  = view.getRuleCheckBoxes().stream()
+                                      .map(AbstractButton::getText)
+                                      .collect(Collectors.toList());
 
-        JButton addButton = view.getAddButton();
-        addButton.doClick(); // 버튼 클릭으로 addRule 수행
-
-        assertTrue(view.getRuleCheckBoxes().stream()
-                .anyMatch(cb -> cb.getText().equals("장갑 착용")));
+        assertEquals(2, fromModel.size());
+        assertTrue(fromView.containsAll(fromModel));
     }
 
     @Test
-    public void testDeleteRuleButtonClick() {
-        RuleManagementView view = (RuleManagementView) getPrivateField("view");
+    void testAddButtonAction() throws Exception {
+        // 리플렉션으로 private JTextField newRuleField 꺼내 세팅
+        Field tfField = RuleManagementView.class.getDeclaredField("newRuleField");
+        tfField.setAccessible(true);
+        JTextField newRuleField = (JTextField) tfField.get(view);
+        newRuleField.setText("새룰");
 
-        // 체크박스를 강제로 선택
-        JCheckBox toDelete = view.getRuleCheckBoxes().stream()
-                .filter(cb -> cb.getText().equals("안전모 착용"))
-                .findFirst()
-                .orElse(null);
+        // Add 버튼 클릭
+        JButton addBtn = view.getAddButton();
+        addBtn.doClick();
 
-        assertNotNull(toDelete);
-        toDelete.setSelected(true);
-
-        // 삭제 버튼 클릭
-        JButton deleteButton = view.getDeleteButton();
-        // JOptionPane 때문에 YES 선택이 필요하지만 테스트 환경에서는 생략할 수도 있음
-        deleteButton.doClick();
-
-        // 삭제되었는지 확인
-        assertFalse(view.getRuleCheckBoxes().stream()
-                .anyMatch(cb -> cb.getText().equals("안전모 착용")));
+        // 모델에 반영 확인
+        assertTrue(model.getRules().contains("새룰"),
+                   "Add 클릭 후 모델에 '새룰'이 추가되어야 한다");
     }
 
-    private void setPrivateFieldInView(Object view, String fieldName, Object value) {
-        try {
-            Field field = view.getClass().getDeclaredField(fieldName);
-            field.setAccessible(true);
-            field.set(view, value);
-        } catch (Exception e) {
-            fail("Cannot access field in view: " + e.getMessage());
-        }
+    @Test
+    void testDeleteButtonAction() throws IOException {
+        // 모델에 직접 추가 & 뷰 갱신
+        model.addRule("toDelete");
+        view.updateRules(model.getRules());
+
+        // 체크박스에서 toDelete 선택
+        view.getRuleCheckBoxes().forEach(b -> {
+            if (b.getText().equals("toDelete")) {
+                b.setSelected(true);
+            }
+        });
+
+        // Delete 버튼 클릭
+        JButton delBtn = view.getDeleteButton();
+        delBtn.doClick();
+
+        // 모델에서 삭제 확인
+        assertFalse(model.getRules().contains("toDelete"),
+                    "Delete 클릭 후 모델에서 'toDelete'가 제거되어야 한다");
     }
 }

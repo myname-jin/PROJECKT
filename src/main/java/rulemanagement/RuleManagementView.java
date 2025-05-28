@@ -102,4 +102,8 @@ public class RuleManagementView extends JFrame {
     public JButton getBackButton() {
         return backButton;
     }
+
+    Object getNewRuleField() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

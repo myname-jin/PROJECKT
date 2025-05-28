@@ -76,10 +76,7 @@ public class ReservationGUIController {
     
     public ReservationGUIController() {
 
-//        this.userName = "테스트용";
-//    this.userId = "20230004";
-//    this.userDept = "컴퓨터소프트웨어공학과";
-//    this.userType = "교수";
+
         view = new ReservationView();
         view.setUserInfo(userName, userId, userDept);
 
@@ -250,12 +247,7 @@ public class ReservationGUIController {
         }
 
         int dayCol = getDayColumnIndex(date);
-        //주말 예약 불가 로직
-        //if (dayCol == -1) {
-        //  view.clearTimeSlots();
-        // view.showMessage("주말은 예약할 수 없습니다.");
-        //return;
-        // }
+        
 
         Sheet sheet = workbook.getSheet(roomName);
         List<String> availableTimes = getAvailableTimesByDay(sheet, dayCol);
