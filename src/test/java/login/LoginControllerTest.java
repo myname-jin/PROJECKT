@@ -22,22 +22,33 @@ public class LoginControllerTest {
     
     @BeforeAll
     public static void setUpClass() {
+        System.out.println("setUpClass()");
+
     }
     
     @AfterAll
     public static void tearDownClass() {
+        System.out.println("tearDownClass()");
     }
     
     @BeforeEach
     public void setUp() {
+        System.out.println("setUp()");
     }
     
     @AfterEach
     public void tearDown() {
+        System.out.println("tearDown()");
     }
 
     @Test
-    public void testDefaultConstructor() {
+    public void testHandleSignup() {
+        System.out.println("회원가입 화면 테스트");        
+        LoginView loginView = new LoginView();
+        LoginModel loginModel = new LoginModel();
+        LoginController loginController = new LoginController(loginView, loginModel);
+
+        loginController.handleSignup();
     }
     
 }

@@ -36,7 +36,7 @@ public class SignupModel {
         if (userId.isEmpty() || password.isEmpty() || role.isEmpty() || userName.isEmpty() || userDept.isEmpty()) {
             return false;
         }
-        // role 값을 "admin" 또는 "user"로 제한
+        // role 값을 "admin" 또는 "학생" 또는 "교사"로 제한
         if (!role.equals("admin") && !role.equals("학생")&& !role.equals("교수")) {
             return false;
         }

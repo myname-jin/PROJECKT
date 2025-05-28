@@ -145,7 +145,7 @@
             }
         }
 
-        private void handleSignup() {
+        public void handleSignup() {
             view.dispose();
             SignupView signupView = new SignupView();
             SignupModel signupModel = new SignupModel();

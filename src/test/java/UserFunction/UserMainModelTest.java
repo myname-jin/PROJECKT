@@ -1,63 +1,64 @@
-///*
-// * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-// * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
-// */
-//package UserFunction;
-//
-///**
-// *
-// * @author jms5310
-// */
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import java.io.*;
-//import java.net.Socket;
-//import static org.junit.jupiter.api.Assertions.*;
-//import static org.mockito.Mockito.*;
-//
-//public class UserMainModelTest {
-//    
-//    private UserMainModel model;
-//    private String userId;
-//    private Socket mockSocket;
-//    private BufferedReader mockReader;
-//    private BufferedWriter mockWriter;
-//    
-//    @BeforeEach
-//    public void setUp() {
-//        userId = "20211111";
-//        mockSocket = mock(Socket.class);
-//        mockReader = mock(BufferedReader.class);
-//        mockWriter = mock(BufferedWriter.class);
-//        
-//        model = new UserMainModel(userId, mockSocket, mockReader, mockWriter);
-//    }
-//    
-//    @Test
-//    public void testGetUserId() {
-//        assertEquals(userId, model.getUserId(), "UserID가 생성자에서 설정한 값과 일치해야 함");
-//    }
-//    
-//    @Test
-//    public void testGetSocket() {
-//        assertEquals(mockSocket, model.getSocket(), "Socket이 생성자에서 설정한 값과 일치해야 함");
-//    }
-//    
-//    @Test
-//    public void testGetReader() {
-//        assertEquals(mockReader, model.getIn(), "BufferedReader가 생성자에서 설정한 값과 일치해야 함");
-//    }
-//    
-//    @Test
-//    public void testGetWriter() {
-//        assertEquals(mockWriter, model.getOut(), "BufferedWriter가 생성자에서 설정한 값과 일치해야 함");
-//    }
-//    
-//    @Test
-//    public void testDefaultConstructor() {
-//         
-//    UserMainModel defaultModel = new UserMainModel(null, null, null, null);
-//    // 실제 구현은 null을 그대로 유지하므로 그에 맞게 테스트
-//    assertNull(defaultModel.getUserId(), "UserID가 null이면 그대로 null을 반환해야 함");
-//    }
-//}
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/UnitTests/JUnit5TestClass.java to edit this template
+ */
+package UserFunction;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ *
+ * @author jms5310
+ */
+public class UserMainModelTest {
+    
+    public UserMainModelTest() {
+    }
+    
+    @BeforeAll
+    public static void setUpClass() {
+    }
+    
+    @AfterAll
+    public static void tearDownClass() {
+    }
+    
+    @BeforeEach
+    public void setUp() {
+    }
+    
+    @AfterEach
+    public void tearDown() {
+    }
+
+    @Test
+    public void testGetUserId() {
+        String userId = "test123";
+        String userType = "학생";
+        UserMainModel instance = new UserMainModel(userId, userType, null, null, null);
+        
+        String result = instance.getUserId();
+        assertEquals("test123", result);
+    }
+
+    @Test
+    public void testGetUserName() {
+        UserMainModel instance = new UserMainModel("testUser", "학생", null, null, null);
+        
+        String result = instance.getUserName();
+        assertNotNull(result);
+    }
+
+    @Test
+    public void testGetUserType() {
+        UserMainModel instance = new UserMainModel("testUser", "교수", null, null, null);
+        
+        String result = instance.getUserType();
+        assertNotNull(result);
+    }
+}
