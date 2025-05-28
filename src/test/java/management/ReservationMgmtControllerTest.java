@@ -27,8 +27,8 @@ public class ReservationMgmtControllerTest {
 
         // 샘플 예약 데이터 입력
         Files.write(tempReservationFile, List.of(
-                "홍길동,01012345678,20231234,컴퓨터공학과,301호,A,2025-05-21,B,09:00,10:00,X,대여",
-                "김철수,01087654321,20231235,소프트웨어학과,302호,A,2025-05-22,B,11:00,12:00,X,대여"
+                "홍길동,01012345678,20231234,컴퓨터소프트웨어학과,913,A,2025-05-21,B,09:00,10:00,X,승인",
+                "김철수,01087654321,20231235,컴퓨터소프트웨어학과,912,A,2025-05-22,B,11:00,12:00,X,승인"
         ));
 
         // 초기 차단 사용자 없음
@@ -141,7 +141,7 @@ public class ReservationMgmtControllerTest {
         List<ReservationMgmtModel> list = controller.getAllReservations();
         assertEquals(2, list.size());
         assertEquals("홍길동", list.get(0).getName());
-        assertEquals("302호", list.get(1).getRoom());
+        assertEquals("912", list.get(1).getRoom());
     }
 
     @Test
