@@ -8,15 +8,10 @@ package login;
  *
  * @author adsd3
  */
-import javax.swing.*;
+import login.ConnectView;
 
 public class Main {
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            LoginView view = new LoginView();
-            LoginModel model = new LoginModel();
-            new LoginController(view, model);
-            view.setVisible(true);
-        });
+        new ConnectView(); // IP 입력 전용 창 실행
     }
 }

@@ -52,4 +52,55 @@
         <maven.compiler.target>21</maven.compiler.target>
         <exec.mainClass>com.mycompany.javaprojeckt.JAVAPROJECKT</exec.mainClass>
     </properties>
+     <build>
+  <plugins>
+    <!-- 1) 리소스를 target/src/main/resources 로 복사 -->
+    <plugin>
+      <artifactId>maven-resources-plugin</artifactId>
+      <version>3.3.1</version>
+      <executions>
+        <execution>
+          <id>copy-app-resources</id>
+          <phase>package</phase>
+          <goals>
+            <goal>copy-resources</goal>
+          </goals>
+          <configuration>
+            <!-- 복사 대상 디렉터리 -->
+            <outputDirectory>${project.build.directory}/src/main/resources</outputDirectory>
+            <resources>
+              <resource>
+                <!-- 원본 리소스 -->
+                <directory>${project.basedir}/src/main/resources</directory>
+                <filtering>false</filtering>
+              </resource>
+            </resources>
+          </configuration>
+        </execution>
+      </executions>
+    </plugin>
+
+    <!-- 2) 기존 Shade 플러그인 (메인클래스 지정) -->
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-shade-plugin</artifactId>
+      <version>3.5.1</version>
+      <executions>
+        <execution>
+          <phase>package</phase>
+          <goals>
+            <goal>shade</goal>
+          </goals>
+          <configuration>
+            <transformers>
+              <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                <mainClass>login.Main</mainClass>
+              </transformer>
+            </transformers>
+          </configuration>
+        </execution>
+      </executions>
+    </plugin>
+  </plugins>
+</build>    
 </project>

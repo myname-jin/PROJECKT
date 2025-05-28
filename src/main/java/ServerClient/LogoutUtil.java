@@ -18,18 +18,21 @@ public class LogoutUtil {
 
     public static void attach(JFrame frame, String userId, Socket socket, BufferedWriter out) {
         if (frame == null || userId == null || socket == null || out == null) {
-            return; // 관리자거나 비정상 상황: 아무것도 하지 않음
+            return;
         }
 
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 try {
+                    // 서버에 LOGOUT 신호는 보냄
                     out.write("LOGOUT:" + userId + "\n");
                     out.flush();
-                    socket.close(); // 소켓도 정리
+
+                    //  소켓은 닫지 않음 (FileWatcher 등이 계속 사용 중)
+
                 } catch (IOException ex) {
-                    ex.printStackTrace(); // 예외는 로깅만
+                    ex.printStackTrace();
                 }
             }
         });

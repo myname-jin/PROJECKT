@@ -11,11 +11,13 @@ import java.util.*;
 public class ReservationView extends JFrame {
     private JLabel nameLabel, idLabel, deptLabel;
     private JComboBox<String> roomTypeComboBox;
+    private JLabel roomInfoLabel;
     private JComboBox<String> roomComboBox;
     private JPanel timeSlotPanel;
     private JDatePickerImpl datePicker;
     private JTextField selectedTimeField;
     private JLabel totalDurationLabel;
+    private JPanel purposePanel;
     private JButton[] purposeButtons;
     private JButton reserveButton;
     private JButton backButton;
@@ -53,6 +55,10 @@ public class ReservationView extends JFrame {
         roomComboBox = new JComboBox<>();
         roomPanel.add(roomComboBox);
         centerPanel.add(roomPanel);
+        
+        roomInfoLabel = new JLabel(" ");  // 초기 빈 라벨
+        roomPanel.add(roomInfoLabel);    // 강의실 선택 아래에 배치
+
 
         // 날짜 선택
         UtilDateModel model = new UtilDateModel();
@@ -100,7 +106,7 @@ public class ReservationView extends JFrame {
         purposeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         centerPanel.add(purposeLabel);
         
-        JPanel purposePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        purposePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         String[] purposes = {"수업", "시험", "스터디", "세미나", "기타"};
         purposeButtons = new JButton[purposes.length];
         
@@ -110,9 +116,9 @@ public class ReservationView extends JFrame {
         for (int i = 0; i < purposes.length; i++) {
             final String purpose = purposes[i];
             JButton btn = new JButton(purpose);
-             btn.setPreferredSize(fixedSize);           // ✅ 고정 크기
-            btn.setMargin(margin);                     // ✅ 고정 여백
-            btn.setFocusPainted(false);                // ✅ 클릭 테두리 제거
+             btn.setPreferredSize(fixedSize);           //  고정 크기
+            btn.setMargin(margin);                     //  고정 여백
+            btn.setFocusPainted(false);                //  클릭 테두리 제거
             btn.setBackground(null);                   // 초기 배경
 
             purposeButtons[i] = btn;
@@ -245,6 +251,11 @@ centerPanel.add(purposePanel);
     public void addReserveButtonListener(ActionListener listener) {
         reserveButton.addActionListener(listener);
     }
+    
+    public void addBackButtonListener(ActionListener listener) {
+    backButton.addActionListener(listener);
+    }
+
 
     public String getSelectedTime() {
         return selectedTimeField.getText().trim();
@@ -257,9 +268,56 @@ centerPanel.add(purposePanel);
     public JButton getBackButton() {
     return backButton;
     }
-
-
     
+    public void setRoomInfoText(String info) {
+    roomInfoLabel.setText(info);
+}
+    
+    //교수용 설정. 일단은 호출만. 필요시 기능 추가
+    public void enableProfessorMode() {
+//    JPanel professorPanel = new JPanel();
+//    professorPanel.setLayout(new BoxLayout(professorPanel, BoxLayout.X_AXIS));
+//    professorPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+    }
+
+    // 목적 버튼 외부 설정 메서드
+    public void setPurposeOptions(java.util.List<String> options) {
+        purposePanel.removeAll();
+        purposeButtons = new JButton[options.size()];
+
+        Dimension fixedSize = new Dimension(80, 30);
+        Insets margin = new Insets(5, 10, 5, 10);
+
+        for (int i = 0; i < options.size(); i++) {
+            final String purpose = options.get(i);
+            JButton btn = new JButton(purpose);
+            btn.setPreferredSize(fixedSize);
+            btn.setMargin(margin);
+            btn.setFocusPainted(false);
+            btn.setBackground(null);
+
+            btn.addActionListener(e -> {
+                selectedPurpose = purpose;
+                for (JButton b : purposeButtons) {
+                    b.setBackground(null);
+                    b.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+                }
+                btn.setBackground(new Color(200, 230, 255));
+                btn.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
+            });
+
+            purposeButtons[i] = btn;
+            purposePanel.add(btn);
+        }
+
+        purposePanel.revalidate();
+        purposePanel.repaint();
+
+        if (purposeButtons.length > 0) {
+            purposeButtons[0].doClick(); // 기본 선택
+        }
+    }
+
    public void showMessage(String msg) {
         JOptionPane.showMessageDialog(this, msg);
     }

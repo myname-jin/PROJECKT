@@ -1,131 +1,165 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package login;
+    /*
+     * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+     * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+     */
+    package login;
 
-import management.ReservationMgmtView;
-import ruleagreement.RuleAgreementController;
+import ServerClient.FileWatcher;
+import ServerClient.SocketManager;
+    import ruleagreement.RuleAgreementController;
+    import management.ReservationMgmtView;
 
-import javax.swing.*;
-import java.io.*;
-import java.net.Socket;
+    import javax.swing.*;
+    import java.io.*;
+    import java.net.Socket;
 
-public class LoginController {
+    public class LoginController {
 
-    private final LoginView view;
-    private final LoginModel model;
+        private final LoginView view;
+        private final LoginModel model;
+        private final Socket socket;
+        private final BufferedWriter out;
+        private final BufferedReader in;
 
-    public LoginController(LoginView view, LoginModel model) {
-        this.view = view;
-        this.model = model;
+        public LoginController(LoginView view, LoginModel model) {
+            this.view = view;
+            this.model = model;
 
-        view.btnLogin.addActionListener(e -> handleLogin());
-        view.btnSignup.addActionListener(e -> handleSignup()); // 회원가입 버튼
-    }
+            Socket tempSocket = null;
+            BufferedWriter tempOut = null;
+            BufferedReader tempIn = null;
 
-    private void handleLogin() {
-        String userId = view.getUserId();
-        String password = view.getPassword();
-        String role = view.getRole();
-
-        // 관리자 로그인 처리
-        if (role.equals("admin")) {
-            if (model.validateCredentials(userId, password, role)) {
-                showNextPage(userId, role, null, null, null);
-                view.dispose();
-            } else {
-                JOptionPane.showMessageDialog(view, "관리자 인증 실패", "오류", JOptionPane.ERROR_MESSAGE);
+            try {
+                tempSocket = new Socket("127.0.0.1", 5000);
+                tempOut = new BufferedWriter(new OutputStreamWriter(tempSocket.getOutputStream()));
+                tempIn = new BufferedReader(new InputStreamReader(tempSocket.getInputStream()));
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(view, "서버 접속 실패: " + e.getMessage());
             }
-            return;
+
+            this.socket = tempSocket;
+            this.out = tempOut;
+            this.in = tempIn;
+            setupListeners();
         }
 
-        // 사용자 로그인 처리 (서버 연결)
-        view.btnLogin.setEnabled(false);
-        new Thread(() -> {
-            try {
-                Socket socket = new Socket("localhost", 12345);
-                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        public LoginController(LoginView view, LoginModel model, Socket socket) throws IOException {
+            this.view = view;
+            this.model = model;
+            this.socket = socket;
+            this.out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            setupListeners();
+        }
 
-                out.write("LOGIN:" + userId + ":" + password + "\n");
+        private void setupListeners() {
+            view.getLoginButton().addActionListener(e -> attemptLogin());
+            view.getRegisterButton().addActionListener(e -> handleSignup());
+        }
+
+        private void attemptLogin() {
+            String userId = view.getUserId();
+            String password = view.getPassword();
+            String role = view.getRole(); // "학생", "교수", "admin"
+
+            try {
+                out.write("LOGIN:" + userId + "," + password + "," + role);
+                out.newLine();
                 out.flush();
 
-                String response;
-                boolean waitingShown = false;
-                while ((response = in.readLine()) != null) {
-                    if (response.startsWith("OK")) {
-                        showNextPage(userId, role, socket, in, out);
-                        break;
+                String response = in.readLine();
 
-                    } else if (response.startsWith("WAIT") && !waitingShown) {
-                        waitingShown = true;
-                        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(view,
-                                "접속 대기 중입니다. 자리가 나면 자동 접속됩니다.",
-                                "대기 중", JOptionPane.INFORMATION_MESSAGE));
+                if ("LOGIN_SUCCESS".equals(response)) {
+                    JOptionPane.showMessageDialog(view, userId + "님 로그인 성공");
+                    
+                    SocketManager.setSocket(socket);  // ← 이 줄을 꼭 먼저 추가
 
-                    } else if (response.startsWith("FAIL")) {
-                        final String failMsg = response;
+                    new FileWatcher().start();
 
-                        SwingUtilities.invokeLater(() -> {
-                            JOptionPane.showMessageDialog(
-                                    view,
-                                    failMsg,
-                                    "접속 거부",
-                                    JOptionPane.WARNING_MESSAGE
-                            );
-                            view.btnLogin.setEnabled(true);
-                        });
+                    // 🔽 서버에 유저 정보 요청
+                    out.write("INFO_REQUEST:" + userId + "\n");
+                    out.flush();
 
-                        socket.close();
-                        break;
+                    String userInfoResponse = in.readLine();
+                    String name = "알수없음";
+                    String dept = "미지정";
+                    String userType = role;
+
+                    if (userInfoResponse != null && userInfoResponse.startsWith("INFO_RESPONSE:")) {
+                        String[] parts = userInfoResponse.substring("INFO_RESPONSE:".length()).split(",");
+                        if (parts.length >= 4) {
+                            name = parts[1];
+                            dept = parts[2];
+                            userType = parts[3];
+                        }
                     }
-                }
 
-            } catch (IOException e) {
-                SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(view,
-                        "서버 연결 실패: " + e.getMessage(),
-                        "오류", JOptionPane.ERROR_MESSAGE));
-                view.btnLogin.setEnabled(true);
-            }
-        }).start();
-    }
+                    try {
+                        if ("admin".equalsIgnoreCase(role)) {
+                            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+                            new ReservationMgmtView().setVisible(true);
+                        } else {
+                            new RuleAgreementController(userId, userType, socket, out);
+                        }
+                        view.dispose();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(view, "화면 전환 오류: " + ex.getMessage());
+                    }
 
-    private void handleSignup() {
-        view.dispose();
+                }else if ("WAIT".equals(response)) {
+        JOptionPane.showMessageDialog(view, "현재 접속 인원 초과로 대기 중입니다.");
 
-        SignupView signupView = new SignupView();
-        SignupModel signupModel = new SignupModel();
-        new SignupController(signupView, signupModel);
+        String line;
+        while ((line = in.readLine()) != null) {
+            if ("LOGIN_SUCCESS".equals(line)) {
+                JOptionPane.showMessageDialog(view, userId + "님 자동 로그인 성공");
 
-        signupView.setVisible(true); // 회원가입 화면 띄우기
-    }
+                SocketManager.setSocket(socket);  // ← 이 줄을 꼭 먼저 추가
 
-    private void showNextPage(String userId, String role,
-                              Socket socket, BufferedReader in, BufferedWriter out) {
-        SwingUtilities.invokeLater(() -> {
-            view.dispose();
+                    new FileWatcher().start();
+                // 서버에 정보 요청
+                out.write("INFO_REQUEST:" + userId);
+                out.newLine();
+                out.flush();
+                 String userInfoResponse = in.readLine();
+                    String name = "알수없음";
+                    String dept = "미지정";
+                    String userType = role;
 
-            if ("admin".equals(role)) {
-                try {
-                    UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-                } catch (Exception ignored) {
-                }
-
+                // ✅ 여기서 EDT로 새 창 띄우고 기존 창 닫기
                 SwingUtilities.invokeLater(() -> {
-                    ReservationMgmtView mgmtView = new ReservationMgmtView();
-                    mgmtView.setLocationRelativeTo(null);
-                    mgmtView.setVisible(true);
+                    try {
+                        RuleAgreementController rac =
+                            new RuleAgreementController(userId, userType, socket, out);
+                        rac.showView();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(view,
+                            "이용 동의 화면 오류: " + ex.getMessage());
+                    }
+                    view.dispose();
                 });
-            } else {
-                try {
-                    new RuleAgreementController(userId, socket, out);
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(null,
-                            "규칙 동의 화면을 여는 중 오류가 발생했습니다:\n" + e.getMessage(),
-                            "오류", JOptionPane.ERROR_MESSAGE);
-                }
+                break;
             }
-        });
+        }
     }
-}
+                else {
+                    JOptionPane.showMessageDialog(view, "로그인 실패");
+                }
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(view, "서버 통신 오류: " + ex.getMessage());
+            }
+        }
+
+        public void handleSignup() {
+            view.dispose();
+            SignupView signupView = new SignupView();
+            SignupModel signupModel = new SignupModel();
+            new SignupController(signupView, signupModel);
+            signupView.setVisible(true);
+        }
+
+    }

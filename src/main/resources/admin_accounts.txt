@@ -1,1 +1,0 @@
-학번/교수번호,jPasswordField1,나관리,컴소공
