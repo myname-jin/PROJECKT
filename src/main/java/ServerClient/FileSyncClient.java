@@ -39,7 +39,6 @@ public class FileSyncClient {
             }
             out.write("<<EOF>>\n");
             out.flush();
-            System.out.println("[FileSyncClient] 서버로 전송 완료: " + filename);
         } catch (IOException e) {
             e.printStackTrace();
         }

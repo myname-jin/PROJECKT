@@ -150,14 +150,7 @@ private BufferedWriter out;
         JOptionPane.showMessageDialog(this, "취소할 예약을 선택해주세요.", "알림", JOptionPane.WARNING_MESSAGE);
         return;
     }
-    
-    // 선택된 행이 예약 가능한 상태인지 확인
-   // String status = jTable1.getValueAt(selectedRow, 7).toString(); // 승인 상태 열
-   // if ("거절".equals(status)) {
-   //     JOptionPane.showMessageDialog(this, "이미 거절된 예약은 취소할 수 없습니다.", "알림", JOptionPane.WARNING_MESSAGE);
-   //     return;
-  //  }
-    
+  
     // 취소 컨트롤러 생성 및 팝업창 표시
     UserReservationCancelController cancelController = 
         new UserReservationCancelController(this, selectedRow);
@@ -167,37 +160,7 @@ private BufferedWriter out;
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(UserReservationListView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(UserReservationListView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(UserReservationListView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(UserReservationListView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new UserReservationListView().setVisible(true);
-            }
-        });
-    }
+    
 public JTable getTable() {
     return jTable1; // ← 실제 변수 이름으로 변경
 }

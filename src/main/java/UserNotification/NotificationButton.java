@@ -151,11 +151,10 @@ public class NotificationButton extends JButton {
     }
     
     /**
-     * ✅ 컴포넌트 종료 시 정리 작업 (싱글톤이므로 인스턴스 제거하지 않음)
+     *  컴포넌트 종료 시 정리 작업 (싱글톤이므로 인스턴스 제거하지 않음)
      */
     public void shutdown() {
         stopBlinking();
-        // ✅ 싱글톤 인스턴스는 제거하지 않음 (다른 곳에서도 사용할 수 있음)
-        // controller = null; <- 제거
+        //  싱글톤 인스턴스는 제거하지 않음 (다른 곳에서도 사용할 수 있음)
     }
 }

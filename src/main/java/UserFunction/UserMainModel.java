@@ -29,7 +29,7 @@ public class UserMainModel {
     this.in = in;
     this.out = out;
         
-        loadUserInfoFromFile(); // ✅ 파일에서 userName, userDept, userType 한 번만 읽어서 저장
+        loadUserInfoFromFile(); //  파일에서 userName, userDept, userType 한 번만 읽어서 저장
     }
     
      private void loadUserInfoFromFile() {
@@ -56,30 +56,6 @@ public class UserMainModel {
         this.userType = "학생";
      }
      
-//public String getUserName() {
-//    String name = "사용자"; // 기본값
-//    
-//    try {
-//        File file = new File("src/main/resources/user_signup.txt");
-//        if (file.exists()) {
-//            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-//                String line;
-//                while ((line = reader.readLine()) != null) {
-//                    String[] parts = line.split(",");
-//                    if (parts.length >= 3 && parts[0].equals(userId)) {
-//                        name = parts[2]; // 이름은 세 번째 필드
-//                        break;
-//                    }
-//                }
-//            }
-//        }
-//    } catch (IOException e) {
-//        e.printStackTrace();
-//    }
-//    
-//    return name;
-//}
-    // Getters
     public String getUserId() { return userId; }
     public String getUserName() { return userName; }
     public String getUserDept() { return userDept; }

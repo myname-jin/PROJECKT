@@ -31,12 +31,7 @@ public class UserReservationListController {
     private BufferedWriter out;
     
     
-    //하드코딩
-    //public UserReservationListController(JTable table) {
-   //      this.userId = "20211111"; // 하드코딩된 테스트 ID
-   //     this.table = table;
-    //    loadReservationData();
-   // }
+    
      public UserReservationListController(String userId, String userType, Socket socket, BufferedReader in, BufferedWriter out) {
         this.userId = userId; // 조건분기로 처리
         this.socket = socket;
@@ -44,7 +39,7 @@ public class UserReservationListController {
         this.out = out;
         this.userType = userType;
 
-        // ✅ 로그아웃 자동 처리 등록
+        //  로그아웃 자동 처리 등록
        
         
         view = new UserReservationListView();

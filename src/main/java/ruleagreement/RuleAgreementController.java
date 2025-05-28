@@ -25,7 +25,7 @@ public class RuleAgreementController {
         this.model = new RuleAgreementModel(absolutePath);
         this.view = new RuleAgreementView(model.getRules());
 
-        // ✅ 로그아웃 처리
+        //  로그아웃 처리
         LogoutUtil.attach(view, userId, socket, out);
 
         view.getNextButton().addActionListener(e -> {
@@ -34,10 +34,10 @@ public class RuleAgreementController {
                 view.dispose();
 
                 try {
-                    // ✅ in 스트림 생성
+                    // in 스트림 생성
                     BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-                    // ✅ Main 화면 진입
+                    //  Main 화면 진입
                     new UserMainController(userId, userType, socket, in, out);
                 } catch (IOException ex) {
                     ex.printStackTrace();

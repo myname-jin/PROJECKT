@@ -23,7 +23,7 @@ public class CalendarController {
         // 날짜 더블클릭 핸들러 등록
         view.setDayDoubleClickHandler(this::onDateDoubleClick);
 
-        // 🔁 뒤로가기 버튼 핸들러 등록
+        //  뒤로가기 버튼 핸들러 등록
         view.addBackButtonListener(e -> {
             view.dispose();
             ReservationMgmtView mgmtView = new ReservationMgmtView();

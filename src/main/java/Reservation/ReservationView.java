@@ -116,9 +116,9 @@ public class ReservationView extends JFrame {
         for (int i = 0; i < purposes.length; i++) {
             final String purpose = purposes[i];
             JButton btn = new JButton(purpose);
-             btn.setPreferredSize(fixedSize);           // ✅ 고정 크기
-            btn.setMargin(margin);                     // ✅ 고정 여백
-            btn.setFocusPainted(false);                // ✅ 클릭 테두리 제거
+             btn.setPreferredSize(fixedSize);           //  고정 크기
+            btn.setMargin(margin);                     //  고정 여백
+            btn.setFocusPainted(false);                //  클릭 테두리 제거
             btn.setBackground(null);                   // 초기 배경
 
             purposeButtons[i] = btn;

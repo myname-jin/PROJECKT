@@ -22,8 +22,6 @@ public class FileWatcher extends Thread {
             Path path = Paths.get(watchDir);
             path.register(watchService, ENTRY_MODIFY);
 
-            System.out.println("[FileWatcher] 텍스트 파일 변경 감시 시작...");
-
             while (true) {
                 WatchKey key = watchService.take(); // blocking
                 for (WatchEvent<?> event : key.pollEvents()) {
@@ -31,7 +29,6 @@ public class FileWatcher extends Thread {
                     if (kind == ENTRY_MODIFY) {
                         String filename = event.context().toString();
                         if (filename.endsWith(".txt")) {
-                            System.out.println("[FileWatcher] 수정 감지됨: " + filename);
                             FileSyncClient.syncFile(filename); // 서버로 전송
                         }
                     }

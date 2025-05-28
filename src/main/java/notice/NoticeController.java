@@ -42,7 +42,7 @@ public class NoticeController {
         listView.addEditListener(e -> onEdit());
         listView.addDeleteListener(e -> onDelete());
 
-        // ✅ 뒤로가기 버튼 동작 추가
+        //  뒤로가기 버튼 동작 추가
         listView.getBackButton().addActionListener(e -> {
             try {
                 UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");

@@ -48,12 +48,12 @@ public class UserMainController {
             }
         }
     } catch (IOException e) {
-        System.out.println("❌ 사용자 정보 수신 실패: " + e.getMessage());
+        System.out.println(" 사용자 정보 수신 실패: " + e.getMessage());
     }
 
     this.model = new UserMainModel(userId, userType, socket, in, out);
     this.view = new UserMainView();
-    view.setWelcomeMessage(userName); // ✅ 서버에서 받은 이름 사용
+    view.setWelcomeMessage(userName); //  서버에서 받은 이름 사용
 
     initializeNotificationSystem();
     initListeners();
@@ -69,7 +69,7 @@ public class UserMainController {
         try {
             notificationController = NotificationController.getInstance(
     model.getUserId(),
-    model.getUserType(),  // ✅ 여기 추가
+    model.getUserType(),  //  여기 추가
     model.getSocket(),
     model.getIn(),
     model.getOut()

@@ -35,7 +35,7 @@ public class NotificationController {
     private BufferedWriter out;
     private boolean isTimerRunning = false;
     
-    // ✅ 시간 기반 중복 방지로 변경 (영구 저장 대신)
+    //  시간 기반 중복 방지로 변경 (영구 저장 대신)
     private Map<String, LocalDateTime> lastShownAlerts = new HashMap<>();
     private Map<String, LocalDateTime> lastShownDialogs = new HashMap<>();
     private Map<String, LocalDateTime> processedCancellations = new HashMap<>();
@@ -45,7 +45,7 @@ public class NotificationController {
     private static final int DIALOG_COOLDOWN_MINUTES = 10;
 
     /**
-     * ✅ private 생성자 (싱글톤 패턴)
+     *  private 생성자 (싱글톤 패턴)
      */
     private NotificationController(String userId, String userType, Socket socket, BufferedReader in, BufferedWriter out) {
     this.userId = userId;
@@ -61,7 +61,7 @@ public class NotificationController {
 }
     
     /**
-     * ✅ 싱글톤 인스턴스 반환 (userId별로 관리)
+     *  싱글톤 인스턴스 반환 (userId별로 관리)
      */
        public static NotificationController getInstance(String userId, String userType, Socket socket, BufferedReader in, BufferedWriter out) {
         NotificationController instance = instances.get(userId);
@@ -75,22 +75,22 @@ public class NotificationController {
     }
     
     /**
-     * ✅ 연결 정보 업데이트 (소켓 재연결 등)
+     *  연결 정보 업데이트 (소켓 재연결 등)
      */
     private void updateConnection(Socket socket, BufferedReader in, BufferedWriter out) {
         this.socket = socket;
         this.in = in;
         this.out = out;
-        // ✅ 연결 업데이트 시 타이머 재시작
+        //  연결 업데이트 시 타이머 재시작
     System.out.println("🔄 연결 업데이트 - 타이머 재시작");
     initializeTimers();
     
-    // ✅ 즉시 현재 상황 체크
+    //  즉시 현재 상황 체크
     checkCurrentSituation();
     }
     
     /**
-     * ✅ 사용자 로그아웃 시 인스턴스 정리
+     *  사용자 로그아웃 시 인스턴스 정리
      */
     public static void removeInstance(String userId) {
         NotificationController instance = instances.get(userId);
@@ -101,7 +101,7 @@ public class NotificationController {
     }
     
     /**
-     * ✅ 접속 시 현재 상황 즉시 체크
+     *  접속 시 현재 상황 즉시 체크
      */
     private void checkCurrentSituation() {
         LocalDateTime now = LocalDateTime.now();
@@ -117,7 +117,7 @@ public class NotificationController {
             LocalDateTime reservationTime = item.getReservationTime();
             String reservationKey = generateReservationKey(item);
             
-            // ✅ 시간 기반 중복 체크
+            //  시간 기반 중복 체크
             if (shouldShowAlert(reservationKey)) {
                 if (Math.abs(java.time.Duration.between(now, reservationTime).toMinutes()) <= 10) {
                     SwingUtilities.invokeLater(() -> {
@@ -169,7 +169,7 @@ public class NotificationController {
     }
     
     /**
-     * ✅ 알림 표시 여부 결정 (시간 기반)
+     *  알림 표시 여부 결정 (시간 기반)
      */
     private boolean shouldShowAlert(String reservationKey) {
         LocalDateTime lastShown = lastShownAlerts.get(reservationKey);
@@ -182,7 +182,7 @@ public class NotificationController {
     }
     
     /**
-     * ✅ 다이얼로그 표시 여부 결정 (시간 기반)
+     *  다이얼로그 표시 여부 결정 (시간 기반)
      */
     private boolean shouldShowDialog(String reservationKey) {
         LocalDateTime lastShown = lastShownDialogs.get(reservationKey);
@@ -195,7 +195,7 @@ public class NotificationController {
     }
     
     /**
-     * ✅ 만료된 예약 처리 여부 확인
+     * 만료된 예약 처리 여부 확인
      */
     private boolean hasProcessedCancellation(String reservationKey) {
         return processedCancellations.containsKey(reservationKey);
@@ -213,7 +213,7 @@ public class NotificationController {
                 String reservationKey = generateReservationKey(item);
                 
                 if (!hasProcessedCancellation(reservationKey)) {
-                    System.out.println("✅ 접속 시 만료된 예약 발견 - 취소 처리: " + reservationKey);
+                    System.out.println(" 접속 시 만료된 예약 발견 - 취소 처리: " + reservationKey);
                     
                     int cancelCount = model.processMissedCheckins();
                     
@@ -350,7 +350,7 @@ public class NotificationController {
                 });
                 
                 lastShownAlerts.put(reservationKey, now);
-                System.out.println("✅ 10분 전 알림 표시: " + reservationKey);
+                System.out.println(" 10분 전 알림 표시: " + reservationKey);
             }
         }
     }
@@ -380,7 +380,7 @@ public class NotificationController {
             });
             
             lastShownDialogs.put(reservationKey, now);
-            System.out.println("✅ 입실 확인 다이얼로그 표시: " + reservationKey);
+            System.out.println(" 입실 확인 다이얼로그 표시: " + reservationKey);
         }
     }
     
@@ -412,12 +412,12 @@ public class NotificationController {
         if (item != null) {
             String reservationKey = generateReservationKey(item);
             
-            // ✅ 입실 확인 완료 시 해당 예약에 대한 알림 기록 제거
+            //  입실 확인 완료 시 해당 예약에 대한 알림 기록 제거
             lastShownAlerts.remove(reservationKey);
             lastShownDialogs.remove(reservationKey);
             processedCancellations.put(reservationKey, LocalDateTime.now());
             
-            System.out.println("✅ 입실 확인 완료 - 예약 처리 완료: " + reservationKey);
+            System.out.println(" 입실 확인 완료 - 예약 처리 완료: " + reservationKey);
         }
         
         JOptionPane.showMessageDialog(
@@ -476,7 +476,7 @@ public class NotificationController {
     }
     
     /**
-     * ✅ 오래된 기록 정리 (메모리 관리)
+     *  오래된 기록 정리 (메모리 관리)
      */
     private void cleanupOldRecords() {
         LocalDateTime cutoffTime = LocalDateTime.now().minusDays(1);

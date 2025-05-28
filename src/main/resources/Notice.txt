@@ -3,4 +3,3 @@ sadsas|시스템|true
 ㅁㄴㅇ|긴급|false
 ㅁㄴㅇ|일반|false
 ㅊㅊ|일반|false
-저는 집게 갈겁니다|긴급|true

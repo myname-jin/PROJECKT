@@ -98,7 +98,7 @@ public class ReservationGUIController {
                     } // 추가
                 } // 추가
             } catch (IOException e) { // 추가
-                System.out.println("❌ 사용자 정보 요청 오류: " + e.getMessage()); // 추가
+                System.out.println(" 사용자 정보 요청 오류: " + e.getMessage()); // 추가
             } // 추가
         } // 추가
         initializeReservationFeatures();
@@ -511,25 +511,25 @@ public class ReservationGUIController {
         out.flush();
 
         String response = in.readLine();
-        System.out.println("📥 서버 응답: " + response);
+        System.out.println(" 서버 응답: " + response);
 
         if (response != null && response.startsWith("INFO_RESPONSE:")) {
             String[] parts = response.substring("INFO_RESPONSE:".length()).split(",");
-            System.out.println("📦 분해된 응답: " + Arrays.toString(parts));
+            System.out.println("분해된 응답: " + Arrays.toString(parts));
 
             if (parts.length >= 4) {
-    this.userName = parts[1];  // ✅ 이름
-    this.userDept = parts[2];  // ✅ 학과
-    this.userType = parts[3];  // ✅ 역할
+    this.userName = parts[1];  //  이름
+    this.userDept = parts[2];  //  학과
+    this.userType = parts[3];  //  역할
     view.setUserInfo(this.userName, userId, this.userDept);
 } else {
-                System.out.println("❗ 응답 형식 오류: 5개 요소가 아님");
+                System.out.println(" 응답 형식 오류: 5개 요소가 아님");
             }
         } else {
-            System.out.println("❌ 서버 응답 없음 또는 형식 오류");
+            System.out.println(" 서버 응답 없음 또는 형식 오류");
         }
     } catch (IOException e) {
-        System.out.println("❌ 사용자 정보 요청 실패: " + e.getMessage());
+        System.out.println(" 사용자 정보 요청 실패: " + e.getMessage());
     }
 }
 }
