@@ -25,9 +25,13 @@ public class LogoutUtil {
             @Override
             public void windowClosing(WindowEvent e) {
                 try {
+                    // ✅ 서버에 LOGOUT 신호는 보냄
                     out.write("LOGOUT:" + userId + "\n");
                     out.flush();
-                    socket.close();
+
+                    // ❌ 소켓은 닫지 않음 (FileWatcher 등이 계속 사용 중)
+                    // socket.close(); ← 이 줄 제거
+
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }

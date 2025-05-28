@@ -8,6 +8,7 @@ package login;
  *
  * @author adsd3
  */
+import ServerClient.FileWatcher;
 import login.LoginView;
 import login.LoginModel;
 import login.LoginController;
@@ -45,6 +46,8 @@ public class ConnectView extends JFrame {
             String ip = ipField.getText().trim();
             try {
                 Socket socket = new Socket(ip, 5000);
+                new FileWatcher().start();
+
                 JOptionPane.showMessageDialog(this, "서버 연결 성공");
                 LoginView loginView = new LoginView(); // IP칸 없음
                 LoginModel loginModel = new LoginModel();

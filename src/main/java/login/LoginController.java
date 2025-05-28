@@ -4,6 +4,8 @@
      */
     package login;
 
+import ServerClient.FileWatcher;
+import ServerClient.SocketManager;
     import ruleagreement.RuleAgreementController;
     import management.ReservationMgmtView;
 
@@ -69,6 +71,10 @@
 
                 if ("LOGIN_SUCCESS".equals(response)) {
                     JOptionPane.showMessageDialog(view, userId + "님 로그인 성공");
+                    
+                    SocketManager.setSocket(socket);  // ← 이 줄을 꼭 먼저 추가
+
+                    new FileWatcher().start();
 
                     // 🔽 서버에 유저 정보 요청
                     out.write("INFO_REQUEST:" + userId + "\n");
@@ -109,6 +115,9 @@
             if ("LOGIN_SUCCESS".equals(line)) {
                 JOptionPane.showMessageDialog(view, userId + "님 자동 로그인 성공");
 
+                SocketManager.setSocket(socket);  // ← 이 줄을 꼭 먼저 추가
+
+                    new FileWatcher().start();
                 // 서버에 정보 요청
                 out.write("INFO_REQUEST:" + userId);
                 out.newLine();
