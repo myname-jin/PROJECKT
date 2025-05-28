@@ -13,18 +13,28 @@ import java.net.Socket;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+
+/**
+ * ReservationGUIController
+ * 강의실 예약 시스템의 GUI Controller 클래스
+ * - 사용자 정보 처리
+ * - 엑셀/텍스트 파일 기반 강의실 및 예약 관리
+ * - View(ReservationView)와 연결하여 사용자와 상호작용
+ * - 서버와의 통신(Socket, BufferedReader/Writer) 연동
+ */
+
 public class ReservationGUIController {
 
-    private ReservationView view;
+    private ReservationView view; // 사용자 인터페이스 뷰 (GUI)
     private static final String EXCEL_PATH = "src/main/resources/available_rooms.xlsx";
     private static final List<String> LAB_ROOMS = Arrays.asList("911", "915", "916", "918");
 
-    private List<RoomModel> allRooms = new ArrayList<>();
-    public Workbook workbook;
+    private List<RoomModel> allRooms = new ArrayList<>(); //로드된 강의실 목록
+    public Workbook workbook; // 엑셀 파일 워크북 객체
 
-    private String userName;
-    private String userId;
-    private String userDept;
+    private String userName;  //사용자 이름
+    private String userId;  //사용자id
+    private String userDept;    //사용자 학과
     private String userType; // "학생" 또는 "교수"
 
     private Socket socket;
@@ -44,7 +54,8 @@ public class ReservationGUIController {
         this.out = out;
 
         view = new ReservationView();
-
+        
+        // 서버에서 사용자 정보 불러오기
         initializeUserInfoFromServer();
         System.out.println("최종 유저 정보 - 이름: " + userName + ", 학과: " + userDept);
 
@@ -57,7 +68,12 @@ public class ReservationGUIController {
         view.setVisible(true);
 
     }
-
+    
+    /**
+     * [기본 생성자] - 테스트용
+     * 서버 연결 없이 테스트 또는 임시 실행
+     */
+    
     public ReservationGUIController() {
 
 //        this.userName = "테스트용";
@@ -67,17 +83,17 @@ public class ReservationGUIController {
         view = new ReservationView();
         view.setUserInfo(userName, userId, userDept);
 
-        // 추가: userName이나 userDept가 비어 있으면 서버에 사용자 정보 요청
-        if ((userName == null || userName.isEmpty()) || (userDept == null || userDept.isEmpty())) { // 추가
+        // userName이나 userDept가 비어 있으면 서버에 사용자 정보 요청
+        if ((userName == null || userName.isEmpty()) || (userDept == null || userDept.isEmpty())) { 
             try { // 추가
-                out.write("INFO_REQUEST:" + userId + "\n"); // 추가
+                out.write("INFO_REQUEST:" + userId + "\n"); 
                 out.flush(); // 추가
-                String response = new BufferedReader(new InputStreamReader(socket.getInputStream())).readLine(); // 추가
+                String response = new BufferedReader(new InputStreamReader(socket.getInputStream())).readLine(); 
                 if (response != null && response.startsWith("INFO_RESPONSE:")) { // 추가
-                    String[] parts = response.substring("INFO_RESPONSE:".length()).split(","); // 추가
-                    if (parts.length >= 3) { // 추가
-                        this.userName = parts[1]; // 추가
-                        this.userDept = parts[2]; // 추가
+                    String[] parts = response.substring("INFO_RESPONSE:".length()).split(","); 
+                    if (parts.length >= 3) { 
+                        this.userName = parts[1]; 
+                        this.userDept = parts[2]; 
                         view.setUserInfo(this.userName, userId, this.userDept); // 추가
                     } // 추가
                 } // 추가
@@ -88,7 +104,12 @@ public class ReservationGUIController {
         initializeReservationFeatures();
         view.setVisible(true);
     }
-
+    
+      /**
+     * 예약 기능 초기화:
+     * - 강의실 목록, 버튼 이벤트, 시간대 표시, UI 구성 등
+     */
+    
     private void initializeReservationFeatures() {
 
         if (userType.equals("교수")) {
@@ -196,7 +217,11 @@ public class ReservationGUIController {
 
         view.setVisible(true);
     }
-
+    
+    /**
+     * classroom.txt에서 강의실 정보 가져오기 (위치, 인원, 비고)
+     */
+    
     public String getRoomInfo(String roomName) {
         String filePath = "src/main/resources/classroom.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
@@ -212,7 +237,11 @@ public class ReservationGUIController {
         }
         return "정보 없음";
     }
-
+    
+    /**
+     * 날짜/강의실 선택 시 → 선택 가능한 시간대 갱신
+     */
+    
     private void updateAvailableTimes() {
         String date = view.getSelectedDate();
         String roomName = view.getSelectedRoom();
@@ -239,6 +268,10 @@ public class ReservationGUIController {
             });
         }
     }
+    
+    /**
+     * 선택한 시간대들의 총 예약 시간 계산 (분 단위)
+     */
 
     public int calculateTotalDuration(List<String> times) {
         int total = 0;
@@ -256,6 +289,10 @@ public class ReservationGUIController {
         }
         return total;
     }
+    
+     /**
+     * 사용자가 이미 예약했는지 확인 (하루 1회 제한) - 학생만
+     */
 
     public boolean isUserAlreadyReserved(String userId, String date) {
         String path = "src/main/resources/reservation.txt";
@@ -275,6 +312,10 @@ public class ReservationGUIController {
         }
         return false;
     }
+    
+    /**
+     * 선택한 시간대에 중복 예약이 있는지 확인
+     */
 
     public boolean isTimeSlotAlreadyReserved(String roomName, String date, List<String> newTimes) {
         String path = "src/main/resources/reservation.txt";
@@ -315,7 +356,11 @@ public class ReservationGUIController {
 
         return false;
     }
-
+    
+    /**
+     * 강의실 이름으로 RoomModel 객체 반환
+     */
+    
     private RoomModel getRoomByName(String name) {
         for (RoomModel r : allRooms) {
             if (r.getName().equals(name)) {
@@ -324,7 +369,11 @@ public class ReservationGUIController {
         }
         return null;
     }
-
+    
+    /**
+     * Excel 파일에서 강의실 목록 로드 (available_rooms.xlsx)
+     */
+    
     public void loadRoomsFromExcel() {
         try (InputStream fis = new FileInputStream(EXCEL_PATH)) {
             workbook = new XSSFWorkbook(fis);
@@ -340,7 +389,11 @@ public class ReservationGUIController {
             System.out.println("엑셀 파일 읽기 오류: " + e.getMessage());
         }
     }
-
+    
+    /**
+     * 날짜 → 요일 열 인덱스 변환 (1~7)
+     */
+    
     public int getDayColumnIndex(String selectedDate) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -371,6 +424,10 @@ public class ReservationGUIController {
             return -1;
         }
     }
+    
+      /**
+     * Excel 시트에서 선택한 요일의 '비어있음' 시간대 반환
+     */
 
     public List<String> getAvailableTimesByDay(Sheet sheet, int dayCol) {
         List<String> times = new ArrayList<>();
@@ -393,7 +450,11 @@ public class ReservationGUIController {
         }
         return times;
     }
-
+    
+     /**
+     * 예약 정보를 파일에 저장 (reservation.txt)
+     */
+    
     private void saveReservation(String name, String userType, String userId, String department,
             String roomType, String roomNumber,
             String date, String dayOfWeek, String startTime, String endTime,
@@ -409,6 +470,10 @@ public class ReservationGUIController {
             System.out.println("예약 저장 실패: " + e.getMessage());
         }
     }
+    
+    /**
+     * 날짜 문자열 → 한글 요일 반환
+     */
 
     public String getDayOfWeek(String dateStr) {
         try {
