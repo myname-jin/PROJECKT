@@ -21,7 +21,7 @@ import javax.swing.JOptionPane;
 public class ClassroomController {
 
     private DefaultTableModel tableModel;
-    private String filePath; 
+    private String filePath;
     private static final String DEFAULT_FILE_PATH = "src/main/resources/classroom.txt";
 
     public ClassroomController(DefaultTableModel tableModel) {
@@ -33,18 +33,11 @@ public class ClassroomController {
         this.filePath = filePath;
     }
 
-    public void addClassroom(ClassroomModel classroom) { // 강의실 정보 추가
-        // 중복 확인
+    public String addClassroom(ClassroomModel classroom) {
         List<ClassroomModel> existing = getClassroomList();
         for (ClassroomModel c : existing) {
             if (c.getRoom().equals(classroom.getRoom())) {
-                JOptionPane.showMessageDialog(
-                        null,
-                        "이미 존재하는 강의실입니다: " + classroom.getRoom(),
-                        "중복 강의실",
-                        JOptionPane.WARNING_MESSAGE
-                );
-                return;
+                return "이미 존재하는 강의실입니다: " + classroom.getRoom();
             }
         }
 
@@ -59,29 +52,31 @@ public class ClassroomController {
             writer.write(classroom.toFileString());
             writer.newLine();
         } catch (IOException e) {
-            e.printStackTrace();
+            return "파일 저장 중 오류 발생: " + e.getMessage();
         }
+
+        return "강의실이 추가되었습니다: " + classroom.getRoom();
     }
 
-    public List<ClassroomModel> getClassroomList() { // 강의실 목록 띄우기
+    public List<ClassroomModel> getClassroomList() {
         List<ClassroomModel> classrooms = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",", -1); // 빈 문자열 허용
+                String[] parts = line.split(",", -1);
                 if (parts.length == 4) {
                     classrooms.add(new ClassroomModel(parts[0], parts[1], parts[2], parts[3]));
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(); // 개발 중 로그용
         }
 
         return classrooms;
     }
 
-    public void updateClassroom(ClassroomModel updatedClassroom) {
+    public String updateClassroom(ClassroomModel updatedClassroom) {
         List<ClassroomModel> classrooms = getClassroomList();
         boolean found = false;
 
@@ -96,15 +91,14 @@ public class ClassroomController {
                 writer.newLine();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            return "파일 저장 중 오류 발생: " + e.getMessage();
         }
 
-        if (!found) {
-            JOptionPane.showMessageDialog(null, "수정할 강의실을 찾을 수 없습니다.", "수정 실패", JOptionPane.ERROR_MESSAGE);
-        }
+        return found ? "강의실이 수정되었습니다: " + updatedClassroom.getRoom()
+                : "수정할 강의실을 찾을 수 없습니다: " + updatedClassroom.getRoom();
     }
 
-    public void deleteClassroom(String room) {
+    public String deleteClassroom(String room) {
         List<ClassroomModel> classrooms = getClassroomList();
         boolean found = false;
 
@@ -123,7 +117,7 @@ public class ClassroomController {
                 writer.newLine();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            return "파일 저장 중 오류 발생: " + e.getMessage();
         }
 
         if (found) {
@@ -133,9 +127,9 @@ public class ClassroomController {
                     break;
                 }
             }
-            JOptionPane.showMessageDialog(null, "강의실이 삭제되었습니다: " + room);
+            return "강의실이 삭제되었습니다: " + room;
         } else {
-            JOptionPane.showMessageDialog(null, "삭제할 강의실을 찾을 수 없습니다: " + room, "삭제 실패", JOptionPane.ERROR_MESSAGE);
+            return "삭제할 강의실을 찾을 수 없습니다: " + room;
         }
     }
 }

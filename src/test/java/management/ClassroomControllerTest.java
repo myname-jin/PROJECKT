@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class ClassroomControllerTest {
 
-       private DefaultTableModel tableModel;
+    private DefaultTableModel tableModel;
     private ClassroomController controller;
     private Path tempFile;
 
@@ -38,22 +38,22 @@ public class ClassroomControllerTest {
 
     @Test
     void testAddClassroom() {
-        ClassroomModel classroom = new ClassroomModel("101", "1층", "30", "화이트보드 있음");
+        ClassroomModel classroom = new ClassroomModel("913", "9층", "30", "화이트보드 있음");
 
         controller.addClassroom(classroom);
 
         assertEquals(1, tableModel.getRowCount());
-        assertEquals("101", tableModel.getValueAt(0, 0));
+        assertEquals("913", tableModel.getValueAt(0, 0));
 
         List<ClassroomModel> list = controller.getClassroomList();
         assertEquals(1, list.size());
-        assertEquals("101", list.get(0).getRoom());
+        assertEquals("913", list.get(0).getRoom());
     }
 
     @Test
     void testPreventDuplicateClassroom() {
-        ClassroomModel classroom1 = new ClassroomModel("101", "1층", "30", "");
-        ClassroomModel classroom2 = new ClassroomModel("101", "2층", "40", "빔 있음");
+        ClassroomModel classroom1 = new ClassroomModel("913", "9층", "30", "");
+        ClassroomModel classroom2 = new ClassroomModel("913", "9층", "40", "빔 있음");
 
         controller.addClassroom(classroom1);
         controller.addClassroom(classroom2);
