@@ -1,3 +1,3 @@
-배고파요|시스템|false
+배고파요|시스템|true
 ㄴㄴㅁㅇ|긴급|true
 sadsas|시스템|true
