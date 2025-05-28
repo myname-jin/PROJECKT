@@ -197,7 +197,7 @@ public class ReservationGUIController {
         view.setVisible(true);
     }
 
-    private String getRoomInfo(String roomName) {
+    public String getRoomInfo(String roomName) {
         String filePath = "src/main/resources/classroom.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
@@ -257,7 +257,7 @@ public class ReservationGUIController {
         return total;
     }
 
-    private boolean isUserAlreadyReserved(String userId, String date) {
+    public boolean isUserAlreadyReserved(String userId, String date) {
         String path = "src/main/resources/reservation.txt";
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(new FileInputStream(path), "UTF-8"))) {
@@ -276,7 +276,7 @@ public class ReservationGUIController {
         return false;
     }
 
-    private boolean isTimeSlotAlreadyReserved(String roomName, String date, List<String> newTimes) {
+    public boolean isTimeSlotAlreadyReserved(String roomName, String date, List<String> newTimes) {
         String path = "src/main/resources/reservation.txt";
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
