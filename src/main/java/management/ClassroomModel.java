@@ -41,4 +41,20 @@ public class ClassroomModel {
     public String toFileString() {
         return room + "," + location + "," + capacity + "," + note;
     }
+
+    public void setRoom(String room) {
+        this.room = room;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public void setCapacity(String capacity) {
+        this.capacity = capacity;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
 }

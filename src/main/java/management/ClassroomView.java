@@ -36,6 +36,41 @@ public class ClassroomView extends javax.swing.JFrame {
         }
     }
 
+    private boolean validateInputs(String location, String capacity) {
+        if (location.isEmpty() && capacity.isEmpty()) {
+            showMessage("위치와 수용 인원을 입력하세요.");
+            return false;
+        }
+        if (location.isEmpty()) {
+            showMessage("위치를 입력하세요.");
+            return false;
+        }
+        if (capacity.isEmpty()) {
+            showMessage("수용 인원을 입력하세요.");
+            return false;
+        }
+        try {
+            Integer.parseInt(capacity);
+        } catch (NumberFormatException e) {
+            showMessage("수용 인원은 숫자로 입력하세요.");
+            return false;
+        }
+        return true;
+    }
+
+    private void showMessage(String message) {
+        JOptionPane.showMessageDialog(this, message);
+    }
+
+    private ClassroomModel getClassroomFromInputs() {
+        String room = (String) jComboBox1.getSelectedItem();
+        String location = jTextField1.getText().trim();
+        String capacity = jTextField2.getText().trim();
+        String note = jTextField3.getText().trim();
+        return new ClassroomModel(room, location, capacity, note);
+
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -198,103 +233,64 @@ public class ClassroomView extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        String room = (String) jComboBox1.getSelectedItem();
-        String location = jTextField1.getText().trim();
-        String capacity = jTextField2.getText().trim();
-        String note = jTextField3.getText().trim();
-
-        if (location.isEmpty() && capacity.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "위치와 수용 인원을 입력하세요.");
-            return;
-        } else if (location.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "위치를 입력하세요.");
-            return;
-        } else if (capacity.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "수용 인원을 입력하세요.");
+        ClassroomModel classroom = getClassroomFromInputs();
+        if (!validateInputs(classroom.getLocation(), classroom.getCapacity())) {
             return;
         }
-
-        try {
-            Integer.parseInt(capacity);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "수용 인원은 숫자로 입력하세요.");
+        String result = controller.addClassroom(classroom);
+        if (result != null) {
+            showMessage(result); // 중복 등 에러 메시지
             return;
         }
-
-        javax.swing.JOptionPane.showMessageDialog(this, "강의실 정보가 추가되었습니다.");
-
-        ClassroomModel classroom = new ClassroomModel(room, location, capacity, note);
-        controller.addClassroom(classroom);
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        model.addRow(new Object[]{classroom.getRoom(), classroom.getLocation(), classroom.getCapacity(), classroom.getNote()});
+        showMessage("강의실 정보가 추가되었습니다.");
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         int selectedRow = jTable1.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "수정할 행을 선택하세요.");
+            showMessage("수정할 행을 선택하세요.");
             return;
         }
 
-        String room = (String) jTable1.getValueAt(selectedRow, 0); // 기존 room 값 유지
-        String newLocation = jTextField1.getText().trim();
-        String newCapacity = jTextField2.getText().trim();
-        String newNote = jTextField3.getText().trim();
+        ClassroomModel classroom = getClassroomFromInputs();
+        String room = (String) jTable1.getValueAt(selectedRow, 0); // 기존 room 유지
+        classroom.setRoom(room);
 
-        if (newLocation.isEmpty() && newCapacity.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "위치와 수용 인원을 입력하세요.");
-            return;
-        } else if (newLocation.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "위치를 입력하세요.");
-            return;
-        } else if (newCapacity.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "수용 인원을 입력하세요.");
+        if (!validateInputs(classroom.getLocation(), classroom.getCapacity())) {
             return;
         }
 
-        try {
-            Integer.parseInt(newCapacity);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "수용 인원은 숫자로 입력하세요.");
-            return;
-        }
+        controller.updateClassroom(classroom);
 
-        ClassroomModel updatedClassroom = new ClassroomModel(room, newLocation, newCapacity, newNote);
-        controller.updateClassroom(updatedClassroom);  // 컨트롤러에 수정 요청
-
-        // 테이블도 업데이트
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        model.setValueAt(newLocation, selectedRow, 1);
-        model.setValueAt(newCapacity, selectedRow, 2);
-        model.setValueAt(newNote, selectedRow, 3);
+        model.setValueAt(classroom.getLocation(), selectedRow, 1);
+        model.setValueAt(classroom.getCapacity(), selectedRow, 2);
+        model.setValueAt(classroom.getNote(), selectedRow, 3);
 
-        JOptionPane.showMessageDialog(this, room + " 강의실 정보가 수정되었습니다.");
+        showMessage(room + " 강의실 정보가 수정되었습니다.");
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         int selectedRow = jTable1.getSelectedRow();
-
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "삭제할 행을 선택하세요.");
+            showMessage("삭제할 행을 선택하세요.");
             return;
         }
 
         String room = (String) jTable1.getValueAt(selectedRow, 0);
-
-        int confirm = JOptionPane.showConfirmDialog(
-                this,
-                room + " 강의실을 삭제하시겠습니까?",
-                "삭제 확인",
-                JOptionPane.YES_NO_OPTION
-        );
+        int confirm = JOptionPane.showConfirmDialog(this, room + " 강의실을 삭제하시겠습니까?", "삭제 확인", JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
-            controller.deleteClassroom(room);  // Controller의 삭제 메서드 호출
+            controller.deleteClassroom(room);
         }
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         ReservationMgmtView view = new ReservationMgmtView();
-        view.setLocationRelativeTo(null); 
-        view.setVisible(true); 
+        view.setLocationRelativeTo(null);
+        view.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton4ActionPerformed
 
