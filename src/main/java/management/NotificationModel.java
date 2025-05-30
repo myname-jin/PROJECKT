@@ -32,12 +32,12 @@ public class NotificationModel {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length >= 12 && parts[11].trim().equals("예약 대기")) {
+                if (parts.length >= 12 && parts[11].trim().equals("예약대기")) {
                     String name = parts[0].trim();
-                    String roomType = parts[4].trim();  // 실습실 / 강의실
+                    String roomType = parts[4].trim(); 
                     String roomNumber = parts[5].trim();
                     String date = parts[6].trim();
-                    String dayOfWeek = parts[7].trim(); // 금
+                    String dayOfWeek = parts[7].trim();
                     String startTime = parts[8].trim();
                     String endTime = parts[9].trim();
                     String purpose = parts[10].trim();

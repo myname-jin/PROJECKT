@@ -54,7 +54,7 @@ public class NotificationController {
                     }
                 }
 
-                // 예약 취소 감지 (상태 무관 전체 목록 기준)
+                // 예약 취소 감지
                 for (String old : shownAll) {
                     String oldName = old.split(",")[0];
                     boolean stillExists = currentAllSet.stream()
