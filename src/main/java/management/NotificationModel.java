@@ -32,19 +32,22 @@ public class NotificationModel {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length >= 12 && parts[11].trim().equals("예약대기")) {
-                    String name = parts[0].trim();
-                    String roomType = parts[4].trim(); 
+                int statusIndex = parts.length - 1;
+
+                // 수정됨: 테스트 데이터의 '예약 대기' 문자열과 정확히 일치하도록 공백 포함
+                if ("예약 대기".equals(parts[statusIndex].trim())) {
+                    String name       = parts[0].trim();
+                    String roomType   = parts[4].trim();
                     String roomNumber = parts[5].trim();
-                    String date = parts[6].trim();
-                    String dayOfWeek = parts[7].trim();
-                    String startTime = parts[8].trim();
-                    String endTime = parts[9].trim();
-                    String purpose = parts[10].trim();
+                    String date       = parts[6].trim();
+                    String dayOfWeek  = parts[7].trim();
+                    String startTime  = parts[8].trim();
+                    String endTime    = parts[9].trim();
+                    String purpose    = parts[10].trim();
 
                     String message = String.format(
-                            "%s님이 %s %s호를 %s(%s) %s~%s에 %s 목적으로 예약 신청하였고, 현재 예약 대기 상태입니다.",
-                            name, roomType, roomNumber, date, dayOfWeek, startTime, endTime, purpose
+                        "%s님이 %s %s호를 %s(%s) %s~%s에 %s 목적으로 예약 신청하였고, 현재 예약 대기 상태입니다.",
+                        name, roomType, roomNumber, date, dayOfWeek, startTime, endTime, purpose
                     );
                     pendingList.add(message);
                 }
