@@ -24,8 +24,8 @@ public class NotificationModelTest {
         tempFile = Files.createTempFile("test_reservation", ".txt");
 
         List<String> testData = Arrays.asList(
-                "홍길동,학생,2023001,컴공,강의실,101,2025-05-24,금,10:00,12:00,수업,예약 대기",
-                "김영희,학생,2023002,컴공,강의실,102,2025-05-25,토,14:00,16:00,스터디,예약 승인"
+                "홍길동,학생,2023001,컴공,강의실,101,2025-05-24,금,10:00,12:00,수업,예약대기",
+                "김영희,학생,2023002,컴공,강의실,102,2025-05-25,토,14:00,16:00,스터디,예약승인"
         );
         Files.write(tempFile, testData);
     }

@@ -122,20 +122,16 @@ public class UserMainController {
     }
 
     private void handleLogout() {
-        try {
-            shutdownNotificationSystem();
-            if (model.getSocket() != null && model.getOut() != null) {
-                model.getOut().write("LOGOUT:" + model.getUserId() + "\n");
-                model.getOut().flush();
-                model.getSocket().close();
-            }
-            view.dispose();
+        int result = JOptionPane.showConfirmDialog(view, "로그아웃 하시겠습니까?", "로그아웃", JOptionPane.YES_NO_OPTION);
+
+        if (result == JOptionPane.YES_OPTION) {
+            shutdownNotificationSystem(); // 알림 시스템만 정리하고
+
+            view.dispose(); // 현재 화면 닫기
             login.LoginView loginView = new login.LoginView();
             login.LoginModel loginModel = new login.LoginModel();
             new login.LoginController(loginView, loginModel);
-            loginView.setVisible(true);
-        } catch (IOException ex) {
-            view.showMessage("로그아웃 중 오류: " + ex.getMessage(), "오류", JOptionPane.ERROR_MESSAGE);
+            loginView.setVisible(true); // 로그인 화면 보여주기
         }
     }
 
