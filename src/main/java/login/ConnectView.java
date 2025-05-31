@@ -8,18 +8,29 @@ package login;
  *
  * @author adsd3
  */
-import ServerClient.FileWatcher;
-import login.LoginView;
-import login.LoginModel;
-import login.LoginController;
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 
-import javax.swing.*;
-import java.awt.*;
+import ServerClient.FileWatcher;
+import ServerClient.SocketManager;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.net.Socket;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
-public class ConnectView extends JFrame {
+/**
+ * 최초 “서버 연결” 화면
+ */
+public class ConnectView extends javax.swing.JFrame {
 
     private JTextField ipField;
     private JButton connectButton;
@@ -42,20 +53,38 @@ public class ConnectView extends JFrame {
         add(panel, BorderLayout.CENTER);
         add(connectButton, BorderLayout.SOUTH);
 
+        // “서버 연결” 버튼 클릭 리스너
         connectButton.addActionListener((ActionEvent e) -> {
             String ip = ipField.getText().trim();
+            int port = 5000; 
             try {
-                Socket socket = new Socket(ip, 5000);
+                // 1) 실제 서버에 Socket 연결
+                Socket socket = new Socket(ip, port);
+                
+                // 2) SocketManager에 set → 전역에서 재사용 가능
+                SocketManager.setSocket(socket);
+                System.out.println("[ConnectView] 서버와 연결되었습니다: " + ip + ":" + port);
+
+                // 3) FileWatcher 시작 (예: 파일 동기화가 필요하다면)
                 new FileWatcher().start();
 
+                // 4) 로그인 화면으로 넘어가기 (IP 입력 칸 없음)
                 JOptionPane.showMessageDialog(this, "서버 연결 성공");
-                LoginView loginView = new LoginView(); // IP칸 없음
-                LoginModel loginModel = new LoginModel();
-                new LoginController(loginView, loginModel, socket);
-                loginView.setVisible(true);
-                dispose(); // 연결창 닫기
+
+                SwingUtilities.invokeLater(() -> {
+                    LoginView  loginView  = new LoginView();
+                    LoginModel loginModel = new LoginModel();
+                    // SocketManager를 썼기 때문에, LoginController에서는 따로 socket을 받을 필요 없음
+                    new LoginController(loginView, loginModel);
+                    loginView.setLocationRelativeTo(null);
+                    loginView.setVisible(true);
+                });
+
+                // 5) 현재 ConnectView 창 닫기
+                dispose();
             } catch (IOException ex) {
-                JOptionPane.showMessageDialog(this, "서버 연결 실패: " + ex.getMessage());
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "서버 연결 실패: " + ex.getMessage(), "연결 오류", JOptionPane.ERROR_MESSAGE);
             }
         });
 
