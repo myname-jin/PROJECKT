@@ -33,9 +33,7 @@ public class NotificationModel {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
                 int statusIndex = parts.length - 1;
-
-                // 수정됨: 테스트 데이터의 '예약 대기' 문자열과 정확히 일치하도록 공백 포함
-                if ("예약 대기".equals(parts[statusIndex].trim())) {
+                if ("예약대기".equals(parts[statusIndex].trim())) {
                     String name       = parts[0].trim();
                     String roomType   = parts[4].trim();
                     String roomNumber = parts[5].trim();

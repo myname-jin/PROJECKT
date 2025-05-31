@@ -53,7 +53,7 @@ public class ReservationMgmtView extends javax.swing.JFrame {
     }
 
     private void setupApprovalColumnEditor() {
-        String[] statusOptions = {"예약 대기", "승인", "거절"};
+        String[] statusOptions = {"예약대기", "승인", "거절"};
         JComboBox<String> comboBox = new JComboBox<>(statusOptions);
 
         TableColumn statusColumn = jTable1.getColumnModel().getColumn(6);
